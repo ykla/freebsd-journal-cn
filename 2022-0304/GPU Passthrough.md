@@ -22,9 +22,9 @@ TwinCAT 运行时是所有 Beckhoff 工控机的共同标准，自然，TwinCAT 
 
 目前，是 TwinCAT/BSD 基 于FreeBSD 13.2。因此，TwinCAT/BSD 受益于 FreeBSD 基本系统，包括 FreeBSD 用户空间程序以及内核服务。此外，Beckhoff 还将 TwinCAT 的大部分功能从基于 Windows 的控制系统中引入到 TwinCAT/BSD 中。TwinCAT/BSD 是由 FreeBSD 基本系统和 TwinCAT 功能组件组成的。
 
-图 1 显示了该系统的结构。
+图 1 显示了该系统的结构:
 
-[这里需要插图]
+![图1](../2022-0304/1.png)
 
 图 1：TwinCAT 在 FreeBSD 上的集成
 
@@ -56,9 +56,9 @@ bhyve 托管的虚拟机也受益于 OpenZFS，它是 TwinCAT/BSD 上的默认�
 
 ## 虚拟机配置
 
-bhyve 被集成到 TwinCAT/BSD 中，以便配置一个像图 2 所示的系统设置。
+bhyve 被集成到 TwinCAT/BSD 中，以便配置一个像图 2 所示的系统设置:
 
-[这里需要插图]
+![图2](../2022-0304/2.png)
 
 图 2：TwinCAT/BSD 上的虚拟机配置样本
 
