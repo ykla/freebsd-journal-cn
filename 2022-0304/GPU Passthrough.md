@@ -130,4 +130,4 @@ FreeBSD 与 Beckhoff TwinCAT 自动化软件的结合，构成了 TwinCAT/BSD �
 
 CORVIN KÖHNE 是 Beckhoff 自动化有限公司的一名软件开发人员。他是 Beckhoff 的 FreeBSD 分支的维护者和开发者，该分支被称为 TwinCAT/BSD。他专注于基于 x86 的系统和管理程序技术。由于他对 bhyve 项目的贡献，他在 2022 年成为 FreeBSD 的贡献者。
 
-DANIEL KERKHOFF 的职业生涯开始于 Beckhoff 自动化有限公司的工业自动化解决方案的应用工程师。KG 担任工业自动化解决方案的应用工程师。在获得信息技术的硕士学位后，他加入了 TwinCAT 产品管理团队。他负责处理来自使用 bhyve 和 TwinCAT/BSD 作为 Beckhoff 基于 PC 的控制系统的用户的询问。
+DANIEL KERKHOFF 的职业生涯开始于 Beckhoff 自动化有限公司的工业自动化解决方案的应用工程师。在获得信息技术的硕士学位后，他加入了 TwinCAT 产品管理团队。他负责处理来自使用 bhyve 和 TwinCAT/BSD 作为 Beckhoff 基于 PC 的控制系统的用户的询问。
