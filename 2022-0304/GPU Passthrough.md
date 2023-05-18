@@ -2,7 +2,7 @@
 
 作者：Corvin Köhne 和 Daniel Kerkhoff
 
-译者：冰/deepl
+译者：冰
 
 校对：ykla
 
