@@ -1,32 +1,20 @@
-# GPU 直通车
+# GPU 直通
 
 作者：Corvin Köhne 和 Daniel Kerkhoff
+译者：冰/deepl
+校对：ykla
 
-自 1980 年成立以来，Beckhoff 一直致力于工业自动化技术的研究。
-1986 年，基于 PC 的机器控制的概念诞生了。那时，Beckhoff 正在远离基于微控制器的 PLC，并开始使用标准 PC 技术作为 PLC 的基础，同时将其置于工业外壳中。
-这极大地提高了性能，因为 PC 已经比微控制器强大得多。
+自 1980 年成立以来，Beckhoff 一直致力于工业自动化技术的研究。在 1986 年，基于 PC 的机器控制概念诞生了。那时，Beckhoff 正在摒弃基于微控制器的 PLC，并开始使用标准 PC 技术作为 PLC 的基础，同时将使用在工业外壳中【即一种特殊设计的外部保护壳，用于包裹、保护和隔离工业设备或机器，校对者注，下同】。这极大地提高了性能，因为 PC 已经比微控制器强大得多。
 
-随着 Windows 的兴起，使通用操作系统成为机器控制系统本身的一部分的想法诞生了。
- Windows 环境已经为机器制造商和操作员所熟悉。
- Windows 环境还可以用额外的用户应用程序来充实，这被证明是有益的，因为它为整个控制系统增加了价值。
- 然而，Windows 本身并不能为具有硬性、实时约束的控制逻辑提供所需的执行环境。
+随着 Windows 的兴起，使通用操作系统成为机器控制系统本身的一部分的想法诞生了。Windows 环境已为机器制造商和操作员所熟悉。Windows 环境还可以用额外的用户应用程序来扩展，这被证明是有益的，因为它为整个控制系统提升了价值。然而，Windows 本身并不能为具有硬性、实时约束的控制逻辑提供所需的执行环境。
 
-TwinCAT（代表 Windows 控制自动化技术）软件已被开发出来，并在 1996 年首次发布。
- TwinCAT 被设计为 Windows NT 的一个扩展，以确保在 Beckhoff 基于 Windows 的控制系统上确定地执行控制任务。
+TwinCAT（代表 Windows 控制自动化技术）软件已被开发出来，并在 1996 年首次发布。TwinCAT 被设计为 Windows NT 的扩展，以确保在 Beckhoff （开发的）基于 Windows 的控制系统上确定地执行控制任务。
 
-多年来，PC 的硬件组件，如 CPU、内存、总线系统和 I/O 设备变得更加强大，基于 PC 的控制系统也一样。
- 2002 年，Beckhoff 发明了嵌入式 PC 系列，这是一种可安装在 DIN 导轨上的工业 PC，可直接连接到 Beckhoff I/O 系统。
- 由于这些设备使用了低功耗的 CPU（AMD SC2200）和紧凑的闪存卡，因此需要一个占地面积小的嵌入式操作系统。
- 当时，Windows CE 是市场上的主导者，是这种嵌入式 PC 系列的明显选择。
- 今天，Beckhoff 提供了一个广泛的工业 PC 产品系列，从小型单核 ARM CPU 到最新的 AMD Ryzen CPU 和基于英特尔至强的服务器级设备。
- 因此，控制系统工程师可以为其应用选择合适的性能等级。
+多年来，PC 的硬件组件，如 CPU、内存、总线系统和 I/O 设备变得更加强大，基于 PC 的控制系统也一样。2002 年，Beckhoff 发明了嵌入式 PC 系列，这是一种可安装在 DIN 导轨上的工业 PC，可直接连接到 Beckhoff I/O 系统。由于这些设备使用了低功耗的 CPU（AMD SC2200）和小巧的闪存卡，因此需要一个迷你的嵌入式操作系统。当时，Windows CE 是市场上的主导者，是这种嵌入式 PC 系列的明显选择。今天，Beckhoff 提供了一个广泛的工业 PC 产品系列，从小型单核 ARM CPU 到最新的 AMD Ryzen CPU 和基于英特尔至强的服务器级设备。因此，控制系统工程师可以为其应用选择合适的性能等级。
 
-TwinCAT 运行时间是所有 Beckhoff 工控机的共同标准，自然，TwinCAT 本身也随着时间的推移不断发展，使控制系统能够利用现代 PC 硬件的力量。
- Windows 已经成为 Beckhoff 及其客户基于 PC 的控制系统的标准操作系统。
+TwinCAT 运行时是所有 Beckhoff 工控机的共同标准，自然，TwinCAT 本身也随着时间的推移不断发展，使控制系统能够利用现代 PC 硬件的力量。Windows 已经成为 Beckhoff 及其客户基于 PC 的控制系统的标准操作系统。
 
-然而，近年来，Windows CE 已经过时，客户对基于非 Windows 的控制系统的需求也在增加，因此 Beckhoff 开始寻找一种可以成为新的 TwinCAT 主机的替代操作系统。
- 最终，FreeBSD 被选为承载 TwinCAT 的非 Windows 操作系统。
- Beckhoff 将 FreeBSD 和 TwinCAT 结合起来，创建了一个新的基于 PC 的控制操作系统，命名为 TwinCAT/BSD。
+然而，近年来，Windows CE 已经过时，客户对基于非 Windows 的控制系统的需求也在增加，因此 Beckhoff 开始寻找一种可以成为新的 TwinCAT 主机的替代操作系统。最终，FreeBSD 被选为承载 TwinCAT 的非 Windows 操作系统。Beckhoff 将 FreeBSD 和 TwinCAT 结合起来，创建了一个新的基于 PC 的控制操作系统，命名为 TwinCAT/BSD。
 
 ## TwinCAT/BSD
 
