@@ -68,11 +68,15 @@ FreeBSD 有一个被称为兼容层的功能，它为针对不同 ABI 编译的�
 
 在默认情况下， `pkg(8)` 软件包管理器会根据 `uname(1)` 的 `NT_FREEBSD_ABI_TAG` ELF 注释来决定使用哪个软件包仓库。该注释的值被用来构建 ABI pkg 变量的值， 它可以被嵌入到软件包仓库的 URL 中 (参见 pkg.conf(5) 和 `/etc/pkg/FreeBSD.conf`)。例如， 在运行 FreeBSD 14-CURRENT 的 amd64 主机上，URL：
 
-`pkg+http://pkg.FreeBSD.org/${ABI}/latest`
+```
+pkg+http://pkg.FreeBSD.org/${ABI}/latest
+```
 
 被扩展为：
 
-`pkg+http://pkg.FreeBSD.org/FreeBSD:14:amd64/latest`
+```
+pkg+http://pkg.FreeBSD.org/FreeBSD:14:amd64/latest
+```
 
 与 FreeBSD 相比，CheriBSD 没有任何关于 ABI 在不同版本和分支中稳定性的假设。相反，CheriBSD 维护着 ABI 计数器 `__CheriBSD_version` (当它被撞开时被设置为当前日期)，类似于 `__FreeBSD_version`，也在 `sys/param.h` 中，它描述了当前 CheriBSD 分支所使用的 ABI 版本。因此，两个 CheriBSD 发布版本可以使用相同的 ABI 版本，而两个不同的 CheriBSD 分支版本可以使用两个不同的 ABI 版本。
 
@@ -86,11 +90,15 @@ FreeBSD 有一个被称为兼容层的功能，它为针对不同 ABI 编译的�
 
 被 pkg64c 扩展为：
 
-`pkg+http://pkg.CheriBSD.org/CheriBSD:20220828:aarch64c`
+```
+pkg+http://pkg.CheriBSD.org/CheriBSD:20220828:aarch64c
+```
 
 和被 pkg64 扩展为： 
 
-`pkg+http://pkg.CheriBSD.org/CheriBSD:20220828:aarch64`
+```
+pkg+http://pkg.CheriBSD.org/CheriBSD:20220828:aarch64
+```
 
 ## 软件包构建
 
@@ -125,11 +133,15 @@ FreeBSD 允许用 binmiscctl(8) 定义二进制图像激活器，使用特定的
 例如，系统管理员可以定义一个激活器，在 amd64 主机上使用 QEMU 用户模式模拟器运行 arch64 二进制文件。
 在实践中，在 FreeBSD/amd64 主机上的 FreeBSD/aarch64 jail 中执行的程序会被包装成用户模式，例如：
 
-`$ sh`
+```
+$ sh
+```
 
 是在 jail 中作为命令执行的：
 
-`$ /usr/local/bin/qemu-aarch64-static sh`
+```
+$ /usr/local/bin/qemu-aarch64-static sh
+```
 
 其中/usr/local/bin/qemu-aarch64-static 二进制文件是为主机的本地 ABI 编译的，因此是本地执行的，而不是由图像激活器再次封装的。
 
@@ -156,7 +168,9 @@ b. 我们改变了 QEMU，使其更接近 CheriBSD/FreeBSD 的系统调用接口
 这一部分的项目花了我们最长的时间。目前，用户模式本身可以通过 cheribuild qemu-cheri-bsd-user 分支2 轻松使用。
  例如，你可以在 FreeBSD/amd64 主机上从 CheriBSD/riscv64c 基础系统运行 CheriABI shell，使用
 
-`$ ./cheribuild.py run-user-shell-riscv64-purecap`
+```
+$ ./cheribuild.py run-user-shell-riscv64-purecap
+```
 
 ## CheriBSD ports
 
@@ -194,11 +208,17 @@ Poudriere 有两种套装配置：Cheriabi 和 Hybridabi。
 
 在 CheriBSD/Morello 主机上为开发分支构建 CheriABI 包需要执行三个简单的命令：
 
-`$ poudriere jail -c -j aarch64c-dev -a arm64.aarch64c -v dev`
+```
+$ poudriere jail -c -j aarch64c-dev -a arm64.aarch64c -v dev
+```
 
-`$ poudriere ports -c -p main`
+```
+$ poudriere ports -c -p main
+```
 
-`$ poudriere bulk -j aarch64c-dev -p main -z cheriabi -a`
+```
+$ poudriere bulk -j aarch64c-dev -p main -z cheriabi -a
+```
 
 当把软件移植到 CHERI 时，CheriBSD 用户也可以从 Poudriere 中获益，轻松地启动构建环境。
  这对混合 ABI 软件特别有用，因为有时需要设置自定义共享库搜索路径，而不是错误地使用默认搜索路径的 CheriABI 库。
@@ -221,9 +241,13 @@ CheriBSD 用户可以使用从 CheriBSD.org 获得的 memstick 安装程序，�
 CheriBSD 中的 bsdinstall(8) 包括一个安装步骤，用户可以决定是否要安装运行 CheriABI 图形环境（使用 KDE Plasma 和 Wayland；见图 3）和其他混合 ABI 程序（目前是 Firefox 和 Chromium）的软件包。
 这些包可以很容易地用元包来安装：
 
-`$ pkg64c install cheri-desktop`
+```
+$ pkg64c install cheri-desktop
+```
 
-`$ pkg64 install cheri-desktop-hybrid-extras`
+```
+$ pkg64 install cheri-desktop-hybrid-extras
+```
 
 [这里需要插图]
 
