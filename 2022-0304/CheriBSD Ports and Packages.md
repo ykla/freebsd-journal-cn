@@ -1,107 +1,72 @@
 
-# CheriBSD port 和软件包——用于 Arm Morello 和 CHERI-RISC-V CheriBSD 的纯 capability 第三方软件
+# CheriBSD port 和软件包——用于 Arm Morello 和 CHERI-RISC-V CheriBSD 的纯能力第三方软件
 
 作者：Konrad Witaszczyk
 
 CHERI 是一个硬件/软件/语义学联合设计项目，旨在提高现有和未来硬件-软件堆栈实现的安全性。来自谷歌和微软的最新研究表明，他们产品中大约 70% 的漏洞与内存安全问题有关。CHERI 不仅使我们能够阻止大多数这类漏洞被利用，而且还能对软件进行分离，从而限制目前软件维护者不知道的可成功利用的漏洞的影响（例如，第三方软件依赖中的后门）。
 
-随着 Arm Morello 平台的发布，CHERI 的生态系统迅速扩大
+随着 Arm Morello 平台的发布，CHERI 的生态系统迅速扩大。
 
 直到 2022 年，CHERI 项目主要由剑桥大学、SRI 国际和他们的合作伙伴开发，包括微软、谷歌和 Arm。随着 Arm Morello 平台的发布，CHERI 生态系统迅速扩大，这是 CHERI 第一个面向公众的硬件实现。2022 年 1 月，Arm 开始向公司、学术和政府机构运送第一批（大约一千块）Morello 主板。为了给 Morello 用户提供一个用户友好的工作环境，*CheriBSD*——一个基于 FreeBSD 的操作系统，适配 Arm Morello 和 CHERIRISC-V ——他们需要一个基础工具，在 Morello 发布之前构建和分发兼容 CHERI 的第三方软件。今天，有几十所大学、政府研究实验室和公司在 Morello 的工作中使用 CheriBSD，并且每天都依赖这个基础系统。
 
-这篇文章描述了我们在没有支持 CHERI 的硬件情况下，使用 QEMU 用户模式、FreeBSD 端口和 Poudriere 为 CheriBSD 构建第三方软件包的历程。
-在讨论软件包构建基础设施的实施细节的同时，文章总结了我们需要做哪些决定和改变，以最终实现 ~24,000 个 AArch64 软件包和 ~9,000 个支持 CHERI 的软件包。
+这篇文章介绍了我们在没有支持 CHERI 的硬件情况下，使用 QEMU 用户模式、FreeBSD ports 和 Poudriere 为 CheriBSD 构建第三方软件包的历程。在讨论软件包构建基础设施的实施细节的同时，文章总结了我们需要做哪些决定和改变，以最终实现约 24,000 个 AArch64 软件包和约 9,000 个支持 CHERI 的软件包。
 
 ## CHERI 硬件-软件栈
 
-为了充分了解 CheriBSD 软件包构建的基础设施，我们应该首先描述开发者可以用来构建 CHERI 软件的 SDK。CHERI 硬件-软件堆栈（见表 1）由硬件、仿真器、编译器、调试器、操作系统和支持 CHERI 的操作系统的应用程序组成。
- 这个堆栈的每个组件都需要为 CHERI 进行调整，并且必须实现对 CHERI 能力的支持。
+为了充分了解 CheriBSD 软件包构建的基础设施，我们应该首先介绍开发者可以用来构建 CHERI 软件的 SDK。CHERI 硬件-软件堆栈（见表 1）由硬件、仿真器、编译器、调试器、操作系统和支持 CHERI 的操作系统的应用程序组成。这个堆栈的每个组件都需要为 CHERI 进行调整，并且必须实现对 CHERI 能力的支持。
 
-| 第三方软件 | ~9,000 CHERI packages (Morello)<br/><br/>~24,000 non-CHERI packages (Morello)                                                          |
+| 第三方软件 | 约 9,000 个 CHERI 软件包 (Morello)<br/><br/> 约 24,000 个非 CHERI 软件包 (Morello)                                                          |
 |:-----:| -------------------------------------------------------------------------------------------------------------------------------------- |
 | 操作系统  | CheriBSD (Morello, CHERI-RISC-V)<br/>FreeRTOS (CHERI-RISC-V)<br/>CHERIoT RTOS (CHERI-RISC-V)<br/>Linux (Morello)<br/>Android (Morello) |
 | 工具链   | CHERI LLVM for CHERI C/C++ (Morello, CHERI-RISC-V)<br/>Morello GCC for CHERI C/C++ (Morello)<br/>GDB-CHERI (Morello, CHERI-RISC-V)     |
 | CPU   | Arm Morello SoC<br/>CHERI-RISC-V on FPGA<br/>QEMU-CHERI (Morello, CHERI-RISC-V)<br/>Microsoft CHERIoT (CHERI-RISC-V)                   |
 
-表 1：目前的 CHERI 硬件-软件栈
+**表 1：目前的 CHERI 硬件-软件栈**
 
-在 Arm Morello 平台 20 发布之前，CheriBSD 和第三方软件已经使用 Morello 和 CHERI-RISC-V9 的 QEMU 仿真器进行开发和移植了。
-这个环境在今天仍然很有用，可以在多个 CheriBSD 分支上工作，或者将 GDB 调试器连接到 QEMU 上，并在 CheriBSD 内核中逐步进行。
- 任何对我们的研究感兴趣的人都可以尝试 CHERI 练习，在 QEMU 下探索 CHERI 如何防止内存安全问题。
- 一个基于 Morello QEMU 的虚拟机可以通过 cheribuild 工具1 在 FreeBSD、Linux 和 macOS 上创建，使用一个简单的命令来获取和编译所需的软件，并运行该虚拟机：
+在 Arm Morello 平台【注20】发布之前，CheriBSD 和第三方软件已经使用 Morello 和 CHERI-RISC-V【注9】的 QEMU 仿真器进行开发和移植了。这个环境在今天仍然很有用，可以在多个 CheriBSD 分支上工作，或者将 GDB 调试器连接到 QEMU 上，并在 CheriBSD 内核中逐步进行。任何对我们的研究感兴趣的人都可以尝试 CHERI 练习【注25】，在 QEMU 下探索 CHERI 如何防止产生内存安全问题。可以通过 *cheribuild* 工具【注1】在 FreeBSD、Linux 和 macOS 上创建一个基于 Morello QEMU 的虚拟机，使用一个简单的命令来获取和编译所需的软件，并运行该虚拟机：
 
- ` $ ./cheribuild.py --include-dependencies run-morello-purecap`
+```
+$ ./cheribuild.py --include-dependencies run-morello-purecap
+```
 
-可用的工具链包括 LLVM 编译器和 GDB 调试器。
- LLVM 可以交叉编译代码或在硬件上或在 QEMU 下进行本地编译。
- GDB-CHERI，目前基于 GDB 12，可以反汇编能力感知的指令，并打印寄存器和内存中的能力信息。
- 虽然本文主要讨论 CheriBSD，但 Arm 也开发了 Linux 和 Android 操作系统，并为 Morello19 提供了 CHERI LLVM 和 GCC 编译器。
- 2023 年 2 月，微软也发布了 CHERIoT 项目，该项目为嵌入式 RISC-V 设备实现了一个完整的硬件-软件堆栈与 CHERIoT RTOS。
+可用的工具链包括 LLVM 编译器【注14、17】和 GDB 调试器【注15】。LLVM 可以交叉编译代码或在硬件上/QEMU 下进行本地编译。GDB-CHERI，目前基于 GDB 12，可以反汇编能力感知的指令，并打印寄存器和内存中的能力信息。虽然本文主要讨论 CheriBSD【注3】，但 Arm 也开发了 Linux 和 Android 操作系统【注18】，并为 Morello【注19】提供了 CHERI LLVM 和 GCC 编译器。2023 年 2 月，微软也发布了 CHERIoT 项目【注16】，该项目为嵌入式 RISC-V 设备实现了一个完整的硬件-软件堆栈与 CHERIoT RTOS。
 
-有了上述的 SDK，我们决定分叉 FreeBSD 的端口，并对其进行错误修正，以及对 CHERI 和 CheriBSD 的必要修改。我们把这个端口集合称为 CheriBSD 端口。
+有了上述的 SDK，我们决定复刻 FreeBSD ports，并对其进行错误修正，以及对 CHERI 和 CheriBSD 的必要修改。我们把这个 ports 称为 *CheriBSD ports*。
 
-移植软件到 CHERI 的过程类似于将为 32 位架构开发的代码移植到 64 位架构。
- 一个纯能力的程序只能使用 CHERI 能力和 CHERI 感知的 CPU 指令来访问内存。
- 在这样的程序中，一个指针的大小增加到 128 位，以容纳一个 CHERI 能力。
-为了编译 C/C++ 程序，代码必须适应 CHERI C/C++ 语义，要求使用适当的数据类型来存储指针（例如，uintptr_t 而不是 long），并将指针的对齐方式增加到 16 字节。
- CHERI LLVM 可以识别 C/C++ 和 CHERI/C++ 之间的许多不兼容之处，并显示详细的警告，建议对代码进行哪些修改以使其与 CHERI 兼容。
-在许多情况下，开发者在修复了 CHERI LLVM 发现的所有问题后，可以成功编译和运行他们的软件。
-然而，建议进行广泛的测试，以确保移植的软件不包括任何运行时的错误（例如，自定义内存分配器的错位分配）。
+移植软件到 CHERI 的过程类似于将为 32 位架构开发的代码移植到 64 位架构。一个纯能力的程序只能使用 CHERI 能力和 CHERI 感知的 CPU 指令来访问内存。在这样的程序中，一个指针的大小增加到 128 位，以容纳 CHERI 能力。为了编译 C/C++ 程序，代码必须兼容 CHERI C/C++ 语义【注24】，要求使用适当的数据类型来存储指针（例如，uintptr_t 而不是 long），并将指针的对齐方式增加到 16 字节。CHERI LLVM 可以识别 C/C++ 和 CHERI/C++ 之间的许多不兼容之处，并显示详细的警告，建议对代码进行哪些修改以使其与 CHERI 兼容。在许多情况下，开发者在修复了 CHERI LLVM 发现的所有问题后，就可以成功编译和运行他们的软件。然而，建议进行广泛的测试，以确保移植的软件不包括任何运行时的错误（例如，自定义内存分配器的错位分配）。
 
-虽然很多开源项目已经被移植到 CHERI，但很多关键的应用程序仍然不能被编译为使用 CHERI 的功能。
- 例如，网络浏览器是非常复杂的软件，需要大量的依赖关系。
-
-为了提供一个全功能的开发平台, CheriBSD 允许运行适应 CHERI 的应用程序和为 CHERI 扩展的 CPU（例如，Morello 的 Armv8-A）基线架构编译的应用程序。
-与现有软件的兼容性对于 CHERI 项目来说是至关重要的，它允许为 CHERI 逐步调整软件，而不是要求从头开始重新实现一个应用程序。
- FreeBSD，作为 CheriBSD 的基础操作系统，能够实现传统软件和 CHERI 感知软件的运行时环境。
- 然而，当涉及到为多个运行时环境提供第三方软件时，CheriBSD 仍然有一些从 FreeBSD 继承的挑战。
+虽然很多开源项目已经被移植到 CHERI，但很多关键的应用程序仍然不能被编译为使用 CHERI 的功能。例如，网络浏览器是非常复杂的软件，有大量的依赖关系。
 
 与现有软件的兼容性对于 CHERI 项目来说是非常重要的，它可以使软件逐步适应 CHERI。
 
+为了提供一个全功能的开发平台, CheriBSD 允许运行适应 CHERI 的应用程序和为 CHERI 扩展的 CPU（例如，Morello 的 Armv8-A）基线架构编译的应用程序。与现有软件的兼容性对于 CHERI 项目来说是至关重要的，它允许为 CHERI 逐步调整软件，而不是要求从头开始重新开发一个应用程序。FreeBSD，作为 CheriBSD 的基础操作系统，能够实现传统软件和 CHERI 感知软件的运行时环境。然而，当涉及到为多个运行时环境提供第三方软件时，CheriBSD 仍然有一些从 FreeBSD 继承的挑战。
+
+
 ## 多 ABI 支持
 
-FreeBSD 包括一个被称为兼容层的功能，它为针对不同 ABI 编译的程序提供系统调用的实现，而不是针对本地 ABI。
-例如，一个 amd64 的 FreeBSD 内核带有一个编译的 32 位兼容层(也被称为 freebsd32)，可以运行一个为 i386 编译的程序。
-CheriBSD 受益于这一特性，支持两种与 CHERI 相关的 ABI：CheriABI 也被称为纯能力 ABI(***MACHINE_ARCH*** aarch64c 和 riscv64c)，用于只能使用 CHERI 能力访问内存的程序，以及混合 ABI(**MACHINE_ARCH** aarch64 和 riscv64)，用于可以但不需要使用 CHERI 能力的程序。
- 后一种 ABI 由纯能力的 CheriBSD 内核与 freebsd64 兼容层实现，类似于 freebsd32。
+FreeBSD 有一个被称为兼容层的功能，它为针对不同 ABI 编译的程序提供系统调用的实现，而不是针对本地 ABI。例如，amd64 的 FreeBSD 内核带有一个编译的 32 位兼容层（也被称为 *freebsd32*），可以运行为 i386 编译的程序。CheriBSD 受益于这一特性，支持两种与 CHERI 相关的 ABI：CheriABI 也被称为纯能力 ABI(***MACHINE_ARCH*** aarch64c 和 riscv64c)，用于只能使用 CHERI 能力访问内存的程序，以及混合 ABI(**MACHINE_ARCH** aarch64 和 riscv64)，用于可以但不需要使用 CHERI 能力的程序。后一种 ABI 由纯能力的 CheriBSD 内核与 *freebsd64（ 兼容层实现，类似于 freebsd32。
 
 ### 缺少的跨 ABI 支持
 
-尽管 FreeBSD 和 CheriBSD 内核实现了对多 ABI 的支持， 但 FreeBSD ports 和 Poudriere 却不支持多 ABI 环境。
-这在 CHERI 的背景下是一个重要的问题。
- 许多 ports 需要的依赖关系还没有针对 CHERI 进行调整。
- 例如， Meson 和 Ninja 是常用的依赖 Python 的构建系统。
- 由于我们目前还没有 CheriABI Python， 我们无法为 CheriABI 构建这些实用程序来编译其他端口。
- 如果 FreeBSD ports 和 Poudriere 支持编译时的跨 ABI 依赖关系， 我们就可以使用混合 ABI Meson 和 Ninja 来构建那些在运行时不需要它们的 CheriABI 包。
- CheriBSD ports 一节简要地解释了我们如何设法部分地解决这个问题。
+尽管 FreeBSD 和 CheriBSD 内核实现了对多 ABI 的支持， 但 FreeBSD ports 和 Poudriere 却不支持多 ABI 环境。这在 CHERI 的背景下是一个重要的问题。许多 ports 需要的依赖关系还没有针对 CHERI 进行调整。例如， Meson 和 Ninja 是常用的依赖 Python 的构建系统。由于我们目前还没有 CheriABI Python， 我们无法为 CheriABI 构建这些实用程序来编译其他 port。如果 FreeBSD ports 和 Poudriere 支持编译时的跨 ABI 依赖关系， 我们就可以使用混合 ABI Meson 和 Ninja 来构建那些在运行时不需要它们的 CheriABI 包。*CheriBSD ports* 一节简要地解释了我们如何设法部分地解决这个问题。
 
 ### 软件包管理器
 
-**pkg(8)** 软件包管理器只能管理为一种 ABI 构建的软件包 - 默认为基本系统的 ABI(基于 **uname(1)**)。
- 例如， i386 的软件包不能与 amd64 的软件包一起安装在 amd64 主机上， 并在一个软件包数据库中注册 (**pkg-register(8)**)。
- 当然，我们可以创建一个包含为 i386 编译的二进制文件和共享库的包，并将其标记为为 amd64 创建的，就像 FreeBSD 为 Linux 包所做的那样，但这需要为同一个端口创建两个包（为 amd64 和 i386），并且不能在包管理器级别上反映打包文件的实际 ABI。
- 为了更好地支持这种多 ABI 环境，有两个重要的问题必须解决：
+**pkg(8)** 软件包管理器只能管理为单个 ABI 构建的软件包——默认为基本系统的 ABI（基于 **uname(1)**）。例如，i386 的软件包不能与 amd64 的软件包一起安装在 amd64 主机上， 并在同一个软件包数据库中注册 (**pkg-register(8)**)。当然，我们可以创建一个包含为 i386 编译的二进制文件和共享库的包，并将其标记为为 amd64 创建的，就像 FreeBSD 为 Linux 软件所做的那样，但这需要为同一个 port 创建两个包（为 amd64 和 i386），并且不能在包管理器级别上反映打包文件的实际 ABI。为了更好地支持这种多 ABI 环境，有两个重要的问题必须予以解决：
 
-1.  两个具有相同预编译端口但适用于不同 ABI 的软件包必须使用不同的路径，以免相互冲突。
-   例如，为两个不同的 ABI 编译的 Git 使用相同的本地基本路径（如 /usr/local），会与安装在该路径上的文件（如 */usr/local/bin/git*）发生冲突。
+1.  两个具有相同预编译 port 但适用于不同 ABI 的软件包必须使用不同的路径，以免相互冲突。例如，为两个不同的 ABI 编译的 Git 使用相同的本地基本路径（如 `/usr/local`），会与安装在该路径上的文件（如 `/usr/local/bin/git`）发生冲突。
 
-2. 一个 ABI 的软件包应该能够依赖另一个 ABI 的软件包。
-   例如，Git 依赖于 Perl，因为它包含了其子命令（例如 git add -i）所使用的多个 Perl 脚本。
-   与其使用为同一 ABI 编译的解释器，不如使用为另一支持的 ABI 提供的 Perl。
+2. 一个 ABI 的软件包应该能够依赖另一个 ABI 的软件包。例如，Git 依赖于 Perl，因为它包含了其子命令（例如 git add -i）所使用的多个 Perl 脚本。与其使用为同一 ABI 编译的解释器，不如使用为另一支持的 ABI 提供的 Perl。
 
-从今天起，我们解决了第一个问题，并决定忽略 CheriBSD 的第二个问题。
+从现在起，我们解决了第一个问题，并决定忽略 CheriBSD 的第二个问题。
 
-为了避免在 CheriBSD 的软件包之间产生冲突，我们将 CheriABI 和混合 ABI 软件包放在两个不同的地方。我们在构建 CheriBSD ports 时， 将 LOCALBASE 设为 /usr/local， 而混合 ABI 包则将 LOCALBASE 设为 /usr/local64。虽然 FreeBSD ports 联编系统提供了 localbase 功能 (在 Mk/Uses/localbase 中)， 但我们发现并修正了许多破坏这一功能的 port， 例如， 在代码中硬编码路径； 或根本没有使用 localbase 功能。
+为了避免在 CheriBSD 的软件包之间产生冲突，我们将 CheriABI 和混合 ABI 软件包放在两个不同的地方。我们在构建 CheriBSD ports 时， 将 `LOCALBASE` 设为 `/usr/local`， 而混合 ABI 包则将 `LOCALBASE` 设为 `/usr/local64`。虽然 FreeBSD ports 联编系统提供了 `localbase` 功能 (在 `Mk/Uses/localbase` 中)， 但我们发现并修正了许多破坏这一功能的 port， 例如，在代码中硬编码路径；或根本没有使用 `localbase` 功能。
 
-构建的包被注册在两个独立的包库中， 可以用不同的包管理器来管理： pkg64c 用于 CheriABI 包， pkg64 用于混合 ABI 包。
-pkg64c 和 pkg64 是为它们所管理的软件包的相同 ABI 而编译的程序，它们使用单独的软件包库配置目录、数据库和缓存。
-简而言之，这些软件包管理器完全不认识对方。
+构建的包被注册在两个独立的包库中， 可以用不同的包管理器来管理： `pkg64c` 用于 CheriABI 包， `pkg64` 用于混合 ABI 包。`pkg64c` 和 `pkg64` 是为它们所管理的软件包的相同 ABI 而编译的程序，它们使用单独的软件包库配置目录、数据库和缓存。简而言之，这些软件包管理器完全不认识对方。
 
 ### CheriBSD ABI 版本
 
-默认情况下， pkg(8) 软件包管理器会根据 uname(1) 的 NT_FREEBSD_ABI_TAG ELF 注释来决定使用哪个软件包仓库。
-该注释的值被用来构建 ABI pkg 变量的值， 它可以被嵌入到软件包仓库的 URL 中 (参见 pkg.conf(5) 和 /etc/pkg/FreeBSD.conf)。
- 例如， 在运行 FreeBSD 14-CURRENT 的 amd64 主机上，URL：
+在默认情况下， `pkg(8)` 软件包管理器会根据 `uname(1)` 的 `NT_FREEBSD_ABI_TAG` ELF 注释来决定使用哪个软件包仓库。该注释的值被用来构建 ABI pkg 变量的值， 它可以被嵌入到软件包仓库的 URL 中 (参见 pkg.conf(5) 和 `/etc/pkg/FreeBSD.conf`)。例如， 在运行 FreeBSD 14-CURRENT 的 amd64 主机上，URL：
 
 `pkg+http://pkg.FreeBSD.org/${ABI}/latest`
 
@@ -109,15 +74,11 @@ pkg64c 和 pkg64 是为它们所管理的软件包的相同 ABI 而编译的程�
 
 `pkg+http://pkg.FreeBSD.org/FreeBSD:14:amd64/latest`
 
-与 FreeBSD 相比，CheriBSD 没有任何关于 ABI 在不同版本和分支中稳定性的假设。
- 相反，CheriBSD 维护着 ABI 计数器 __CheriBSD_version (当它被撞开时被设置为当前日期)，类似于 __FreeBSD_version，也在 sys/param.h 中，它描述了当前 CheriBSD 分支所使用的 ABI 版本。
- 因此，两个 CheriBSD 发布版本可以使用相同的 ABI 版本，而两个不同的 CheriBSD 分支版本可以使用两个不同的 ABI 版本。
+与 FreeBSD 相比，CheriBSD 没有任何关于 ABI 在不同版本和分支中稳定性的假设。相反，CheriBSD 维护着 ABI 计数器 `__CheriBSD_version` (当它被撞开时被设置为当前日期)，类似于 `__FreeBSD_version`，也在 `sys/param.h` 中，它描述了当前 CheriBSD 分支所使用的 ABI 版本。因此，两个 CheriBSD 发布版本可以使用相同的 ABI 版本，而两个不同的 CheriBSD 分支版本可以使用两个不同的 ABI 版本。
 
-这种方法使我们能够灵活地对 CheriBSD 开发分支进行修改，并向使用该分支不同版本的用户提供软件包库。
- 至于发布版本，我们不会在一个版本中做任何会破坏 ABI 的改动，因为这会严重破坏用户的工作环境，并需要重新编译所有的用户代码。
+这种方法使我们能够灵活地对 CheriBSD 开发分支进行修改，并向使用该分支不同版本的用户提供软件包库。至于发布版本，我们不会在一个版本中做任何会破坏 ABI 的改动，因为这会严重破坏用户的工作环境，并需要重新编译所有的用户代码。
 
-我们扩展了 CheriBSD 中的 csu 代码，将 __CheriBSD_version 计数器包含在为特定分支编译的每个程序的额外 NT_CHERIBSD_ABI_TAG ELF 备注中。
-pkg64 和 pkg64c 在建立指向软件包仓库的 URL 时， 不再使用 NT_FREEBSD_ABI_TAG， 而是使用 NT_CHERIBSD_ABI_TAG。
+我们扩展了 CheriBSD 中的 csu 代码，将 `__CheriBSD_version` 计数器包含在为特定分支编译的每个程序的额外 `NT_CHERIBSD_ABI_TAG` ELF 备注中。pkg64 和 pkg64c 在建立指向软件包仓库的 URL 时， 不再使用 `NT_FREEBSD_ABI_TAG`， 而是使用 `NT_CHERIBSD_ABI_TAG`。
 
  例如， 在一台运行 CheriBSD 22.12 的 Morello 主机上，URL:
 
@@ -136,24 +97,14 @@ pkg64 和 pkg64c 在建立指向软件包仓库的 URL 时， 不再使用 NT_FR
 CheriBSD/Morello 软件包构建基础设施包括：本地机器开始构建，FreeBSD/amd64 主机使用 QEMU 用户模式构建 CheriABI 软件包，FreeBSD/arm64 主机在本地构建混合 ABI 软件包。
 构建者使用以下软件栈：
 
--QEMU BSD 用户模式用于 CheriABI 程序；
+- QEMU BSD 用户模式用于 CheriABI 程序【注10】；
+- CheriBSD 基础系统；
+- CHERI LLVM 工具链；
+- CheriBSD ports【注6】；
+- 为 CheriBSD 扩展的 Poudriere【注5、7】；
+- Poudriere 配置文件和辅助脚本（例如，`poudrier-remote.sh`）【注8】。
 
--CheriBSD 基础系统；
-
--CHERI LLVM 工具链；
-
--CheriBSD 端口；
-
--为 CheriBSD 扩展的 Poudriere；
-
--Poudriere 配置文件和辅助脚本（例如，poudrier-remote.sh）。
-
-图 1 展示了上述组件的概况。
-根据 poudrier-remote.sh 的命令，FreeBSD/amd64 和 FreeBSD/arm64 主机会创建 Poudriere jails、端口树，并分别在 CheriBSD/aarch64c 和 CheriBSD/aarchjails jails中构建端口树。
- CheriBSD/aarjails6jails jails 使用 QEMU 用户模式执行为 CheriABI 编译的程序，而为 amd64 架构编译的工具链实用程序则以原生方式执行。
- 同样地， CheriBSD/aarch64 jails 也是以原生方式执行所有程序， 因为它们是为 arm64 编译的。
- 目前没有任何 ports 的混合 ABI 编译时依赖项， 它们部分使用了 CHERI 功能， 并必须在构建过程中执行； 因此， 混合 ABI 包不需要 QEMU 用户模式。
- 下面几节将更详细地描述构建基础设施组件。
+图 1 展示了上述组件的概况。根据 `poudrier-remote.sh` 的命令，FreeBSD/amd64 和 FreeBSD/arm64 主机会创建 Poudriere jail、ports，并分别在 CheriBSD/aarch64c 和 CheriBSD/aarchjails jail 中构建 port。CheriBSD/aarch64c jail 使用 QEMU 用户模式执行为 CheriABI 编译的程序，而为 amd64 架构编译的工具链实用程序则以原生方式执行。同样地， CheriBSD/aarch64 jail 也是以原生方式执行所有程序， 因为它们是为 arm64 编译的。目前没有任何 ports 的混合 ABI 编译时依赖项，它们部分使用了 CHERI 功能， 并必须在构建过程中执行。因此，混合 ABI 包不需要 QEMU 用户模式。下面几节将更详细地描述构建基础设施组件。
 
 [这里需要插图]
 
