@@ -164,7 +164,7 @@ b. 我们改变了 QEMU，使其更接近 CheriBSD/FreeBSD 的系统调用接口
 
 •USE_PACKAGE_DEPENDS_REMOTE;
 
-当启用 USE_PACKAGE_DEPENDS{, _ ONLY} 时， 如果本地软件包不存在， 则会尝试从远程仓库安装一个软件包， 而不是从头开始构建一个端口。
+当启用 USE_PACKAGE_DEPENDS{, _ ONLY} 时， 如果本地软件包不存在， 则会尝试从远程仓库安装一个软件包， 而不是从头开始构建 port。
 
 •USE_ PACKAGE_ 64 _ DEPENDS_ ONLY;
 
@@ -180,7 +180,7 @@ b. 我们改变了 QEMU，使其更接近 CheriBSD/FreeBSD 的系统调用接口
 
 •BROKEN_ ${ABI}.
 
-如果设置了这个选项， 则认为某个端口对于 ${ABI} 来说是被破坏的。
+如果设置了这个选项， 则认为某个 port 对于 ${ABI} 来说是被破坏的。
 
 我们还修改了 autoreconf、 cmake、 meson、 ninja 和 python 支持， 以允许我们用 <UTILITY>_CMD make(1) 变量为混合 ABI 构建工具指定自定义命令， 例如 CMAKE_CMD。
 
@@ -188,7 +188,7 @@ b. 我们改变了 QEMU，使其更接近 CheriBSD/FreeBSD 的系统调用接口
 
 我们的 Poudriere fork7 支持在 FreeBSD 和 CheriBSD 主机上构建软件包。
 默认情况下，它使用它所执行的操作系统的基础系统压缩包，但用户可以用 poudrier-jail(8) 的一个新标志 -o 来指定操作系统。
- 由于 CheriBSD 的基本系统中不包含工具链，Poudriere 使用 pkg 或 pkg64 在 Poudriere jails中安装它，在本地基本目录之外，以免与从 CheriBSD 端口构建的工具链发生冲突。
+ 由于 CheriBSD 的基本系统中不包含工具链，Poudriere 使用 pkg 或 pkg64 在 Poudriere jails中安装它，在本地基本目录之外，以免与从 CheriBSD ports 构建的工具链发生冲突。
 Poudriere 有两种套装配置：Cheriabi 和 Hybridabi。
  两者都使用相同的工具链，但定义了不同的 LOCALBASE 值，而且 cheriabi 可以启用 CheriABI 无法使用的混合 ABI 构建工具。
 
@@ -213,7 +213,7 @@ Poudriere 有两种套装配置：Cheriabi 和 Hybridabi。
 ## 结果
 
 截至 2023 年 3 月，CheriBSD 提供了 9104 个 CheriABI 软件包和 24494 个混合 ABI 软件包。
- 只有 37 个 CheriBSD 端口有补丁。
+ 只有 37 个 CheriBSD  port 有补丁。
  大部分针对 CHERI 的修改已经成功上传到第三方软件仓库。
  一些补丁包括针对 CHERI 限制的修改(例如，更强的指针对齐到 16 字节)，这表明开源社区认为 CHERI 和 Arm Morello 是一个有前途的平台。
 
@@ -252,13 +252,13 @@ CheriBSD 发布的版本和软件包已经被技术普及计划(TAP)的参与者
 •Cross-ABI support in Poudriere;
 
 我们希望利用混合 ABI 包来构建 Poudriere 的 CheriABI 包。
-目前，我们使用混合 ABI 构建工具构建 CheriABI 包，方法是在端口目录中执行 make package，并将生成的包转移到用 Poudriere 创建的包库中。
+目前，我们使用混合 ABI 构建工具构建 CheriABI 包，方法是在 ports 目录中执行 make package，并将生成的包转移到用 Poudriere 创建的包库中。
  这项功能将使我们能够轻松地重建和部署软件包库。
 
 •上传补丁；
 
 我们希望尽量减少必须在 CheriBSD ports 中维护的补丁数量， 而将其提交给上游软件库。
- 这包括在端口中进行修改，以更好地支持 FreeBSD 端口中的自定义本地基本路径。
+ 这包括在 port 中进行修改，以更好地支持 FreeBSD ports 中的自定义本地基本路径。
 
 •CHERI-RISC-V 软件包。
 
