@@ -316,6 +316,6 @@ CheriBSD 是一个成熟的研究型操作系统，可以用来制作使用 CHER
     https://www.gov.uk/government/publications/competition-cheri-within-defence-and-security
 28. Digital Security by Design. Funded Projects. https://www.dsbd.tech/whos-involved/funded-projects/
 
-KONRAD WITASZCZYK is a Research Associate and a PhD Student at the University of Cambridge working on the CHERI project.
- He graduated with a BSc degree in Theoretical Computer Science from the Jagiellonian University, an MSc degree in ComputerScience from the University of Copenhagen and has been working with FreeBSD and itssecurity-related mechanisms since 2013, including at Fudo Security. 
- As part of his PhD,he is studying and working on compartmentalisation strategies for the CheriBSD kernel,and thus the FreeBSD kernel as well.
+ -----
+ 
+KONRAD WITASZCZYK is a Research Associate and a PhD Student at the University of Cambridge working on the CHERI project.He graduated with a BSc degree in Theoretical Computer Science from the Jagiellonian University, an MSc degree in ComputerScience from the University of Copenhagen and has been working with FreeBSD and itssecurity-related mechanisms since 2013, including at Fudo Security. As part of his PhD,he is studying and working on compartmentalisation strategies for the CheriBSD kernel,and thus the FreeBSD kernel as well.
