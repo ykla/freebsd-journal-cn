@@ -86,7 +86,9 @@ pkg+http://pkg.FreeBSD.org/FreeBSD:14:amd64/latest
 
  例如， 在一台运行 CheriBSD 22.12 的 Morello 主机上，URL:
 
-`pkg+http://pkg.CheriBSD.org/${ABI}`
+```
+pkg+http://pkg.CheriBSD.org/${ABI}
+```
 
 被 pkg64c 扩展为：
 
