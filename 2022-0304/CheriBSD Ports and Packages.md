@@ -344,4 +344,4 @@ CheriBSD 是一个成熟的研究型操作系统，可以用来制作使用 CHER
 
  -----
  
-KONRAD WITASZCZYK is a Research Associate and a PhD Student at the University of Cambridge working on the CHERI project.He graduated with a BSc degree in Theoretical Computer Science from the Jagiellonian University, an MSc degree in ComputerScience from the University of Copenhagen and has been working with FreeBSD and itssecurity-related mechanisms since 2013, including at Fudo Security. As part of his PhD,he is studying and working on compartmentalisation strategies for the CheriBSD kernel,and thus the FreeBSD kernel as well.
+KONRAD WITASZCZYK 是剑桥大学的研究助理和博士生，从事 CHERI 项目。他拥有于亚捷隆大学大学的理论计算机科学学士学位，哥本哈根大学的计算机科学硕士学位，自 2013 年以来一直在研究 FreeBSD 及其安全相关机制，包括在 Fudo Security 工作。作为他的博士论文的一部分，他正在研究 CheriBSD 内核的分区策略，因此也在研究 FreeBSD 内核的分区策略。
