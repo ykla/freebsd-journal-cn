@@ -178,23 +178,23 @@ $ ./cheribuild.py run-user-shell-riscv64-purecap
 
 除了 CHERI/CheriBSD 专有的针对 FreeBSD ports 系列软件的补丁之外， 我们还引入了额外的 make(1) 变量， 以允许根据它们所使用的 ABI 来修改 port 的构建配置， 并允许构建具有混合 ABI 编译时依赖性的 CheriABI 包：
 
-•USE_PACKAGE_DEPENDS_REMOTE;
+ - `USE_PACKAGE_DEPENDS_REMOTE`；
 
-当启用 USE_PACKAGE_DEPENDS{, _ ONLY} 时， 如果本地软件包不存在， 则会尝试从远程仓库安装一个软件包， 而不是从头开始构建 port。
+当启用 `USE_PACKAGE_DEPENDS{,_ONLY}` 时， 如果本地软件包不存在， 则会尝试从远程仓库安装一个软件包， 而不是从头开始构建 port。
 
-•USE_ PACKAGE_ 64 _ DEPENDS_ ONLY;
+ - `USE_PACKAGE_64_DEPENDS_ONLY`；
 
-安装标有 USE_ PKG64 的依赖项时， 使用它们的 pkg64 替代混合 ABI 包， 而不是从头开始构建它们。
+安装标有 `USE_PKG64` 的依赖项时， 使用它们的 pkg64 替代混合 ABI 包， 而不是从头开始构建它们。
 
-•USE_ PKG64;
+ - `USE_PKG64`；
 
 当设置了 USE_ PACKAGE_ 64_ DEPENDS_ ONLY 时， 对一个不能为 CheriABI 构建的 port 使用混合 ABI 包， 而另一个正在为 CheriABI 构建的 port 则需要它。
 
-•OPTIONS_ {DEFINE,DEFAULT,EXCLUDE} _ ${ABI};
+ - `OPTIONS_{DEFINE,DEFAULT,EXCLUDE}_${ABI}`；
 
 专门针对 ${ABI} 的选项列表。
 
-•BROKEN_ ${ABI}.
+ - `BROKEN_${ABI}`.
 
 如果设置了这个选项， 则认为某个 port 对于 ${ABI} 来说是被破坏的。
 
@@ -202,11 +202,7 @@ $ ./cheribuild.py run-user-shell-riscv64-purecap
 
 ### Poudriere
 
-我们的 Poudriere fork7 支持在 FreeBSD 和 CheriBSD 主机上构建软件包。
-默认情况下，它使用它所执行的操作系统的基础系统压缩包，但用户可以用 poudrier-jail(8) 的一个新标志 -o 来指定操作系统。
- 由于 CheriBSD 的基本系统中不包含工具链，Poudriere 使用 pkg 或 pkg64 在 Poudriere jails中安装它，在本地基本目录之外，以免与从 CheriBSD ports 构建的工具链发生冲突。
-Poudriere 有两种套装配置：Cheriabi 和 Hybridabi。
- 两者都使用相同的工具链，但定义了不同的 LOCALBASE 值，而且 cheriabi 可以启用 CheriABI 无法使用的混合 ABI 构建工具。
+我们的 Poudriere fork【注7】支持在 FreeBSD 和 CheriBSD 主机上构建软件包。在默认情况下，它使用它所执行的操作系统的基础系统压缩包，但用户可以用 poudrier-jail(8) 的一个新参数 `-o` 来指定操作系统。由于 CheriBSD 的基本系统中不包含工具链，Poudriere 使用 pkg 或 pkg64 在 Poudriere jail 中安装它，在本地基本目录之外，以免与从 CheriBSD ports 构建的工具链发生冲突。Poudriere 有两种套装配置：Cheriabi 和 Hybridabi。两者都使用相同的工具链，但定义了不同的 LOCALBASE 值，而且 cheriabi 可以启用 CheriABI 无法使用的混合 ABI 构建工具。
 
 在 CheriBSD/Morello 主机上为开发分支构建 CheriABI 包需要执行三个简单的命令：
 
@@ -222,26 +218,17 @@ $ poudriere ports -c -p main
 $ poudriere bulk -j aarch64c-dev -p main -z cheriabi -a
 ```
 
-当把软件移植到 CHERI 时，CheriBSD 用户也可以从 Poudriere 中获益，轻松地启动构建环境。
- 这对混合 ABI 软件特别有用，因为有时需要设置自定义共享库搜索路径，而不是错误地使用默认搜索路径的 CheriABI 库。
- 有了 Poudriere 混合 ABI jails，开发者不必担心可能与 CheriABI 库链接，因jails种jails只包括混合 ABI 程序和库。
+当把软件移植到 CHERI 时，CheriBSD 用户也可以从 Poudriere 中获益，轻松地启动构建环境。这对混合 ABI 软件特别有用，因为有时需要设置自定义共享库搜索路径，而不是错误地使用默认搜索路径的 CheriABI 库。有了 Poudriere 混合 ABI jail，开发者不必担心可能与 CheriABI 库链接，因这种 jail 只包括混合 ABI 程序和库。
 
 ## Poudriere 配置和脚本
 
-基础设施的最后一块是 poudrie-infrastructure 存储库8，包括 Poudriere 配置文件和 shell 脚本，用于在远程主机上启动构建环境，签署软件包库并在 pkg.CheriBSD.org 上部署。
- 特别是，poudrie-remote.sh 构建了 CheriBSD 基本系统、SDK、QEMU 用户模式（如果需要），并开始用 Poudriere 构建软件包。
- CheriBSD 软件包构建的 Poudriere 日志可在 poudriere.CheriBSD.org 上公开获得。
+基础设施的最后一块是 poudrie-infrastructure 存储库【注8】，包括 Poudriere 配置文件和 shell 脚本，用于在远程主机上启动构建环境，签名软件包库并在 `pkg.CheriBSD.org` 上部署。特别是，poudrie-remote.sh 构建了 CheriBSD 基本系统、SDK、QEMU 用户模式（如果需要），并开始用 Poudriere 构建软件包。CheriBSD 软件包构建的 Poudriere 日志可在 `poudriere.CheriBSD.org` 上获得。
 
 ## 结果
 
-截至 2023 年 3 月，CheriBSD 提供了 9104 个 CheriABI 软件包和 24494 个混合 ABI 软件包。
- 只有 37 个 CheriBSD  port 有补丁。
- 大部分针对 CHERI 的修改已经成功上传到第三方软件仓库。
- 一些补丁包括针对 CHERI 限制的修改(例如，更强的指针对齐到 16 字节)，这表明开源社区认为 CHERI 和 Arm Morello 是一个有前途的平台。
+截至 2023 年 3 月，CheriBSD 提供了 9104 个 CheriABI 软件包和 24494 个混合 ABI 软件包。只有 37 个 CheriBSD port 有补丁。大部分针对 CHERI 的修改已经成功上传到第三方软件仓库。一些补丁包括针对 CHERI 限制的修改（例如，更强的指针对齐到 16 字节），这表明开源社区认为 CHERI 和 Arm Morello 是一个有前景的平台。
 
-CheriBSD 用户可以使用从 CheriBSD.org 获得的 memstick 安装程序，轻松建立 Morello 主机（见图 2）。
-CheriBSD 中的 bsdinstall(8) 包括一个安装步骤，用户可以决定是否要安装运行 CheriABI 图形环境（使用 KDE Plasma 和 Wayland；见图 3）和其他混合 ABI 程序（目前是 Firefox 和 Chromium）的软件包。
-这些包可以很容易地用元包来安装：
+CheriBSD 用户可以使用从 CheriBSD.org 获得的 memstick 安装程序，轻松建立 Morello 主机（见图 2）。CheriBSD 中的 bsdinstall(8) 包括了安装选项，用户可以决定是否要安装运行 CheriABI 图形环境（使用 KDE Plasma 和 Wayland；见图 3）和其他合 ABI 程序（目前是 Firefox 和 Chromium）的软件包。这些包可以很容易地用元包来安装：
 
 ```
 $ pkg64c install cheri-desktop
@@ -253,51 +240,37 @@ $ pkg64 install cheri-desktop-hybrid-extras
 
 [这里需要插图]
 
-图 2：运行 CheriBSD 的 Arm Morello 板
+图 2：运行 CheriBSD 的 Arm Morello 开发板
 
 [这里需要插图]
 
-图 3：内存安全的 Morello 桌面环境（CheriBSD, KDE Plasma, Wayland）3
+图 3：内存安全的 Morello 桌面环境（CheriBSD, KDE Plasma, Wayland）【注3】
 
-CheriBSD 发布的版本和软件包已经被技术普及计划(TAP)的参与者所使用。
-由英国研究和创新部门负责的数字安全设计(DSbD)计划组织了 TAP，让英国的公司尝试使用 Arm Morello 平台和内存安全的项目原型。
-目前，我们与大约 30 家这样的公司进行合作。
-由于 CheriBSD 安装程序和预编译的第三方软件包，TAP 参与者可以很容易地部署一个工作环境，而不需要适应 CheriABI，甚至交叉编译，他们的软件依赖。
-然而，由于一些第三方软件的缺失，他们中的许多人仍然需要重新设计他们的项目，或者自己移植这些软件。
+CheriBSD 发布的版本和软件包已经被技术普及计划（TAP）的参与者所使用。由英国研究和创新部门负责的数字安全设计（DSbD）计划组织了 TAP，让英国的公司尝试使用 Arm Morello 平台和内存安全的项目原型。目前，我们与约 30 家这样的公司进行合作。由于 CheriBSD 安装程序和预编译的第三方软件包，TAP 参与者可以很轻松地部署工作环境，而无需适应 CheriABI，甚至交叉编译，无关他们的软件依赖。然而，由于一些第三方软件的缺失，他们中的许多人仍然需要重新设计他们的项目，或者自己移植这些软件。
 
 ## 未来的工作
 
-基于 CheriBSD 22.05 和 22.12 版本，TAP，以及 CheriBSD 用户的经验，我们正在计划下一步工作，以增加 CHERI 内存安全软件包的数量。
- 目前，我们正在考虑：
+基于 CheriBSD 22.05 和 22.12 版本，TAP，以及 CheriBSD 用户的经验，我们正在计划下一步工作，以增加 CHERI 内存安全软件包的数量。目前，我们正在考虑：
 
-•CheriABI Python;
+ - CheriABI Python；
 
-正如在缺少跨 ABI 支持的部分所提到的，多个构建系统都使用 Python。
-让 Python 适应 CheriABI，我们不仅可以为 CheriABI 建立更多的软件包，而且还可以在基于 Python 的应用程序中实现有趣的研究空间。
+正如在缺少跨 ABI 支持的部分所提到的，多个构建系统都使用 Python。让 Python 兼容 CheriABI，我们不仅可以为 CheriABI 建立更多的软件包，而且还可以在基于 Python 的应用程序中实现有趣的研究空间。
 
-•Cross-ABI support in Poudriere;
+ - Cross-ABI support in Poudriere；
 
-我们希望利用混合 ABI 包来构建 Poudriere 的 CheriABI 包。
-目前，我们使用混合 ABI 构建工具构建 CheriABI 包，方法是在 ports 目录中执行 make package，并将生成的包转移到用 Poudriere 创建的包库中。
- 这项功能将使我们能够轻松地重建和部署软件包库。
+我们希望利用混合 ABI 包来构建 Poudriere 的 CheriABI 包。目前，我们使用混合 ABI 构建工具构建 CheriABI 包，方法是在 ports 目录中执行 `make package`，并将生成的软件包转移到用 Poudriere 创建的包库中。这项功能将使我们能够轻松地重建和部署软件包库。
 
-•上传补丁；
+ - 上传补丁；
 
-我们希望尽量减少必须在 CheriBSD ports 中维护的补丁数量， 而将其提交给上游软件库。
- 这包括在 port 中进行修改，以更好地支持 FreeBSD ports 中的自定义本地基本路径。
+我们希望尽量减少必须在 CheriBSD ports 中维护的补丁数量， 而将其提交给上游软件库。这包括在 port 中进行的修改，以更好地支持 FreeBSD ports 中的自定义本地基本路径。
 
-•CHERI-RISC-V 软件包。
+ - CHERI-RISC-V 软件包。
 
-目前，CheriBSD 只为 Arm Morello 提供软件包。
- 鉴于大多数应用的补丁并不是专门针对 Morello 的，我们应该也能为 CHERI-RISC-V 建立大量的软件包。
- 这将使研究人员也能针对大型代码库评估 CHERI-RISC-V 架构。
+目前，CheriBSD 只为 Arm Morello 提供软件包。由于大多数应用的补丁并不是专门用于 Morello 的，所以我们应该也能为 CHERI-RISC-V 建立大量的软件包。这将使研究人员也能针对大型代码库评估 CHERI-RISC-V 架构。
 
 ## 总结
 
-CheriBSD 是一个成熟的研究型操作系统，可以用来制作使用 CHERI 提供的新安全基元的项目原型，并作为一个开发平台来测试软件的安全漏洞。
-虽然很多第三方软件已经为 CHERI 做了调整，但仍然缺少很多关键的应用，这些应用可以在新的领域开发项目。
-我们很高兴看到 CHERI 生态系统的不断壮大，至少有 70 个组织来自技术获取计划26、国防和安全领域的 CHERI 竞赛27和数字安全设计28。
- 在接下来的几个月里，我们预计将继续开展工作，增加可用的纯能力包的数量。
+CheriBSD 是一个成熟的研究型操作系统，可以用来制作使用 CHERI 提供的新安全基石的项目原型，并作为一个开发平台来测试软件的安全漏洞。虽然很多第三方软件已经为 CHERI 做了调整，但仍然缺少很多关键的应用，这些应用可以在新的领域开发项目。我们很高兴看到 CHERI 生态系统的不断壮大，至少有 70 个组织来自技术获取计划【注26】、国防和安全领域的 CHERI 竞赛【注27】和数字安全设计【注28】。在接下来的几个月里，我们预计将继续开展工作，增加可用的纯能力包的数量。
 
 ## 参考文献
 
@@ -344,4 +317,4 @@ CheriBSD 是一个成熟的研究型操作系统，可以用来制作使用 CHER
 
  -----
  
-KONRAD WITASZCZYK 是剑桥大学的研究助理和博士生，从事 CHERI 项目。他拥有于亚捷隆大学大学的理论计算机科学学士学位，哥本哈根大学的计算机科学硕士学位，自 2013 年以来一直在研究 FreeBSD 及其安全相关机制，包括在 Fudo Security 工作。作为他的博士论文的一部分，他正在研究 CheriBSD 内核的分区策略，因此也在研究 FreeBSD 内核的分区策略。
+KONRAD WITASZCZYK 是剑桥大学的研究助理和博士生，从事 CHERI 项目。他拥有亚捷隆大学大学的理论计算机科学学士学位和哥本哈根大学的计算机科学硕士学位，自 2013 年以来一直在研究 FreeBSD 及其安全相关机制，包括在 Fudo Security 工作。作为他的博士论文的一部分，他正在研究 CheriBSD 内核的分区策略，因此也在研究 FreeBSD 内核的分区策略。
