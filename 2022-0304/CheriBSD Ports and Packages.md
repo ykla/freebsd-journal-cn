@@ -7,9 +7,9 @@ CHERI 是一个硬件/软件/语义学联合设计项目，旨在提高现有和
 
 随着 Arm Morello 平台的发布，CHERI 的生态系统迅速扩大。
 
-直到 2022 年，CHERI 项目主要由剑桥大学、SRI 国际和他们的合作伙伴开发，包括微软、谷歌和 Arm。随着 Arm Morello 平台的发布，CHERI 生态系统迅速扩大，这是 CHERI 第一个面向公众的硬件实现。2022 年 1 月，Arm 开始向公司、学术和政府机构运送第一批（大约一千块）Morello 主板。为了给 Morello 用户提供一个用户友好的工作环境，*CheriBSD*——一个基于 FreeBSD 的操作系统，适配 Arm Morello 和 CHERIRISC-V ——他们需要一个基础工具，在 Morello 发布之前构建和分发兼容 CHERI 的第三方软件。今天，有几十所大学、政府研究实验室和公司在 Morello 的工作中使用 CheriBSD，并且每天都依赖这个基础系统。
+直到 2022 年，CHERI 项目主要由剑桥大学、SRI 国际和他们的合作伙伴开发，包括微软、谷歌和 Arm。随着 Arm Morello 平台的发布，CHERI 生态系统迅速扩大，这是 CHERI 第一个面向大众的硬件实现。2022 年 1 月，Arm 开始向公司、学术和政府机构运送第一批（大约一千块）Morello 开发板。为了给 Morello 用户提供一个用户友好的工作环境，*CheriBSD*——一个基于 FreeBSD 的操作系统，适配 Arm Morello 和 CHERIRISC-V ——他们需要一个基础工具，在 Morello 发布之前构建和分发兼容 CHERI 的第三方软件。今天，有几十所大学、政府研究实验室和公司在 Morello 的工作中使用 CheriBSD，并且每天都依赖这个基础系统。
 
-这篇文章介绍了我们在没有支持 CHERI 的硬件情况下，使用 QEMU 用户模式、FreeBSD ports 和 Poudriere 为 CheriBSD 构建第三方软件包的历程。在讨论软件包构建基础设施的实施细节的同时，文章总结了我们需要做哪些决定和改变，以最终实现约 24,000 个 AArch64 软件包和约 9,000 个支持 CHERI 的软件包。
+这篇文章介绍了我们在没有 CHERI 的硬件支持情况下，使用 QEMU 用户模式、FreeBSD ports 和 Poudriere 为 CheriBSD 构建第三方软件包的历程。在讨论软件包构建基础设施的实施细节的同时，文章总结了我们需要做哪些决定和改变，以最终实现约 24,000 个 AArch64 软件包和约 9,000 个支持 CHERI 的软件包。
 
 ## CHERI 硬件-软件栈
 
@@ -44,7 +44,7 @@ $ ./cheribuild.py --include-dependencies run-morello-purecap
 
 ## 多 ABI 支持
 
-FreeBSD 有一个被称为兼容层的功能，它为针对不同 ABI 编译的程序提供系统调用的实现，而不是针对本地 ABI。例如，amd64 的 FreeBSD 内核带有一个编译的 32 位兼容层（也被称为 *freebsd32*），可以运行为 i386 编译的程序。CheriBSD 受益于这一特性，支持两种与 CHERI 相关的 ABI：CheriABI 也被称为纯能力 ABI(***MACHINE_ARCH*** aarch64c 和 riscv64c)，用于只能使用 CHERI 能力访问内存的程序，以及混合 ABI(**MACHINE_ARCH** aarch64 和 riscv64)，用于可以但不需要使用 CHERI 能力的程序。后一种 ABI 由纯能力的 CheriBSD 内核与 *freebsd64（ 兼容层实现，类似于 freebsd32。
+FreeBSD 有一个被称为兼容层的功能，它为针对不同 ABI 编译的程序提供系统调用的实现，而非针对本地 ABI。例如，amd64 的 FreeBSD 内核带有一个编译的 32 位兼容层（也被称为 *freebsd32*），可以运行为 i386 编译的程序。CheriBSD 受益于这一特性，支持两种与 CHERI 相关的 ABI：CheriABI 也被称为纯能力 ABI(***MACHINE_ARCH*** aarch64c 和 riscv64c)，用于只能使用 CHERI 能力访问内存的程序，以及混合 ABI(**MACHINE_ARCH** aarch64 和 riscv64)，用于可以但不需要使用 CHERI 能力的程序。后一种 ABI 由纯能力的 CheriBSD 内核与 *freebsd64（ 兼容层实现，类似于 freebsd32。
 
 ### 缺少的跨 ABI 支持
 
@@ -116,9 +116,9 @@ CheriBSD/Morello 软件包构建基础设施包括：本地机器开始构建，
 
 图 1 展示了上述组件的概况。根据 `poudrier-remote.sh` 的命令，FreeBSD/amd64 和 FreeBSD/arm64 主机会创建 Poudriere jail、ports，并分别在 CheriBSD/aarch64c 和 CheriBSD/aarchjails jail 中构建 port。CheriBSD/aarch64c jail 使用 QEMU 用户模式执行为 CheriABI 编译的程序，而为 amd64 架构编译的工具链实用程序则以原生方式执行。同样地， CheriBSD/aarch64 jail 也是以原生方式执行所有程序， 因为它们是为 arm64 编译的。目前没有任何 ports 的混合 ABI 编译时依赖项，它们部分使用了 CHERI 功能， 并必须在构建过程中执行。因此，混合 ABI 包不需要 QEMU 用户模式。下面几节将更详细地描述构建基础设施组件。
 
-[这里需要插图]
+![图1](../2022-0304/2.1.png)
 
-图1: CheriBSD 的软件包构建过程
+**图1: CheriBSD 的软件包构建过程**
 
 ## QEMU BSD 用户模式
 
@@ -238,13 +238,13 @@ $ pkg64c install cheri-desktop
 $ pkg64 install cheri-desktop-hybrid-extras
 ```
 
-[这里需要插图]
+![图1](../2022-0304/2.2.png)
 
-图 2：运行 CheriBSD 的 Arm Morello 开发板
+**图 2：运行 CheriBSD 的 Arm Morello 开发板**
+ 
+![图1](../2022-0304/2.3.png)
 
-[这里需要插图]
-
-图 3：内存安全的 Morello 桌面环境（CheriBSD, KDE Plasma, Wayland）【注3】
+**图 3：内存安全的 Morello 桌面环境（CheriBSD, KDE Plasma, Wayland）【注3】**
 
 CheriBSD 发布的版本和软件包已经被技术普及计划（TAP）的参与者所使用。由英国研究和创新部门负责的数字安全设计（DSbD）计划组织了 TAP，让英国的公司尝试使用 Arm Morello 平台和内存安全的项目原型。目前，我们与约 30 家这样的公司进行合作。由于 CheriBSD 安装程序和预编译的第三方软件包，TAP 参与者可以很轻松地部署工作环境，而无需适应 CheriABI，甚至交叉编译，无关他们的软件依赖。然而，由于一些第三方软件的缺失，他们中的许多人仍然需要重新设计他们的项目，或者自己移植这些软件。
 
