@@ -1,4 +1,4 @@
-# CheriBSD 的十几年历程
+# CheriBSD 近十多年的历程
 
 - 作者：BROOKS DAVIS
 - 译者：ykla
