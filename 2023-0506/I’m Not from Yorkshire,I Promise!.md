@@ -297,8 +297,6 @@ sysinstall 磁盘编辑器向我展示了文件系统和存储设备之间的接
 
 在这之前，向所有 FreeBSD 的朋友致敬，无论是过去的、现在的还是将来的：谢谢大家，请继续保持热情！
 
-/phk
-
 ---
 
-**POUL HENNING-KAMP**，即phk@FreeBSD.org，他的笔记本电脑叫做“critter”，已经运行了 FreeBSD-current 接近 30 年。在最近十多年里，平均每 18 小时他都会提交代码到 FreeBSD 源代码库，只有在 Norvegian Newspaper 遇到 HTTP 性能问题时他才会停止提交代码。
+**POUL HENNING-KAMP**，即 phk@FreeBSD.org，他的笔记本电脑叫做“critter”，已经运行了 FreeBSD-current 接近 30 年。在最近十多年里，他会平均每 18 小时提交代码到 FreeBSD 源代码库，只有在 Norvegian Newspaper 遇到 HTTP 性能问题时他才会停止提交代码。
