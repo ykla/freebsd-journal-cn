@@ -10,6 +10,7 @@
 * [安装 FreeBSD 1.0：回顾 30 年前](<2023-0506/Installing FreeBSD 1.0 30 Years On.md>)
 * [ZFS 是如何进入 FreeBSD 的呢？](<2023-0506/How ZFS Made Its Way into FreeBSD.md>)
 * [我不是来自约克郡的，我保证！](<2023-0506/I’m Not from Yorkshire,I Promise!.md>)
+* [回忆录：采访 David Greenman Lawrence](2023-0506/recollections-an-interview-with-david-greenman-lawrence.md)
 
 ## 2023-0304
 
