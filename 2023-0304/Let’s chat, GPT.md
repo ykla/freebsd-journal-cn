@@ -1,5 +1,6 @@
 # 让我们来试试 ChatGPT
 
+ - 原文：
  - 作者：Benedict Reuschling
  - 译者：冰
  - 校对整理：ykla 【】部分为 ykla 注
