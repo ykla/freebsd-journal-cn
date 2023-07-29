@@ -60,7 +60,7 @@ Wollongong 大学的移植工作无疑是其中最有趣的。当时，Miller �
 
 ![losh_early_unix-4](https://github.com/basebyte/freebsd-journal-cn/assets/75151114/c3130869-d342-4c70-9039-b10439c1f6cc)
 
-然而，对于 Lions 教授来说，事情最终进展得不错。由于他因这本书而声名鹊起，他成功获得了贝尔实验室的休学资格。当然，John 回信给澳大利亚 Unix 用户组，讲述了这个故事，并被刊登在他们的通讯中。他向这个用户组分享他旅程中的消息，就像写信给一个老朋友一样：
+然而，对于 Lions 教授来说，事情最终进展得不错。由于他因这本书而声名鹊起，他成功获得了贝尔实验室的游学资格。当然，John 回信给澳大利亚 Unix 用户组，讲述了这个故事，并被刊登在他们的通讯中。他向这个用户组分享他旅程中的消息，就像写信给一个老朋友一样：
 
 ![losh_early_unix-5](https://github.com/basebyte/freebsd-journal-cn/assets/75151114/54ad5427-2c88-4b69-96fc-9d80c52041bc)
 
