@@ -14,9 +14,13 @@ FeeBSD 是一个相互协作、相互支持的社区，它允许用户相互帮�
 
 20 世纪 70 年代初，美国电话电报公司（AT&T）研究部门贝尔实验室（Bell Labs）的硬件项目：臭鼬（skunk works project）被取消，作为对该项目被取消的回应，Unix 应运而生。在 1973 年举行的 ACM 操作系统原理研讨会（SOSP）上，Ken Thompson 和 Dennis Ritchie 首次发表了关于 Unix 的公开演讲。1974 年 7 月出版的《ACM 通讯》发表了第一篇论文。由于复杂的法律原因，AT&T 必须以复制的成本来免费提供任何为非商业用途而创建的酷炫的、非电话技术。在这篇论文发表后，有关 Unix 的请求开始纷至沓来。
 
+![losh_early_unix-1](https://github.com/basebyte/freebsd-journal-cn/assets/75151114/1ecb301d-2b05-4b85-98de-8540f936798c)
+
 第一批 Unix 磁带副本于 1974 年初推出。由于 AT&T 被禁止提供技术支持，因此用户只能靠自己。AT&T 保证那些磁带可以读取，但几乎没有其他方面的保证。AT&T 还被禁止销售任何非电话服务产品，因此这些磁带并不属于受支持的产品。从技术上讲，用户必须自己摸索如何使用和安装这个系统，但 Ken Thompson 参与了许多早期的安装工作。一旦系统安装完毕，用户就可以自己想办法解决遇到的任何问题。这与 IBM 或 DEC 等为用户提供广泛支持的大型计算机制造商形成了鲜明对比。如果你想运行 Unix，你就必须真的想要它。
 
 第一批磁带发行后不久，第一个 Unix 用户组会议在纽约市开始召开。人们聚集在一起，讨论 Unix、如何使用它、遇到的错误等。美国电话电报公司（AT&T）的员工也以非官方的身份参加了其中一些会议。最初的几次会议结束后，有关会议的消息不胫而走，参加会议的人越来越多，很快就开始出版一份名为《Unix News》的新闻通讯杂志，为不能参加会议的人记录有趣的新闻和八卦。第一期通讯杂志共发给了 37 人，但其中列出了约 50 位 Unix 用户的姓名和地址，就像一个目录，这样用户就可以相互联系、交流信息，并互相帮助学习如何使用这个新的操作系统。
+
+![losh_early_unix-2](https://github.com/basebyte/freebsd-journal-cn/assets/75151114/56a26885-4f13-4a7e-8e6d-fc8e3c2554b2)
 
 虽然很难得到 Unix 早期受欢迎程度的确切数据，但我们可以做出一些合理的猜测。在 1974 年上半年，大概有 10 盘磁带上市。到 1975 年初，安装数量超过 50 台。到 1975 年年中，差不多有 100 台。到了 1975 年年底，安装数量接近 200 台。与此同时，Unix 在 AT&T 内部也有了大幅增长。
 
@@ -25,6 +29,8 @@ FeeBSD 是一个相互协作、相互支持的社区，它允许用户相互帮�
 **首次法律诉讼**
 
 AT&T 的法律部门善于保护 Unix 的名称和权利，但却不善于处理社区关系。首先，他们反对在没有严格法律声明的情况下谈论 Unix。Unix 许可证要求对源代码、方法和概念保密，因此法律部门强迫《Unix News》通讯杂志使用法律免责声明。
+
+![losh_early_unix-3](https://github.com/basebyte/freebsd-journal-cn/assets/75151114/3bdee864-5ce1-4406-be2e-8333d587c8ce)
 
 接下来，他们不喜欢 Unix News 这个名字，因为它侵犯了他们的 Unix 商标，所以他们强迫使通讯杂志改名为 “login：The Unix Newsletter”。将名称改为副标题似乎是一场没有必要的斗争。
 
@@ -50,12 +56,21 @@ Wollongong 大学的移植工作无疑是其中最有趣的。当时，Miller �
 
 **社区评论**
 
-同在 Wollongong 大学的 John Lions 写了一本关于 Unix 内核的书，用于教授他的操作系统课程。起初，AT&T 允许他发行这本书，但后来收回了许可，因为这本书写的太好了。AT&T 的法务部门再次给 AT&T 在 Unix 社区中制造了负面影响。
+同在 Wollongong 大学的 John Lions 写了一本关于 Unix 内核的书，用于教授他的操作系统课程。起初，AT&T 允许他发行这本书，但后来收回了许可，因为这本书写的太好了。AT&T 的法务部门再次给 AT&T 在 Unix 社区中提交了差劲的PR【制造了负面影响】。
+
+![losh_early_unix-4](https://github.com/basebyte/freebsd-journal-cn/assets/75151114/c3130869-d342-4c70-9039-b10439c1f6cc)
 
 然而，对于 Lions 教授来说，事情最终进展得不错。由于他因这本书而声名鹊起，他成功获得了贝尔实验室的休学资格。当然，John 回信给澳大利亚 Unix 用户组，讲述了这个故事，并被刊登在他们的通讯中。他向这个用户组分享他旅程中的消息，就像写信给一个老朋友一样：
-(有关即将出版的第 7 版的大量信息，以及有关 AT&T 的其他信息省略）。
+
+![losh_early_unix-5](https://github.com/basebyte/freebsd-journal-cn/assets/75151114/54ad5427-2c88-4b69-96fc-9d80c52041bc)
+
+(有关即将出版的第 7 版的大量信息以及有关 AT&T 的其他信息省略）。
+
+![losh_early_unix-6](https://github.com/basebyte/freebsd-journal-cn/assets/75151114/928ec1c2-7df9-46f1-a3d4-36ff26f27b5d)
 
 Lions 教授的一个研究生 David Hunt 也获得了在 Rutgers 大学的休学资格。AUUGN 的编辑 Ian Johnstone 刊登了 Hunt 关于保护 Lions 评论副本的报告。
+
+![losh_early_unix-7](https://github.com/basebyte/freebsd-journal-cn/assets/75151114/14e81b59-6127-41c3-bf25-37b25fd59a88)
 
 **会议和更多录音带**
 
@@ -76,6 +91,8 @@ Lions 教授的一个研究生 David Hunt 也获得了在 Rutgers 大学的休�
 **DARPA 资助**
 
 我在一期 AUUGN 上看到了这个有趣的通知：
+
+![losh_early_unix-8](https://github.com/basebyte/freebsd-journal-cn/assets/75151114/98c796fa-ddb4-4166-a551-29528d592a33)
 
 这两句话虽然被证明只是传言，但却宣布了 Unix 的两个最重要的发展。"Level 7 Unix "宣布了第七版 Unix，这是贝尔实验室最后一个版本的 Unix。第七版将启动 AT&T 的 Unix 商业化努力，并将 Unix 引入非学术用户。
 
