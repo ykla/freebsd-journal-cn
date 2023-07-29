@@ -1,10 +1,10 @@
 # 岁月如梭：我个人的时间线
 
-- 原文: How Time Flies: A Personal Timeline
+- 原文：[How Time Flies: A Personal Timeline](https://freebsdfoundation.org/wp-content/uploads/2023/06/leyhey_timeflies.pdf)
 
-- 作者: GREG LEHEY
+- 作者：GREG LEHEY
 
-- 译者: basebyte 【】为译者注,部分链接为校对者注
+- 译者：basebyte 【】为译者注,部分链接为校对者注
 
 FreeBSD 已经有 30 年的历史了！那么我在其中扮演着什么角色呢？虽然我并不是创始人之一，但我一直在默默关注着。以下是从我的视角描述的事情经过：
 
