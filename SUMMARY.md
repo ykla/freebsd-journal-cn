@@ -15,6 +15,6 @@
 
 ## 2023-0304
 
-* [CheriBSD port 和软件包——用于 Arm Morello 和 CHERI-RISC-V CheriBSD 的纯能力第三方软件](2023-0304/CheriBSD Ports and Packages.md)
-* [让我们来试试 ChatGPT](2023-0304/Let’s chat, GPT.md)
-* [GPU 直通](2023-0304/GPU Passthrough.md)
+* [CheriBSD port 和软件包——用于 Arm Morello 和 CHERI-RISC-V CheriBSD 的纯能力第三方软件](2023-0304/CheriBSD%20Ports%20and%20Packages.md)
+* [让我们来试试 ChatGPT](2023-0304/Let’s%20chat,%20GPT.md)
+* [GPU 直通](2023-0304/GPU%20Passthrough.md)
