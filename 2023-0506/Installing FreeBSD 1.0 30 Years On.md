@@ -1,5 +1,6 @@
 # 安装 FreeBSD 1.0：回顾 30 年前
 
+- 原文：[Installing FreeBSD 1.0: 30 Years On](https://freebsdfoundation.org/wp-content/uploads/2023/06/jones_installing.pdf)
 - 作者：TOM JONES
 - 译者：ykla
 
