@@ -1,5 +1,6 @@
 # AArch64：成为新的 FreeBSD 的一级架构
 
+- 原文：[AArch64: Bringing a New FreeBSD Architecture to Tier-1](https://freebsdfoundation.org/wp-content/uploads/2023/06/maste.pdf)
 - 作者：ED MASTE
 - 译者：ykla 【】为译者注
 
