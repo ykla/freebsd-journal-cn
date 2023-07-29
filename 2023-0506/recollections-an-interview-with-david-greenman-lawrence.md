@@ -1,7 +1,8 @@
 # 回忆录：采访 David Greenman Lawrence
 
-* 作者：Tom Jones
-* 译者：颜曾一 【】为 ykla 注
+- 原文：[Recollections: An Interview with David Greenman Lawrence](https://freebsdfoundation.org/wp-content/uploads/2023/06/jones_lawrence_interview.pdf)
+- 作者：Tom Jones
+- 译者：颜曾一 【】为 ykla 注
 
 FreeBSD 项目起初得益于众多人的贡献，但是该项目的早期阶段以及我们最喜爱的操作系统背后的人们并没有得到很详细的报道。作为《FreeBSD 杂志》30 周年纪念问题的一部分，我决定采访那些参与开发初期的人，并了解他们是如何参与其中的。
 

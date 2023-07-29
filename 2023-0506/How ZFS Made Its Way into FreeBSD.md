@@ -1,5 +1,6 @@
 # ZFS 是如何进入 FreeBSD 的呢？
 
+- 原文：[How ZFS Made its Way into FreeBSD](https://freebsdfoundation.org/wp-content/uploads/2023/06/Dawidek_ZFS_2.pdf)
 - 作者：PAWEL DAWIDEK
 - 译者：ykla 【】为译者注
 

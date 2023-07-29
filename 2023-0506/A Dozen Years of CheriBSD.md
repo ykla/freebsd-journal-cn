@@ -1,5 +1,6 @@
 # CheriBSD 近十多年的历程
 
+- 原文：[A Dozen Years of CheriBSD](https://freebsdfoundation.org/wp-content/uploads/2023/06/davis_cambridge.pdf)
 - 作者：BROOKS DAVIS
 - 译者：ykla
 
