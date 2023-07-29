@@ -1,6 +1,6 @@
 # 让我们来试试 ChatGPT
 
- - 原文：
+ - 原文：[Practical Ports: Let’s Talk, GPT](https://freebsdfoundation.org/wp-content/uploads/2023/05/GPT_Practical_ports.pdf)
  - 作者：Benedict Reuschling
  - 译者：冰
  - 校对整理：ykla 【】部分为 ykla 注
