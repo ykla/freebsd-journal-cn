@@ -1,10 +1,9 @@
 # GPU 直通
 
-作者：Corvin Köhne 和 Daniel Kerkhoff
-
-译者：冰
-
-校对：ykla
+- 原文：[GPU Passthrough](https://freebsdfoundation.org/wp-content/uploads/2023/05/a66452da2b483e5e92bde6533b7236c4d11382eb-1-1.pdf)
+- 作者：Corvin Köhne 和 Daniel Kerkhoff
+- 译者：冰
+- 校对：ykla
 
 自 1980 年成立以来，Beckhoff【倍福自动化公司是主要在德国费尔的自动化公司。倍福自动化公司主要是实现工业自动化以及楼宇自动化的控制系统。倍福是实时以太网 EtherCAT 的发起者。——引自维基百科。校对者注，下同】 一直致力于工业自动化技术的研究。在 1986 年，基于 PC 的机器控制概念诞生了。那时，Beckhoff 正在摒弃基于微控制器的 PLC，并开始使用标准的 PC 技术作为 PLC 的基础，同时将其使用在工业外壳中【即一种特殊设计的外部保护壳，用于包裹、保护和隔离工业设备或机器。】。这极大地提高了性能，因为 PC 比微控制器强大得多。
 
