@@ -12,6 +12,8 @@
 * [我不是来自约克郡的，我保证！](2023-0506/I’m%20Not%20from%20Yorkshire,I%20Promise!.md)
 * [回忆录：采访 David Greenman Lawrence](2023-0506/Recollections_An%20Interview%20with%20David%20Greenman%20Lawrence.md)
 * [FreeBSD 和早期的 Unix社区](2023-0506/FreeBSD%20and%20the%20Early%20Unix%20Communities.md)
+* [早期的 FreeBSD 移植](2023-0506/Early%20FreeBSD%20Ports.md)
+
 ## 2023-0304
 
 * [CheriBSD port 和软件包](2023-0304/CheriBSD%20Ports%20and%20Packages.md)
