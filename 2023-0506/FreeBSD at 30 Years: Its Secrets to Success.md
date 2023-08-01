@@ -1,4 +1,4 @@
-FreeBSD 30 周年： 成功的秘诀
+# FreeBSD 30 周年： 成功的秘诀
 
 - 作者： Marshall Kirk Mckusick
 - 译者：一木
