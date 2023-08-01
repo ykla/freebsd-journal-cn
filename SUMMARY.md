@@ -13,7 +13,7 @@
 * [回忆录：采访 David Greenman Lawrence](2023-0506/Recollections_An%20Interview%20with%20David%20Greenman%20Lawrence.md)
 * [FreeBSD 和早期的 Unix社区](2023-0506/FreeBSD%20and%20the%20Early%20Unix%20Communities.md)
 * [早期的 FreeBSD 移植](2023-0506/Early%20FreeBSD%20Ports.md)
-* [FreeBSD 30 周年：成功的秘诀](2023-0506/FreeBSD%20at%2030%20Years%3A%20Its%20Secrets%20to%20Success.md)
+* [FreeBSD 30 周年：成功的秘诀](2023-0506/FreeBSD%20at%2030%20Years_%20Its%20Secrets%20to%20Success.md)
 
 ## 2023-0304
 
