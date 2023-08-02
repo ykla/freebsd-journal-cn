@@ -14,6 +14,7 @@
 * [FreeBSD 和早期的 Unix社区](2023-0506/FreeBSD%20and%20the%20Early%20Unix%20Communities.md)
 * [早期的 FreeBSD 移植](2023-0506/Early%20FreeBSD%20Ports.md)
 * [FreeBSD 30 周年：成功的秘诀](2023-0506/FreeBSD%20at%2030%20Years_%20Its%20Secrets%20to%20Success.md)
+* [FreeBSD 在日本：回忆之旅与今日之实](2023-0506/FreeBSD%20in%20Japan_A%20Trip%20Down%20Memory%20Lane%20and%20Today’s%20Reality.md)
 
 ## 2023-0304
 
