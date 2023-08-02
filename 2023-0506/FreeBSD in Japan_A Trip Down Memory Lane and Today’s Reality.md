@@ -1,4 +1,4 @@
-![image](https://github.com/FreeBSD-Ask/freebsd-journal-cn/assets/10327999/0dc6cece-268a-4776-a331-e373f553e19b)# FreeBSD 在日本：回忆之旅与今日之实
+# FreeBSD 在日本：回忆之旅与今日之实
 
 - 原文：<https://freebsdfoundation.org/wp-content/uploads/2023/06/sato_japan.pdf>
 - 作者：佐藤弘樹
