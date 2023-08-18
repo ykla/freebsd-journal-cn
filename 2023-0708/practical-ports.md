@@ -4,11 +4,11 @@
 - 作者：BENEDICT REUSCHLING
 - 译者：ykla & ChatGPT
 
-最早吸引我对 FreeBSD 的一点是它能够轻松运行服务。这些服务可以是随操作系统提供的系统服务（最简单的例子可能是 SSH 守护程序），也可以通过 pkg 或 ports 安装的第三方软件来实现。无论哪种情况，过程都是相同的：您在/etc/rc.conf 中添加一行以启用该服务（可以通过 sysrc 或"service ... enable"来实现），使其在系统下次启动时运行。接下来通常会有一个配置文件，用于进行自定义设置以适应您的需求。通常，这需要输入要监听的 IP 地址或 DNS 主机名、网络端口以及一些软件的具体细节。从那时起，要么直接启动该服务（使用"service ... start"），要么在下次重新启动时启动，以防它需要加载 kldload 无法加载的内核模块（这种情况在如今很少出现）。
+FreeBSD 最早吸引我的一点是它能够轻松运行服务。这些服务可以是随操作系统提供的系统服务（最简单的例子可能是 SSH 守护程序），也可以通过 pkg 或 ports 安装的第三方软件来实现。无论哪种情况，过程都是相同的：你在 `/etc/rc.conf` 中添加一行以启用该服务（可以通过 sysrc 或`service …… enable`来实现），使其在系统下次启动时运行。接下来通常会有一个配置文件，用于进行自定义设置以适应你的需求。通常，这需要输入要监听的 IP 地址或 DNS 主机名、网络端口以及一些软件的具体细节。从那时起，要么直接启动该服务（使用`service …… start`），要么在下次重新启动时启动，以防它需要加载 `kldload` 无法加载的内核模块（这种情况在如今很少出现）。
 
-这一过程很直接，将所有系统服务的配置保持在一个方便的位置，并且在为一个或两个服务完成配置后，很容易重复。当然，在 FreeBSD 主机系统上运行一整套服务是没有问题的，直到情况变得更加复杂。并行运行相同软件的不同版本是非常合理且并不罕见的。这是出于测试目的——检查升级是否按预期工作，或者某些软件是否仍需要较旧版本作为依赖。其中一个例子是尝试在相邻运行不同版本的 PostgreSQL 数据库。在这种情况下，pkg 和 ports 都会检查版本，如果发现相同位置的二进制文件，它们将取消安装操作，并显示一条消息，指出某些二进制文件将被放置在同一个位置，因此会相互覆盖。这是一个不希望出现的情况，用户必须为其中一个版本做出决策，因为它们无法共存。
+这一过程很直接，将所有系统服务的配置保持在一个方便的位置，并且在为一个或两个服务完成配置后，很容易重复。当然，在 FreeBSD 主机系统上运行一整套服务是没有问题的，直到情况变得更加复杂。并行运行相同软件的不同版本是非常合理且并不罕见的。这是出于测试目的——检查升级是否按预期工作，或者某些软件是否仍需要较旧版本作为依赖。其中一个例子是尝试在相继运行不同版本的 PostgreSQL 数据库。在这种情况下，pkg 和 ports 都会检查版本，如果发现相同位置的二进制文件，它们将取消安装操作，并显示一条消息，指出某些二进制文件将被放置在同一个位置，因此会相互覆盖。这是一个不希望出现的情况，用户必须为其中一个版本做出决策，因为它们无法共存。
 
-除非涉及虚拟化或容器化技术，否则就会出现这种情况。这使得在独立的执行环境中进行进程隔离成为可能，使用各种方法允许多个这样的系统在同一硬件上运行。虚拟化在操作系统上添加了额外的层，允许安装相同或不同的操作系统，并模拟硬件。容器或 jails 通过使用 chroot(8)隔离进程来实现这一点。我们在这里将重点放在后者上，因为它在资源使用方面更轻量级，并且可以相对快速地启动。
+除非涉及虚拟化或容器化技术，否则就会出现这种情况。这使得在独立的执行环境中进行进程隔离成为可能，使用各种方法让多个这样的系统在同一硬件上运行。虚拟化在操作系统上添加了额外的一层，允许安装相同或不同的操作系统，并模拟硬件。容器或 jail 通过使用 chroot(8)隔离进程来实现这一点。我们在这里将重点放在后者上，因为它在资源使用方面更轻量级，并且可以相对快速地启动。
 
 这种隔离的好处不仅在于可以并行运行各种不同版本，还可以出于安全原因进行分隔。当应用程序在一个 jail 容器中运行时，默认情况下，内部进程无法访问主机系统。该应用程序可以发现所有通常的设备（如网络）、目录结构和正确位置的文件，但实际上，它是一个独立的环境，模仿主机系统的行为和布局。当这样的 jail 在某种情况下被入侵时，很容易停止它，而不会影响其他 jail 或主机系统中的服务。对它们的访问被严格禁止，将任何入侵者隔离在特定的 jail 单元中。
 
@@ -20,16 +20,17 @@
 
 ![image](https://github.com/FreeBSD-Ask/freebsd-journal-cn/assets/10327999/cfb9b796-2366-4bc5-a90f-40dd6fcb35da)
 
-我们从 Raspberry Pi 开始，因为这个服务基本上一直在运行，而且我们希望功耗较低。我这里有一个 RPI3，但其他能够运行 FreeBSD 的设备（包括完整的服务器）同样适用。安装操作系统，应用最新的安全补丁，并使用 SSH 密钥锁定远程访问。
+我们从树莓派开始，因为这个服务基本上一直在运行，而且我们希望功耗较低。我这里有一个树莓派 3，但其他能够运行 FreeBSD 的设备（包括完整的服务器）同样适用。安装操作系统，应用最新的安全补丁，并使用 SSH 密钥锁定远程访问。
 
 ## 环境设置
-我连接了一个旧的 32GB SSD 到 Raspberry Pi 上，这个 SSD 将通过一个单磁盘 ZFS 池来执行大部分 I/O 密集的操作，而不是使用速度较慢的紧凑型闪存卡。在撰写本文时，我正在运行 FreeBSD 13.2，我相当有信心未来的版本也会同样表现出色，或者只需要进行一些小的调整。
+
+我连接了一个旧的 32GB 固态硬盘到树莓派上，这个固态硬盘通过一个单磁盘的 ZFS 池来执行大部分 I/O 密集的操作，而不是使用速度较慢的 TF 卡。在撰写本文时，我正在运行 FreeBSD 13.2，我十分有信心未来的版本也会同样表现出色，或者只需要进行一些小的调整。
 
 ```
 # pkg install bastille git-lite
 ```
 
-由于 Bastille 是一个 Shell 脚本，安装相当迅速，没有额外的依赖。虽然它在一些功能方面可能没有其他 jail 管理器那么全面，但它仍然能够正常工作。为了从 Bastille 的 GitLab 存储库中克隆 adguard home 模板（以及其他模板），需要安装 Git。接下来，我们在/etc/pf.conf 中创建一个针对 bastille 的 PF 配置，内容如下：
+由于 Bastille 是一个 Shell 脚本，安装相当迅速，没有额外的依赖。虽然它在一些功能方面可能没有其他 jail 管理器那么全面，但它仍然能够正常工作。为了从 Bastille 的 GitLab 存储库中克隆 adguard home 模板（以及其他模板），需要安装 Git。接下来，我们在 `/etc/pf.conf` 中创建一个针对 bastille 的 PF 配置，内容如下：
 
 ```
 ext_if=”ue0” ## <- 将“ue0”更改为你机器的配置。
@@ -46,7 +47,8 @@ pass in inet proto tcp from any to any port bootps flags S/SA keep state
 pass in inet proto tcp from any to any port {9100,9124} flags S/SA modulate state
 ```
 
-请确保在顶部的"ext_if"行中将其更改为您正在使用的接口。在我的 RPI 上，网络电缆连接到了"ue0"，所以我输入了这个。pf.conf 将为我们的 jail 流量（使用 NAT）创建一个表。Bastille 支持几个用于网络的选项，这使得它足够灵活，既适用于办公室和家庭网络，也适用于托管服务提供的网络。这些选项在此处有详细描述：https://docs.bastillebsd.org/en/latest/chapters/networking.html
+请确保在顶部的"ext_if"行中将其更改为你正在使用的接口。在我的 RPI 上，网线连接到了"ue0"，所以我输入了 ue0。pf.conf 将为我们的 jail 流量（使用 NAT）创建一个表。Bastille 支持多个用于网络的选项，这使得它足够灵活，既适用于办公室和家庭网络，也适用于托管服务提供的网络。这些选项在此处有详细描述：<https://docs.bastillebsd.org/en/latest/chapters/networking.html>
+
 我将使用基于 VNET 的 jail，因为我在本地网络上有一个可用的 IP 地址。在编辑配置文件后，我们在启动时添加了一个条目来启动 PF 和 pf 日志设备，以及其他服务。Bastille 也应该会启动，我们列出了将为 AdGuard 创建的 jail 的名称（我的命名方案既传奇又无聊）。
 
 ```
@@ -62,23 +64,23 @@ pass in inet proto tcp from any to any port {9100,9124} flags S/SA modulate stat
 # pfctl -nvf /etc/pf.conf
 ```
 
-用于进行此类检查。成功时，它将回显整个规则集，或者显示您可能遇到的任何错误。请注意，它无法检查逻辑错误，比如阻止 SSH 端口 22，而这可能是唯一的远程连接方式。幸运的是，已经存在一条规则允许 SSH 流量通过。一旦检查完成，请启动 PF 服务，并开始过滤流量：
+用于进行此类检查。成功时，它将回显整个规则集，或者显示你可能遇到的任何错误。请注意，它无法检查逻辑错误，比如会阻止 SSH 端口 22，而这可能是唯一的远程连接方式。幸运的是，已经存在一条规则允许 SSH 流量通过。检查完成后，请启动 PF 服务，并开始过滤流量：
 
 ```
 # service pf start
 # service pflog start
 ```
 
-预计您的 SSH 连接将会断开，因此请保持一个单独的终端开启，以防您无法再次访问。重新连接后，我们需要编辑另外一些配置文件。启用 VNET 的 jail 需要在/etc/devfs.rules（而不是.conf）中添加一个条目，在新安装的系统上可能不存在这个文件。只需创建该文件并添加以下规则：
+预计你的 SSH 连接将会断开，因此请保持一个单独的终端开启，以防你无法再次访问。重新连接后，我们需要编辑另外一些配置文件。启用 VNET 的 jail 需要在 `/etc/devfs.rules`（而不是 `.conf`）中添加一个条目，在新安装的系统上可能不存在这个文件。只需创建该文件并添加以下规则：
 
 ```
 [bastille_vnet=13]
 add path bpf* unhide
 ```
 
-这使得 Bastille 能够看到 VNET 接口上的流量，并将 jail 连接到外部世界。这可能是对正在进行的情况的非专业人士的描述。幸运的是，我们不需要过于担心它（也许我需要在我的下一次网络考试中深入研究它）。
+这使得 Bastille 能够看到 VNET 接口上的流量，并将 jail 连接到外部世界。这可能是对正在进行的情况的非专业人士的说明。幸运的是，我们不需要过于担心它（也许我需要在我的下一次网络考试中深入研究它）。
 
-我们还需要访问的另一个文件是/etc/sysctl.conf，需要添加以下行：
+我们还需要访问的另一个文件是 `/etc/sysctl.conf`，需要添加以下行：
 
 ```
 sysctl net.inet.ip.forwarding=1
@@ -87,7 +89,7 @@ sysctl net.link.bridge.pfil_onlyip=0
 sysctl net.link.bridge.pfil_member=0
 ```
 
-当 Bastille 运行时，它会动态地为我们在 RPI 的外部接口（ue0）与 jail 的网络接口（vtnet）之间创建一个桥接。这两个接口通过一根虚拟电缆连接在一起，一端连接在主机的接口上，另一端连接在 jail 上，通过它进行流量交换。
+当 Bastille 运行时，它会动态地为我们在树莓派的外部接口（ue0）与 jail 的网络接口（vtnet）之间创建一个桥接。这两个接口通过一根虚拟网线连接在一起，一端连接在主机的接口上，另一端连接在 jail 上，通过它进行流量交换。
 
 将这些更改应用到正在运行的系统中，而无需重新启动，可以使用以下命令：
 
@@ -101,7 +103,7 @@ sysctl net.link.bridge.pfil_member=0
 https://www.mail-archive.com/freebsd-net@freebsd.org/msg64577.html
 ```
 
-这在 FreeBSD 13 中需要在/boot/loader.conf 中添加额外的一行。这可能会让您发疯，所以在变得疯狂之前，请将以下内容添加到其中，以确保在未来的重启中正常工作：
+这在 FreeBSD 13 中需要在 `/boot/loader.conf` 中添加额外的一行。这可能会让你发疯，所以在变得疯狂之前，请将以下内容添加到其中，以确保在未来的重启中正常工作：
 
 ```
 if_bridge_load=”YES”
@@ -109,17 +111,18 @@ if_bridge_load=”YES”
 
 桥接接口已经正确加载，这也导致 sysctl 出现，使得 sysctl.conf 可以将它们从默认值 1 更改为 0。尽管如此，在完成之前，我们还要访问一个最后的文件。
 
-Bastille 的配置文件位于/usr/local/etc/bastille/bastille.conf。您可以直接编辑它（它有很详细的注释），或者如果您不介意输入很多内容，可以使用 sysrc 命令。由于我正在一个连接到我的树莓派的 ZFS 池上运行，我设置了 bastille_zfs_enable 以给它指定我的池的名称。
+Bastille 的配置文件位于 `/usr/local/etc/bastille/bastille.conf`。你可以直接编辑它（它有很详细的注释），或者如果你不介意输入很多内容，可以使用 sysrc 命令。由于我正在一个连接到我的树莓派的 ZFS 池上运行，我设置了 `bastille_zfs_enable` 以给它指定我的池的名称。
 
 ```
 # sysrc -f /usr/local/etc/bastille/bastille.conf bastille_zfs_enable=YES
 # sysrc -f /usr/local/etc/bastille/bastille.conf bastille_zfs_zpool=rpi3
 ```
 
-如果您的池名称与 bastille_zfs_zpool 行上的名称不同，请将其更改为您的池名称。我还更改了一个选项，即 bastille_network_gateway=""选项。我输入了我的默认网关地址，因为在后续的过程中，我遇到了一些解析 jail 名称的问题。您可能需要或不需要设置这个选项，但如果您确实遇到问题，请重新查看这个选项，看看是否可以解决问题。
+如果你的池名称与 `bastille_zfs_zpool` 行上的名称不同，请将其更改为你的池名称。我还更改了一个选项，即 `bastille_network_gateway=""`选项。我输入了我的默认网关地址，因为在后续的过程中，我遇到了一些解析 jail 名称的问题。你可能需要或不需要设置这个选项，但如果你确实遇到问题，请重新查看这个选项，看看是否可以解决问题。
 
 ## Bastille 自举
-现在，所有设置都已经就位，是时候让 Bastille 在我们分配给它的池上创建数据集结构了。它将下载一个基本的 FreeBSD 13.2 发行版，并更新其中后续发布的任何补丁。执行以下命令，并等待直到它完成：
+
+现在，所有设置都已经就位，是时候让 Bastille 在我们分配给它的池上创建数据集结构了。它将下载一个简单的 FreeBSD 13.2 RELEASE，并更新其中后续发布的任何补丁。执行以下命令，直至它完成：
 
 ```
 # bastille bootstrap 13.2-RELEASE update
@@ -158,7 +161,7 @@ Scanning /usr/local/bastille/releases/13.2-RELEASE/usr/share/certs/trusted for c
  done.
 ```
 
-在引导操作之后，我的池增加了这些数据集：
+在引导操作之后，我的池中增加了这些数据集：
 
 ```
 # zfs list -r rpi3/bastille
@@ -192,9 +195,9 @@ RDR udp 53 53
 Template ready to use.
 ```
 
-这很快。Bastille 拥有自己的模板语言，您可以在大写的命令（如 PKG、CP 等）中看到它们。它们具有与其小写形式中的系统等效功能相同。借助这些命令，可以在 jail 中按正确的顺序设置服务。它们大多是自解释的。最后的两个 RDR 命令将网络端口从主机系统重定向到 jail 中。所有其他端口仍然受到防火墙的保护，因此只有端口 80 从主机连接到 jail（以及反向连接），以及 DNS 端口 53。在您的/etc/pf.conf 中检查 rdr-anchor “rdr/\*”行。这就是使其如此灵活的地方。不必为所有 jail 打开端口，每个 jail 都可以打开所需的端口并保持其他端口关闭。
+这很快。Bastille 拥有自己的模板语言，你可以在大写的命令（如 PKG、CP 等）中看到它们。它们具有与其小写形式中的系统等效功能相同。借助这些命令，可以在 jail 中按正确的顺序设置服务。它们大多是自解释的。最后的两个 RDR 命令将网络端口从主机系统重定向到 jail 中。所有其他端口仍然受到防火墙的保护，因此只有端口 80 从主机连接到 jail（以及反向连接），以及 DNS 端口 53。在你的  `/etc/pf.conf` 中检查 `rdr-anchor "rdr/\*"`行。这就是使其如此灵活的地方。不必为所有 jail 打开端口，每个 jail 都可以打开所需的端口并保持其他端口关闭。
 
-现在是创建和启动我们的第一个 Bastille jail 的时候了。因为我们正在使用 VNET，所以我们需要在 bastille create 命令中传递-V 选项，以及 jail 的名称、要运行的版本，随后是分配给 jail 的本地网络上的 IP 地址，以及主机的网络接口用于桥接。组合起来，命令如下：
+现在是创建和启动我们的第一个 Bastille jail 的时候了。因为我们正在使用 VNET，所以我们需要在 bastille create 命令中传递参数 `-V` ，以及 jail 的名称、要运行的版本，随后是分配给 jail 的本地网络上的 IP 地址，以及主机的网络接口用于桥接。组合起来，命令如下：
 
 ```
 # bastille create -V adguard 13.2-RELEASE 192.168.2.55 ue0
@@ -246,7 +249,7 @@ e0b_bastille0
 adguard: created
 ```
 
-您可以看到我之前提到的虚拟网络电缆的两端：e0a_bastile0 和 e0b_bastile0 形成了主机系统与 jail 之间的连接。在主机上检查 ifconfig 输出，可以看到从 jail 的流量创建的新桥接。
+你可以看到我之前提到的虚拟网线的两端：e0a_bastile0 和 e0b_bastile0 形成了主机系统与 jail 之间的连接。在主机上检查 ifconfig 输出，可以看到从 jail 的流量创建的新桥接。
 
 在创建 jail 期间应用的设置是相当标准的，主要是禁用了我们不会使用的服务。在创建了 jail 之后，我的池中还存在两个数据集，其中保存了所有 jail 的数据：
 
@@ -257,9 +260,9 @@ rpi3/bastille/jails/adguard/root 2.34M 28.0G 2.34M /usr/local/bastille/jails/adg
 root
 ```
 
-这构成了 jail 的根文件系统，并遵循其他 jail 管理器的布局。要将文件复制到或从 jail 中复制出来，只需使用前缀/usr/local/bastille/jails/adguard/root 来访问 jail 的根目录。
+这构成了 jail 的根文件系统，并遵循其他 jail 管理器的布局。要将文件复制到或从 jail 中复制出来，只需使用前缀 `/usr/local/bastille/jails/adguard/root` 来访问 jail 的根目录。
 
-jls 命令将列出 bastille jail 及其设置：
+`jls` 命令将列出 bastille jail 及其设置：
 
 ```
 # bastille list -a
@@ -349,7 +352,7 @@ Template applied: bastillebsd-templates/adguardhome
 
 它只需要在 jail 中执行模板中的指令（PKG、CP 等）。这也是一个很好的测试，可以看到网络是否设置正确。如果没有设置正确，jail 将无法从存储库获取软件包。最后的 pfctl 警告让我有点担心，但尽管有这些警告，它还是正常工作了。
 
-满怀期待，我按照屏幕上的一条消息的指示，打开了浏览器，并将其指向 jail 的 IP 地址。果然，AdGuard Home 的登录界面出现了。但是，凭证在哪里呢？我在 Bastille 模板网站https://gitlab.com/bastillebsd-templates上查找了一下，没有找到有效的信息。Bastille的博客文章提到了AdGuard作为用户名，但密码不适用。因此，我不得不创建自己的凭证，这实际上更安全，因为默认密码很容易被不良分子扫描到。
+满怀期待，我按照屏幕上的一条消息的指示，打开了浏览器，并将其指向 jail 的 IP 地址。果然，AdGuard Home 的登录界面出现了。但是，凭证在哪里呢？我在 Bastille 模板网站 <https://gitlab.com/bastillebsd-templates> 上查找了一下，没有找到有效的信息。Bastille 的博客文章提到了将 AdGuard 作为用户名，但密码不适用。因此，我不得不创建自己的凭证，这实际上更安全，因为默认密码很容易被不良分子扫描到。
 
 我使用以下命令在 jail 中打开了一个控制台：
 
@@ -357,7 +360,7 @@ Template applied: bastillebsd-templates/adguardhome
 # bastille console adguard
 ```
 
-在 jail 中，我发现 AdGuard 将其配置文件放在了/usr/local/etc/AdGuardHome.yaml 下。在顶部附近，我找到了以下部分：
+在 jail 中，我发现 AdGuard 将其配置文件放在了 `/usr/local/etc/AdGuardHome.yaml` 下。在顶部附近，我找到了以下部分：
 
 ```
 users:
@@ -377,7 +380,7 @@ users:
 htpasswd -Bnb adguard BastilleBSD!
 ```
 
-我使用了-B 选项来创建一个 BCrypt 密码，接着是应用于此密码的用户（我们已经在配置文件中有了这个信息，但也许您想要其他用户或多个用户），然后是明文密码。是的，这不是一种安全的方式，因为这会出现在您的 shell 历史记录中。但是在本教程的任何地方，我是否曾表示过它已经准备好投入生产？恰恰相反，我没有。我尽职尽责地运行了 htpasswd，它在命令行上输出了生成的密码，我将其复制并粘贴到了 AdGuard 的配置文件中。
+我使用了参数 `-B` 创建了一个 BCrypt 密码，接着是应用于此密码的用户（我们已经在配置文件中有了这个信息，但也许你想要其他用户或多个用户），然后是明文密码。是的，这不是一种安全的方式，因为这会出现在你的 shell 历史记录中。但是在本教程的任何地方，我是否曾表示过它已经准备好投入生产？恰恰相反，我没有。我尽职尽责地运行了 htpasswd，它在命令行上输出了生成的密码，我将其复制并粘贴到了 AdGuard 的配置文件中。
 
 然后我执行了：
 
@@ -385,23 +388,21 @@ htpasswd -Bnb adguard BastilleBSD!
 # service adguardhome restart
 ```
 
-（请注意，仍在我的 jail 中）来重新启动服务并应用新的设置。该文件中的其他设置在 AdGuard Home Wiki 中有详细记录：
-https://github.com/AdguardTeam/AdGuardHome/wiki/Configuration
-刷新我的网页浏览器后，我输入了我的新凭证，并被重定向到了主 AdGuard 仪表板。成功！
+（请注意，仍在我的 jail 中）来重新启动服务并应用新的设置。该文件中的其他设置在 AdGuard Home Wiki 中有详细记录：<https://github.com/AdguardTeam/AdGuardHome/wiki/Configuration>刷新我的网页浏览器后，我输入了我的新凭证，并被重定向到了主 AdGuard 仪表板。成功！
 
-在顶部，有一个设置向导，显示了如何使用您的新 AdGuard 服务，无论是用于您的路由器（以覆盖整个网络）还是各种设备，并为移动设备和桌面操作系统都进行了描述。太棒了！
+在顶部，有一个设置向导，显示了如何使用你的新 AdGuard 服务，无论是用于你的路由器（以覆盖整个网络）还是各种设备，并为移动设备和桌面操作系统都进行了描述。太棒了！
 
 ![image](https://github.com/FreeBSD-Ask/freebsd-journal-cn/assets/10327999/2119e84d-b4ed-4a0f-85fc-9dee97a3116d)
 
-在我手机上这样做后——出于测试目的——我稍微浏览了一下网页，就看到了仪表板中出现了统计数据。这表明我们的设置正在运行，我们应该将互联网更名为 SnooperNet。几乎所有的网站在某种程度上都会追踪您或显示让您不悦的广告。树莓派能够处理这种负载，我在 AdGuardHome.yaml 的 ratelimit 参数中微调了连接数。
+在我手机上这样做后——出于测试目的——我稍微浏览了一下网页，就看到了仪表板中出现了统计数据。这表明我们的设置正在运行，我们应该将互联网更名为 SnooperNet。几乎所有的网站在某种程度上都会追踪你或显示让你不悦的广告。树莓派能够处理这种负载，我在 `AdGuardHome.yaml` 的 ratelimit 参数中微调了连接数。
 
-您可以在 jail 的/var/log/adguardhome.log 目录中找到 AdGuard 为该服务编写的日志。
+你可以在 jail 的 `/var/log/adguardhome.log` 目录中找到 AdGuard 为该服务编写的日志。
 
 ## 总结
 
-这就是本教程的内容。我发现 AdGuard 的文档很完善，并且由于模板创建者的工作，入门很容易。我已经享受到在互联网上留下更少的痕迹并看到更少的广告。它作为一个 DNS 服务的好处是，您网络上的任何设备都可以使用它：个人电脑、笔记本电脑、智能手机、平板电脑、电视、物联网设备，甚至是邻居的智能猫门，我都不知道。
+这就是本教程的内容。我发现 AdGuard 的文档很完善，并且由于模板创建者的工作，很容易入门。我已经享受到在互联网上留下更少的痕迹并看到更少的广告。它作为一个 DNS 服务的好处是，你网络上的任何设备都可以使用它：个人电脑、笔记本电脑、智能手机、平板电脑、电视、物联网设备，甚至可能还有邻居家的智能猫门。
 
-Bastille 可能需要一些初始配置，但之后，创建 jail 就是一个简单的过程。也许您会发现其他您想要在 Bastille 模板上运行的服务：<https://gitlab.com/bastillebsd-templates>？
+Bastille 可能需要一些初始配置，但之后，创建 jail 就是一个简单的过程。也许你会发现其他你想要在 Bastille 模板上运行的服务：<https://gitlab.com/bastillebsd-templates>？
 
 ---
 
