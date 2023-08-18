@@ -22,7 +22,7 @@
 
 我们从 Raspberry Pi 开始，因为这个服务基本上一直在运行，而且我们希望功耗较低。我这里有一个 RPI3，但其他能够运行 FreeBSD 的设备（包括完整的服务器）同样适用。安装操作系统，应用最新的安全补丁，并使用 SSH 密钥锁定远程访问。
 
-环境设置
+## 环境设置
 我连接了一个旧的 32GB SSD 到 Raspberry Pi 上，这个 SSD 将通过一个单磁盘 ZFS 池来执行大部分 I/O 密集的操作，而不是使用速度较慢的紧凑型闪存卡。在撰写本文时，我正在运行 FreeBSD 13.2，我相当有信心未来的版本也会同样表现出色，或者只需要进行一些小的调整。
 
 ```
@@ -118,7 +118,7 @@ Bastille 的配置文件位于/usr/local/etc/bastille/bastille.conf。您可以�
 
 如果您的池名称与 bastille_zfs_zpool 行上的名称不同，请将其更改为您的池名称。我还更改了一个选项，即 bastille_network_gateway=""选项。我输入了我的默认网关地址，因为在后续的过程中，我遇到了一些解析 jail 名称的问题。您可能需要或不需要设置这个选项，但如果您确实遇到问题，请重新查看这个选项，看看是否可以解决问题。
 
-引导 Bastille
+## Bastille 自举
 现在，所有设置都已经就位，是时候让 Bastille 在我们分配给它的池上创建数据集结构了。它将下载一个基本的 FreeBSD 13.2 发行版，并更新其中后续发布的任何补丁。执行以下命令，并等待直到它完成：
 
 ```
@@ -397,9 +397,12 @@ https://github.com/AdguardTeam/AdGuardHome/wiki/Configuration
 
 您可以在 jail 的/var/log/adguardhome.log 目录中找到 AdGuard 为该服务编写的日志。
 
-总结
+## 总结
+
 这就是本教程的内容。我发现 AdGuard 的文档很完善，并且由于模板创建者的工作，入门很容易。我已经享受到在互联网上留下更少的痕迹并看到更少的广告。它作为一个 DNS 服务的好处是，您网络上的任何设备都可以使用它：个人电脑、笔记本电脑、智能手机、平板电脑、电视、物联网设备，甚至是邻居的智能猫门，我都不知道。
 
-Bastille 可能需要一些初始配置，但之后，创建 jail 就是一个简单的过程。也许您会发现其他您想要在 Bastille 模板上运行的服务：https://gitlab.com/bastillebsd-templates？
+Bastille 可能需要一些初始配置，但之后，创建 jail 就是一个简单的过程。也许您会发现其他您想要在 Bastille 模板上运行的服务：<https://gitlab.com/bastillebsd-templates>？
 
-BENEDICT REUSCHLING 是 FreeBSD 项目中的文档提交者，并且是文档工程团队的成员。在过去，他曾连任两届 FreeBSD 核心团队成员。他在德国达姆斯塔特应用科学大学管理一个大数据集群。他还为本科生开设了“Unix for Developers”课程。Benedict 是每周 bsdnow.tv 播客的主持人之一。
+---
+
+**BENEDICT REUSCHLING** 是 FreeBSD 项目中的文档提交者，并且是文档工程团队的成员。在过去，他曾连任两届 FreeBSD 核心团队成员。他在德国达姆施塔特应用技术大学管理着一个大数据集群。他还为本科生开设了“Unix for Developers”课程。Benedict 还是每周 bsdnow.tv 播客的主持人之一。
