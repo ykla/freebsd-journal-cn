@@ -7,7 +7,7 @@
 * [在 Firecracker 上的 FreeBSD](2023-0708/freebsd-on-firecracker.md)
 * [使用 pot 和 nomad 管理 Jail](2023-0708/jail-orchestration-with-pot-and-nomad.md)
 * [会议报告：C 与 BSD 正如拉丁语与我们](2023-0708/conference-report-c-is-to-bsd-what-latin-is-to-us.md)
-* [回顾与回忆：与 Doug Rabson 的访谈](2023-0708/recollections-an-interview-with-doug-rabson.md)
+* [抒怀之旅：与 Doug Rabson 的访谈](2023-0708/recollections-an-interview-with-doug-rabson.md)
 * [实用的 Port](2023-0708/practical-ports.md)
 * [我们收到的来信](2023-0708/we-get-letters.md)
 
