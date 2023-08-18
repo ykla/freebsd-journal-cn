@@ -1,4 +1,4 @@
-# 回顾与回忆：与 Doug Rabson 的访谈
+# 抒怀之旅：与 Doug Rabson 的访谈
 
 - 原文：<https://freebsdfoundation.org/wp-content/uploads/2023/08/jones_interview.pdf>
 - 作者：TOM JONES
