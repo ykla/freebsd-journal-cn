@@ -72,7 +72,7 @@ Firecracker 提供的一些模拟设备之一（与 Virtio 块和网络设备等
 - 在重新启动时，FreeBSD 会打印一条消息（“正在重新启动...”），然后等待 1 秒钟“等待 printf 完成并读取”。由于人们通常可以看出系统正在重新启动，所以这似乎最小限度地有用——现在有一个 kern.reboot_wait_time sysctl，默认为零。
 - 在关闭或重新启动时，FreeBSD 的 BSP（CPU＃0）会等待其他 CPU 发出停止信号...然后再等待额外的 1 秒钟，以确保它们有机会停止。我删除了额外的一秒等待时间。
 
-一旦低 hanging fruit 解决了，我使用 TSLOG 并开始查看引导过程的火焰图。出于两个原因，Firecracker 是进行此操作的绝佳环境：首先，极简的环境消除了很多噪音，使得更容易看到剩下的内容；其次，Firecracker 能够非常快速地启动虚拟机，使得能够快速测试对 FreeBSD 内核的更改——通常在不到 30 秒内构建新内核，启动它，并生成新的火焰图。
+一旦低 hanging fruit 解决了，我使用 [TSLOG](https://www.daemonology.net/papers/bootprofiling.pdf) 并开始查看引导过程的火焰图。出于两个原因，Firecracker 是进行此操作的绝佳环境：首先，极简的环境消除了很多噪音，使得更容易看到剩下的内容；其次，Firecracker 能够非常快速地启动虚拟机，使得能够快速测试对 FreeBSD 内核的更改——通常在不到 30 秒内构建新内核，启动它，并生成新的火焰图。
 
 通过 TSLOG 的调查揭示了许多可用的优化：
 - lapic_init 中有一个 100000 次迭代的循环，用于校准 lapic_read_icr_lo 的执行时间；将其缩减到 1000 次迭代可减少 10 毫秒。
@@ -92,7 +92,7 @@ FreeBSD 在 Firecracker 下引导——并且非常迅速地完成。包括未�
 
 更具有抱负性的是，如果 Firecracker 能够移植到运行在 FreeBSD 上，那将是很棒的事情 — 在某个程度上，虚拟机就是虚拟机，虽然 Firecracker 是为了使用 Linux KVM 而编写的，但没有根本性的理由阻止它使用 FreeBSD 的 bhyve 虚拟化器的内核部分。
 
-任何想要在 Firecracker 中尝试 FreeBSD 的人都可以使用 amd64 FIRECRACKER 内核配置构建 FreeBSD 14.0 内核，并从 Firecracker 项目中检出 feature/pvh 分支；或者如果该分支不存在，这意味着代码已合并到主线 Firecracker 树中。
+任何想要在 Firecracker 中尝试 FreeBSD 的人都可以使用 amd64 FIRECRACKER 内核配置构建 FreeBSD 14.0 内核，并从 Firecracker 项目中检出 [feature/pvh](https://github.com/firecracker-microvm/firecracker/tree/feature/pvh) 分支；或者如果该分支不存在，这意味着代码已合并到[主线 Firecracker 树中](https://github.com/firecracker-microvm/firecracker)。
 
 如果您在 Firecracker 上尝试 FreeBSD — 尤其是如果您最终在生产中使用它 — 请告诉我！我开始这个项目主要是出于兴趣，但如果它最终变得有用，我会很高兴听到。
 
