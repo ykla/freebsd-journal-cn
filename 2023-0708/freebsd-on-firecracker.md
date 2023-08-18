@@ -46,7 +46,7 @@ Firecracker 提供的一些模拟设备之一（与 Virtio 块和网络设备等
 
 在将 FreeBSD 引导到 Firecracker 内的过程中，我能够启动一个已将根磁盘编译到内核映像中的 FreeBSD 内核——虚拟磁盘驱动程序尚未工作——并读取了内核的所有控制台输出。然而，在所有内核控制台输出之后，FreeBSD 进入了引导过程的用户区域，我得到了 16 个字符的控制台输出，然后停止了。
 
-有趣的是，我在 10 多年前就见过这个确切的问题，当时我首次在 EC2 实例上使 FreeBSD 工作。QEMU 中的一个错误导致 UART 在传输 FIFO 清空时不发送中断；FreeBSD 向 UART 写入 16 字节，然后不再写入，因为它正在等待从未到达的中断。现代的 EC2 实例运行在亚马逊的“Nitro”平台上，但在早期，它们使用了 Xen，并且使用了 QEMU 的代码来模拟设备。不知何故，在 QEMU 中修复了这个错误十年后，完全相同的错误出现在了 Firecracker 中；但幸运的是，我加入了 FreeBSD 内核的解决方法——`hw.broken_txfifo="1"`——仍然可用，添加了这个加载器可调整值（由于 Firecracker 直接加载内核，而不经过引导加载器，这意味着将该值编译为内核的环境变量）修复了控制台输出。
+有趣的是，我在 10 多年前就见过这个类似的问题，当时我首次在 EC2 实例上使 FreeBSD 工作。QEMU 中的一个错误导致 UART 在传输 FIFO 清空时不发送中断；FreeBSD 向 UART 写入 16 字节，然后不再写入，因为它正在等待从未到达的中断。现代的 EC2 实例运行在亚马逊的“Nitro”平台上，但在早期，它们使用了 Xen，并且使用了 QEMU 的代码来模拟设备。不知何故，在 QEMU 中修复了这个错误十年后，完全相同的错误出现在了 Firecracker 中；但幸运的是，我加入了 FreeBSD 内核的解决方法——`hw.broken_txfifo="1"`——仍然可用，添加了这个加载器可调整值（由于 Firecracker 直接加载内核，而不经过引导加载器，这意味着将该值编译为内核的环境变量）修复了控制台输出。
 
 然后我发现控制台输入也是无效的：FreeBSD 对我在控制台中键入的任何内容都没有响应。事实上，在我跟踪 Firecracker 进程时，我发现 Firecracker 甚至没有从控制台读取——因为 Firecracker 认为模拟 UART 上的接收 FIFO 已满。结果证明这是 Firecracker 的另一个错误：在初始化 UART 时，FreeBSD 用垃圾填充接收 FIFO 以测量其大小，然后通过写入 FIFO 控制寄存器来刷新 FIFO。Firecracker 没有实现 FIFO 控制寄存器，因此 FIFO 保持满状态，并且合理地不尝试读取任何更多的字符放入其中。在这里，我向 FreeBSD 添加了另一个解决方法：如果在我们尝试通过 FIFO 控制寄存器刷新 FIFO 后，LSR_RXRDY 仍然被断言（也就是说，如果 FIFO 没有按要求清空），那么我们现在会继续逐个读取和丢弃字符，直到 FIFO 清空。有了这个解决方法，Firecracker 现在可以认识到 FreeBSD 已准备好从串行端口读取更多输入，我有了一个可工作的双向串行控制台。
 
@@ -63,8 +63,8 @@ Firecracker 提供的一些模拟设备之一（与 Virtio 块和网络设备等
 
 这可能是使 FreeBSD 在 Firecracker 中运行的最困难的部分，但经过多次尝试，我认为我终于做对了：我修改了 FreeBSD 的 Virtio 块驱动以使用 busdma，现在非对齐的请求会“弹回”（即通过临时缓冲区进行复制），以符合 Firecracker Virtio 实现的限制。
 
-## 显露出的优化
-在我让 FreeBSD 在 Firecracker 中运行起来后，很快就清楚地看到有一些可改进的空间。我注意到的第一件事是，尽管我正在测试的虚拟机中有 128 MB 的内存，但系统几乎无法使用，进程经常被杀死，因为系统的内存用完了。top(1) 工具显示，几乎一半的系统内存处于“已绑定”状态，这对我来说似乎很奇怪；因此我进一步调查，发现 busdma 为反弹页面保留了 32 MB 的内存。显然，这远远超过所需的量——考虑到 Firecracker 的限制以及反弹页面通常不会连续分配，每个磁盘 I/O 最多应使用单个 4 kB 的反弹页面——通过对 busdma 的补丁，我能将这个内存消耗减少到 512 kB，限制其对仅支持少量 I/O 段的设备的反弹页面保留。
+## 显露出的可优化项目
+在我让 FreeBSD 在 Firecracker 中运行起来后，很快就明显看到有一些可改进的空间。我注意到的第一件事是，尽管我正在测试的虚拟机中有 128 MB 的内存，但系统几乎无法使用，进程经常被杀死，因为系统的内存用完了。top(1) 工具显示，几乎一半的系统内存处于“已绑定”状态，这对我来说似乎很奇怪；因此我进一步调查，发现 busdma 为反弹页面保留了 32 MB 的内存。显然，这远远超过所需的量——考虑到 Firecracker 的限制以及反弹页面通常不会连续分配，每个磁盘 I/O 最多应使用单个 4 kB 的反弹页面——通过对 busdma 的补丁，我能将这个内存消耗减少到 512 kB，限制其对仅支持少量 I/O 段的设备的反弹页面保留。
 
 系统变得更加稳定之后，我开始关注引导过程。如果你观看系统引导并且消息突然在滚动过程中停顿，那么在那一点可能发生了减缓引导过程的情况。简单地观察引导过程——以及关机过程——揭示了几个改进：
 
@@ -74,29 +74,31 @@ Firecracker 提供的一些模拟设备之一（与 Virtio 块和网络设备等
 - 在重新启动时，FreeBSD 会打印一条消息（“Rebooting...”），然后等待 1 秒钟“等待 printf 完成并读取”。由于人们通常可以看出系统正在重新启动，所以这似乎最小限度地有用——现在有一个 kern.reboot_wait_time sysctl，默认为零。
 - 在关闭或重新启动时，FreeBSD 的 BSP（CPU＃0）会等待其他 CPU 发出停止信号...然后再等待额外的 1 秒钟，以确保它们有机会停止。我删除了额外的一秒等待时间。
 
-一旦低 hanging fruit 解决了，我使用 [TSLOG](https://www.daemonology.net/papers/bootprofiling.pdf) 并开始查看引导过程的火焰图。出于两个原因，Firecracker 是进行此操作的绝佳环境：首先，极简的环境消除了很多噪音，使得更容易看到剩下的内容；其次，Firecracker 能够非常快速地启动虚拟机，使得能够快速测试对 FreeBSD 内核的更改——通常在不到 30 秒内构建新内核，启动它，并生成新的火焰图。
+一旦一些显而易见的问题得到解决了，我使用 [TSLOG](https://www.daemonology.net/papers/bootprofiling.pdf) 并开始查看引导过程的火焰图。出于两个原因，Firecracker 是进行此操作的绝佳环境：首先，极简的环境消除了很多噪音，使得更容易看到剩下的内容；其次，Firecracker 能够非常快速地启动虚拟机，使得能够快速测试对 FreeBSD 内核的更改——通常在不到 30 秒内构建新内核，启动它，并生成新的火焰图。
 
 通过 TSLOG 的调查揭示了许多可用的优化：
-- lapic_init 中有一个 100000 次迭代的循环，用于校准 lapic_read_icr_lo 的执行时间；将其缩减到 1000 次迭代可减少 10 毫秒。
+
+- lapic_init 中有一个 100000 次迭代的循环，用于校准 `lapic_read_icr_lo` 的执行时间；将其缩减到 1000 次迭代可减少 10 毫秒。
 - ns8250_drain 在每个字符被读取后调用 DELAY；将此更改为仅在 LSR_RXRDY 可用时调用 DELAY，如果已经有字符可以读取，可减少 27 毫秒。
-- FreeBSD 使用一个大多数虚拟化程序用于广告 TSC 和本地 APIC 时钟频率的 CPUID 叶子；而与 VMWare、QEMU 和 EC2 不同，Firecracker 没有实现这个。为 Firecracker 添加对此 CPUID 叶子的支持可将 FreeBSD 引导时间减少 20 毫秒。
+- FreeBSD 使用一个大多数虚拟化程序用于广播 TSC 和本地 APIC 时钟频率的 CPUID 叶；而与 VMWare、QEMU 和 EC2 不同，Firecracker 没有实现这个。为 Firecracker 添加对此 CPUID 叶的支持可将 FreeBSD 引导时间减少 20 毫秒。
 - FreeBSD 设置了 kern.nswbuf（用于为各种临时目的分配缓冲区的数量）为 256，而不管系统的大小；将其更改为 32 \* mp_ncpus 可将小型（1 个 CPU）虚拟机的引导时间减少 5 毫秒。
-- FreeBSD 的 mi_startup 函数，用于启动机器无关的系统初始化例程，使用冒泡排序对其调用的函数进行排序；尽管在 90 年代，给定在该时刻需要排序的例程数量很少，这是合理的，但现在有 1000 多个这样的例程，而冒泡排序变得很慢。将其替换为快速排序可节省 2 毫秒。（在出版时尚未提交。）
+- FreeBSD 的 mi_startup 函数，用于启动机器无关的系统初始化例程，使用冒泡排序对其调用的函数进行排序；尽管在 90 年代，给定在该时刻需要排序的例程数量很少，这是合理的，但现在有 1000 多个这样的例程，而冒泡排序变得很慢。将其替换为快速排序可节省 2 毫秒。（在杂志出版时尚未提交。）
 - FreeBSD 的 vm_mem 初始化例程正在为所有可用的物理内存初始化 vm_page 结构。即使在具有 128MB RAM 的相对较小的 VM 上，这意味着要初始化 32768 个这样的结构，并且需要几毫秒。将此代码更改为在内存分配供使用时“懒惰”地初始化 vm_page 结构可节省 2 毫秒。（在出版时尚未提交。）
 - Firecracker 通过匿名 mmap 分配 VM 客户端内存，但 Linux 并未设置整个 VM 客户端地址空间的分页结构。结果是，第一次读取任何页面时，将会发生故障，花费大约 20,000 CPU 周期来解决，同时 Linux 映射了一页内存。在 Firecracker 的 mmap 调用中添加 MAP_POPULATE 标志可节省 2 毫秒。（在出版时尚未提交。）
 
 ## 当前状态
+
 FreeBSD 在 Firecracker 下引导——并且非常迅速地完成。包括未提交的补丁（对 FreeBSD 和 Firecracker 都是如此），在具有 1 个 CPU 和 128MB RAM 的虚拟机上，FreeBSD 内核可以在不到 20 毫秒的时间内引导；下面是引导过程的火焰图。
 
 ![GLD 8~GA{A 3W SW(H)9$Q](https://github.com/FreeBSD-Ask/freebsd-journal-cn/assets/10327999/e4c4c53e-51a7-4021-8e57-71bb93fc5c73)
 
-仍然有工作要做：除了提交上述提到的补丁，并将 PVH 引导模式支持合并到“主线” Firecracker 中，还有大量的“清理”工作要做。由于 PVH 引导模式的历史起源于 Xen，用于 PVH 引导的代码仍与 Xen 支持混在一起；将它们分开将显著简化事情。同样，目前无法在没有 PCI 或 ACPI 支持的情况下构建 FreeBSD arm64 内核；查找错误的依赖项并删除它们将允许更小的 FreeBSD/Firecracker 内核（并从引导时间中节省几微秒 — 我们花费了 25 微秒来检查是否需要为 Intel GPU 保留内存）。
+仍然有工作要做：除了提交上述提到的补丁，并将 PVH 引导模式支持合并到“main” Firecracker 中，还有大量的“clean”工作要做。由于 PVH 引导模式的历史起源于 Xen，用于 PVH 引导的代码仍与 Xen 支持混在一起；将它们分开将显著简化问题。同样，目前无法在没有 PCI 或 ACPI 支持的情况下构建 FreeBSD arm64 内核；查找错误的依赖项并删除它们将允许更小的 FreeBSD/Firecracker 内核（并从引导时间中节省几微秒——我们花费了 25 微秒来检查是否需要为 Intel GPU 保留内存）。
 
-更具有抱负性的是，如果 Firecracker 能够移植到运行在 FreeBSD 上，那将是很棒的事情 — 在某个程度上，虚拟机就是虚拟机，虽然 Firecracker 是为了使用 Linux KVM 而编写的，但没有根本性的理由阻止它使用 FreeBSD 的 bhyve 虚拟化器的内核部分。
+更具雄心的是，如果 Firecracker 能够被移植到运行在 FreeBSD 上，那将是很棒的事情——在某种程度上，虚拟机就是虚拟机，虽然 Firecracker 是为了使用 Linux KVM 而编写的，但没有根本性的理由阻止它使用 FreeBSD 的 bhyve 虚拟化器的内核部分。
 
-任何想要在 Firecracker 中尝试 FreeBSD 的人都可以使用 amd64 FIRECRACKER 内核配置构建 FreeBSD 14.0 内核，并从 Firecracker 项目中检出 [feature/pvh](https://github.com/firecracker-microvm/firecracker/tree/feature/pvh) 分支；或者如果该分支不存在，这意味着代码已合并到[主线 Firecracker 树中](https://github.com/firecracker-microvm/firecracker)。
+任何想要在 Firecracker 中尝试 FreeBSD 的人都可以使用 amd64 FIRECRACKER 内核配置构建 FreeBSD 14.0 内核，并从 Firecracker 项目中 checkout [feature/pvh](https://github.com/firecracker-microvm/firecracker/tree/feature/pvh) 分支；或者如果该分支不存在，这意味着代码已合并到[ Firecracker main 中](https://github.com/firecracker-microvm/firecracker)。
 
-如果你在 Firecracker 上尝试 FreeBSD — 尤其是如果你最终在生产中使用它 — 请告诉我！我开始这个项目主要是出于兴趣，但如果它最终变得有用，我会很高兴听到。
+如果你在 Firecracker 上尝试 FreeBSD——尤其是如果你最终在生产环境中使用它。请告诉我！我开始这个项目主要是出于兴趣，但如果它最终变得有用，我会很高兴听到这件事的。
 
 ---
 
