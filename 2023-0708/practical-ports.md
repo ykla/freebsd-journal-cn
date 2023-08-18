@@ -161,7 +161,7 @@ Scanning /usr/local/bastille/releases/13.2-RELEASE/usr/share/certs/trusted for c
  done.
 ```
 
-在引导操作之后，我的池中增加了这些数据集：
+在自举操作之后，我的池中增加了这些数据集：
 
 ```
 # zfs list -r rpi3/bastille
@@ -178,7 +178,7 @@ rpi3/bastille/releases/13.2-RELEASE 414M 28.0G 414M /usr/local/bastille/releases
 rpi3/bastille/templates 24K 28.0G 24K /usr/local/bastille/templates
 ```
 
-让我们运行另一个引导操作，这次是为了提供 AdGuard Home 模板。
+让我们运行另一个自举操作，这次是为了提供 AdGuard Home 模板。
 
 ```
 # bastille bootstrap https://gitlab.com/bastillebsd-templates/adguardhome
