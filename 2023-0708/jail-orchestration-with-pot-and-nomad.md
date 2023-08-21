@@ -74,7 +74,7 @@ Nomad 服务器能运行在任何提供支持的操作系统。要管理 jail，
 
 Nomad 的构建支持多个容器的技术和不同于操作系统。事实上，nomad 软件包是可用的，HashiCorp 公司也为 FreeBSD 提供二进制包。
 
-Nomad 有一个插件结构允许它扩展支持新的容器技术。Esteban Barrios 编写并开源了 Nomad-pot-driver 插件。这个插件作为 nomad 客户端和 pot 容器之间的接口，提供管理 Jail 所需的特性。
+Nomad 有一个插件结构允许它扩展支持新的容器技术。Esteban Barrios 编写并开源了 [Nomad-pot-driver 插件](https://github.com/bsdpot/nomad-pot-driver/)。这个插件作为 nomad 客户端和 pot 容器之间的接口，提供管理 Jail 所需的特性。
 
 管理器将工作负载调度到使用插件与 pot 交互的客户端。
 
@@ -91,7 +91,7 @@ Minipot 对于测试是个很有用的配置，但不适用于专业安装，因
 
 特别是，它将安装和配置 consul、traefik 和 nomad。Nomad 将作为客户端和服务器运行，扮演管理者和执行者的双重角色。
 
-在 Klara 网站上有一篇关于如何安装 minipot 的详细指南。
+在 [Klara 网站](https://klarasystems.com/articles/cluster-provisioning-with-nomad-and-pot-on-freebsd/)上有一篇关于如何安装 minipot 的详细指南。
 
 ## 调度任务
 
@@ -294,7 +294,7 @@ Nomad 或 consul 服务器可以在 Linux 或 Solaris 上运行，允许您重�
 
 ## 鸣谢
 
-我想强调实现这一点所需要的社区的努力，从第一个 nomad-pot-driver 开发人员 Esteban Barrios 到 Michael Gmelin（grembo@），他们的确为提高该解决方案的可靠性和稳定性提供了提供很多帮助。我还想提及 Stephan Lichtenauer 和 Bretton Vine，他们参与了 Potluck，公共镜像注册，以及许多其它项目，如 Ansible 剧本和博客文章，致力于 pot 和 nomad 使用实例。
+我想强调实现这一点所需要的社区的努力，从第一个 nomad-pot-driver 开发人员 Esteban Barrios 到 Michael Gmelin（grembo@），他们的确为提高该解决方案的可靠性和稳定性提供了提供很多帮助。我还想提及 Stephan Lichtenauer 和 Bretton Vine，他们参与了 Potluck，公共镜像注册，以及许多其它项目，如 Ansible 剧本和[博客文章](https://honeyguide.eu/tags/pot)，致力于 pot 和 nomad 使用实例。
 
 ---
 
