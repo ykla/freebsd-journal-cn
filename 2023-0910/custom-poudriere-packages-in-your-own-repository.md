@@ -571,4 +571,4 @@ poudriere# poudriere bulk \
 
 ---
 
-BENEDICT REUSCHLING，并且是文档工程团队的成员。在过去，他曾在 FreeBSD 核心团队中任职两届。他在德国达姆斯塔特应用科学大学管理一个大数据集群。他还为本科生开设了 “Unix for Developers” 课程。Benedict 是每周 bsdnow.tv 播客的主持人之一。
+BENEDICT REUSCHLING 是 FreeBSD 项目的文档提交者，并且是文档工程团队的成员。在过去，他曾在 FreeBSD 核心团队中任职两届。他在德国达姆斯塔特应用科学大学管理一个大数据集群。他还为本科生开设了 “Unix for Developers” 课程。Benedict 是每周 bsdnow.tv 播客的主持人之一。
