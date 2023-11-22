@@ -7,17 +7,17 @@
 - 作者：BENEDICT REUSCHLING
 - 译者：Canvis-Me & ChatGPT
 
-我对使在 FreeBSD 上进行软件移植和软件包安装变得如此简单的人们深表感激。而其他类 Unix 系统则需要手动安装大量的库或依赖项，更不用说软件包的起源是文本文件了，而 BSD 通常不需要这些。一个简单的 `pkg install foo` 对我来说就足够了，最终结果是安装了 foo。这些预构建的软件包来自官方的 FreeBSD 软件包分发系统，并已配置为使用大多数默认情况下适用的默认选项。
+我对使在 FreeBSD 上进行软件移植和软件包安装变得如此简单的人们深表感激。而其他类 Unix 系统则需要手动安装大量的库或依赖项，更不用说起源于文本文件的软件包，而 BSD 通常不需要这些。一个简单的 `pkg install foo` 对我来说就足够了，最终结果是安装了 foo。这些预构建的软件包来自官方的 FreeBSD 软件包分发系统，并已配置了适用于大多数默认情况下的默认选项。
 
-在我的工作场所，不幸的是，默认设置并不适合我们。我们需要的是 LDAP 支持，以查询我们的中央数据库进行身份验证。很多端口通过 “make config” 提供了 LDAP 支持，但基于它们的软件包默认情况下没有启用该选项。因此，当我想要安装带有 LDAP 支持的 PostgreSQL 15 时，我无法通过 `pkg install postgresql15-server` 安装它，因为安装的二进制文件对数据库中的 LDAP 身份验证一无所知。
+不幸的是，在我的工作场所中，默认设置并不适合。我们需要的是 LDAP 支持，以查询我们的中央数据库进行身份验证。很多 ports 通过 “make config” 提供了 LDAP 支持，但基于它们的软件包默认情况下没有启用该选项。因此，当我想要安装带有 LDAP 支持的 PostgreSQL 15 时，我无法通过 `pkg install postgresql15-server` 安装它，因为安装的二进制文件对数据库中的 LDAP 身份验证一无所知。
 
-第一个解决方案是构建我的自定义软件包。我使用最新的端口树进行获取。
+第一个解决方案是构建我的自定义软件包。我使用最新的 ports 树进行获取。
 
 ```
 # portsnap auto
 ```
 
-然后，我导航到有关端口的目录，即 `/usr/ports/databases/postgresql15-server`，并运行
+然后，我导航到有关 port 的目录，即 `/usr/ports/databases/postgresql15-server`，并运行
 
 ```
 # make config-recursive
@@ -29,7 +29,7 @@
 OPTIONS_SET=LDAP
 ```
 
-到我的 `/etc/make.conf` 中，这样就会自动选择此选项（如果可用）用于我构建的任何端口。然后，我可以运行
+到我的 `/etc/make.conf` 中，这样就会自动选择此选项（如果可用）用于我构建的任何 ports。然后，我可以运行
 
 ```
 # make package
@@ -37,9 +37,9 @@ OPTIONS_SET=LDAP
 
 并等待使用这些自定义选项构建软件包。生成的软件包可以在 `work/pkg` 子目录中找到，并通过 `pkg install ./packagename` 进行安装。
 
-这一切都很好，但如果涉及多个类似的软件包呢？或者，如果您想始终安装最新的软件包版本，但又不想在管理的每个个体计算机上都这样做怎么办？早晚，人们想要自动构建自己的软件包，并在其网络中提供它们。为了解决这些情况，poudriere 应运而生。
+这一切都很好，但如果涉及多个类似的软件包呢？或者，如果您想始终安装最新的软件包版本，但又不想在管理的每个独立的计算机上都这样做怎么办？人们早晚想要自动构建自己的软件包，并在其网络中提供它们。为了解决这些情况，poudriere 应运而生。
 
-Poudriere（法语意为火药桶）是一个在 jails 中构建定制软件包、解决它们之间的依赖关系，并将它们作为 FreeBSD 存储库提供的框架。端口开发人员使用它来测试端口的新版本（因此有了火药桶的比喻，因为这样的构建有时可 能会失败或者干脆爆炸）。您不必是端口开发人员，也不必了解构建块的任何内容来使用 poudriere。即使是最微小的依赖，每个端口都在单独的 jail 中构建（会自动创建和删除），以确保每次都有一个干净的构建环境。这还使得能够并行构建端口，考虑到需要构建的软件包数量可能不是立即明显的（依赖可能首先构建其他依赖的端口，然后一发不可收拾）。
+Poudriere（法语意为火药桶）是一个在 jails 中构建定制软件包、解决它们之间的依赖关系，并将它们作为 FreeBSD 存储库提供的框架。ports 开发人员使用它来测试 ports 的新版本（因此有了火药桶的比喻，因为这样的构建有时可能会失败或者干脆爆炸）。您不必是 ports 开发人员，也不必了解构建块的任何内容来使用 poudriere。即使是最微小的依赖，每个 port 都在单独的 jail 中构建（会自动创建和删除），以确保每次都有一个干净的构建环境。它还能并行地构建 ports，这对需要构建的软件包数量非常有利，因为这些软件包可能并不显而易见（依赖可能首先构建其他依赖的 ports，然后一发不可收拾）。
 
 您需要一台 FreeBSD 机器来构建这些自定义软件包，最好配备大量的 CPU 和内存以及良好的 I/O。Poudriere 对系统的压力很大，因为它尝试并行运行很多这些软件包构建，这也是为什么它也可以看作是系统基准测试工具的原因。
 
@@ -47,7 +47,7 @@ Poudriere（法语意为火药桶）是一个在 jails 中构建定制软件包�
 
 ## Poudriere 设置
 
-首先，安装 poudriere 软件包。有一个 poudriere-devel 版本，其中包含一些尚未包含在常规版本中的修复。到目前为止，我个人的经验对两者都很好，所以我选择了这个版本：
+首先，安装 poudriere 软件包。有一个 poudriere-devel 版本，其中包含一些尚未包含在常规版本中的修复。到目前为止，我个人的经验是两者都很好，所以我选择了这个版本：
 
 ```
 poudriere# pkg install poudriere-devel
@@ -75,11 +75,11 @@ KEEP_OLD_PACKAGES=yes
 KEEP_OLD_PACKAGES_COUNT=3
 ```
 
-您需要提供 poudriere 应该使用的 ZFS 池的名称。ZFS 可以快速克隆并删除构建的 jails，而不必为每个端口从基础 jail 复制它们。如果尚不存在，请创建在 `POUDRIERE_DATA`、`DISTFILES_CACHE` 和 `CCACHE_DIR` 中定义的必要数据集。调整 `MAX_FILES`、`PARALLEL_JOBS` 和 `PREPARE_PARALLEL_JOBS` 的值以适应您的系统。我建议一开始将它们设定为较低的值，然后在完成最初的几个 poudriere 构建之后再逐渐增加它们。如果将这些值设置为最大值，poudriere 的构建可能会使您的系统陷入困境，因此请为其他任务（例如 SSH 登录会话）保留一些资源。
+您需要提供 poudriere 应该使用的 ZFS 池的名称。ZFS 可以快速克隆并删除构建的 jails，而不必为每个 port 从基础 jail 复制它们。如果尚不存在，请创建在 `POUDRIERE_DATA`、`DISTFILES_CACHE` 和 `CCACHE_DIR` 中定义的必要数据集。调整 `MAX_FILES`、`PARALLEL_JOBS` 和 `PREPARE_PARALLEL_JOBS` 的值以适应您的系统。我建议一开始将它们设定为较低的值，然后在完成最初的几个 poudriere 构建之后再逐渐增加它们。如果将这些值设置为最大值，poudriere 的构建可能会使您的系统陷入困境，因此请为其他任务（例如 SSH 登录会话）保留一些资源。
 
 ## Ccache 设置
 
-这部分完全是可选的，poudriere 完全可以在没有它的情况下正常运行。这只是一种优化，可以加速将来的构建。 使用 ccache，编译后的二进制文件被缓存（因此称为编译器缓存），如果它们没有更改，就会使用缓存版本。这导致后续构建的巨大加速，因为编译时间缩短了，在某些情况下可能会大幅减少。我们已经在配置文件中告诉 poudriere 使用 ccache，但首先我们需要安装和配置 ccache。如果缺少 ccache，poudriere 将能够正常运行，但不会利用编译缓存。
+这部分完全是可选的，poudriere 可以在没有它的情况下正常运行。这只是一种优化，可以加速将来的构建。使用 ccache，编译后的二进制文件被缓存（因此称为编译器缓存），如果它们没有更改，就会使用缓存版本。这将给后续构建的提供巨大加速，因为编译时间缩短了，在某些情况下可能会大幅减少。我们已经在配置文件中告诉 poudriere 使用 ccache，但首先我们需要安装和配置 ccache。如果缺少 ccache，poudriere 将能够正常运行，但不会利用编译缓存。
 
 在运行 `pkg install` 命令之前，我们创建一个单独的数据集，因为否则 pkg 将为其创建一个目录。
 
@@ -131,7 +131,7 @@ poudriere# ccache -s
 
 ## Poudriere 配置
 
-我们已经提到 poudriere 将为构成软件包的每个单独端口运行 jails。为此，poudriere 需要知道软件包应该在哪个架构和哪个 FreeBSD 版本上构建。版本之间存在细微差异，但 poudriere 可以在它们互不干扰的情况下并排构 建不同版本。这些 jails 互相独立。此外，您可以通过这种方式在功能强大的 amd64 服务器上为您的 Raspberry Pi 构建软件包。
+我们已经提到 poudriere 将为构成软件包的每个单独 port 运行 jails。为此，poudriere 需要知道软件包应该在哪个架构和哪个 FreeBSD 版本上构建。版本之间存在细微差异，但 poudriere 可以在它们互不干扰的情况下并排构建不同版本。这些 jails 互相独立。此外，您可以通过这种方式在功能强大的 amd64 服务器上为您的 Raspberry Pi 构建软件包。
 
 让我们从为 amd64 和 FreeBSD 13.2 创建一个 jail 开始，因为这是本文写作时的当前版本。
 
@@ -151,13 +151,13 @@ JAILNAME  VERSION       ARCH   METHOD  TIMESTAMP            PATH
 
 您的输出可能会有所不同，您可以为 jail 指定任何您喜欢的名称。我鼓励您包含版本和架构信息，以便将其与您可能拥有的其他 poudriere jails 区分开。
 
-需要一个端口树来构建软件包。这是一个简单的命令，如下所示：
+需要一个 ports 树来构建软件包。这是一个简单的命令，如下所示：
 
 ```
 poudriere# poudriere ports -c -p default
 ```
 
-同样，我们可以列出有关这个端口树的一些详细信息：
+同样，我们可以列出有关这个 ports 树的一些详细信息：
 
 ```
 poudriere# poudriere ports -l
@@ -165,13 +165,13 @@ PORTSTREE   METHOD     TIMESTAMP             PATH
 default     git+https  2023-10-01 12:00:02   /usr/local/poudriere/ports/default
 ```
 
-我们也可以拥有多个可用的端口树。也许我们想要在更新方面放慢步伐，只构建上个季度的端口，而不是最新的。 使用 poudriere 和 `-p` 选项，这一切都是可能的。
+我们也可以拥有多个可用的 ports 树。也许我们想要在更新方面放慢步伐，只构建上个季度的 ports，而不是最新的。 使用 poudriere 和 `-p` 选项，这一切都是可能的。
 
-现在我们需要一个供 poudriere 构建的软件包列表。“哦，我喜欢这个端口，而且我总是安装这个 shell，那个编 辑器。还有 tmux…” 这可能很快就能列出一个清单，但它不包含依赖项（运行或构建列出的软件包所需的其他软件 包）。Poudriere 会为您解决这些依赖关系。
+现在我们需要一个供 poudriere 构建的软件包列表。“哦，我喜欢这个 port，而且我总是安装这个 shell，那个编辑器。还有 tmux…” 这可能很快就能列出一个清单，但它不包含依赖项（运行或构建列出的软件包所需的其他软件包）。Poudriere 会为您解决这些依赖关系。
 
-将其放在 `/usr/local/etc/poudriere.d/` 中作为一个文本文件（同样，任何您喜欢的名称），每个端口及其类别都放在单独的行上。
+将其放在 `/usr/local/etc/poudriere.d/` 中作为一个文本文件（同样，任何您喜欢的名称），每个 port 及其类别都放在单独的行上。
 
-我的端口清单看起来像这样（随着我越来越喜欢 poudriere，它还在不断增长）：
+我的 port 清单看起来像这样（随着我越来越喜欢 poudriere，它还在不断增长）：
 
 ```
 poudriere# cat /usr/local/etc/poudriere.d/pkglist.txt
@@ -180,11 +180,11 @@ databases/postgresql15-client
 databases/postgresql15-contrib
 ```
 
-这些是需要 LDAP 支持的端口，记得吗？您可以从一些简单的东西开始，比如 games/sl 或 shells/fish，以免花费太多时间等待 poudriere 完成构建。
+这些是需要 LDAP 支持的 ports，记得吗？您可以从一些简单的东西开始，比如 games/sl 或 shells/fish，以免花费太多时间等待 poudriere 完成构建。
 
 一个更好的方法是让软件包系统创建一个软件包列表。登录到安装了所有这些软件的系统，并运行 `pkg_info`。这将创建一个包括依赖关系的列表。已经是相当长的列表了！在您想要删除软件包的情况下，您总是可以将其减少。软件包可能也太大而无法构建（例如 libreoffice ）。
 
-定义要构建的端口还没有配置它们。我们仍然需要告诉 poudriere 为每个端口设置哪些选项。但我们只需要做这一次，对于将来的构建，poudriere 将保存我们选择的选项并重用它们，甚至用于软件包的将来版本。这相当于在文章开头我们在端口目录中运行 "make config"。
+定义要构建的 ports 还没有配置它们。我们仍然需要告诉 poudriere 为每个 port 设置哪些选项。但我们只需要做这一次，对于将来的构建，poudriere 将保存我们选择的选项并重用它们，甚至用于软件包的将来版本。这相当于在文章开头我们在 ports 目录中运行 "make config"。
 
 ```
 poudriere# poudriere options \
@@ -193,7 +193,7 @@ poudriere# poudriere options \
 -f /usr/local/etc/poudriere.d/pkglist.txt
 ```
 
-这为整个端口列表定义了选项。您也可以使用以下方式为单个端口执行此操作：
+这为整个 ports 列表定义了选项。您也可以使用以下方式为单个 port 执行此操作：
 
 ```
 poudriere# poudriere options \
@@ -206,7 +206,7 @@ databases/postgresql15-server
 
 ## 构建和分发软件包
 
-要启动软件包构建，请为 poudriere 的 bulk 子命令提供 jail、端口树和软件包列表：
+要启动软件包构建，请为 poudriere 的 bulk 子命令提供 jail、ports 树和软件包列表：
 
 ```
 poudriere# poudriere bulk \
@@ -233,7 +233,7 @@ Poudriere: {
 }
 ```
 
-我的存储库被称为 Poudriere（同样是你自己的名字，你懂的），我在 url: 部分定义了它的位置。我从 poudriere 的构建输出中获得了位置。priority 定义了使用这些存储库的顺序。默认情况下，会使用上游的 FreeBSD.org  存储库。但由于我们希望我们自己的软件包具有优先权，只需为其分配一个高于零的优先级，以使其首先使用我们自己的软件包存储库。
+我的存储库被称为 Poudriere（同样是你自己的名字，你懂的），我在 url: 部分定义了它的位置。我从 poudriere 的构建输出中获得了位置。priority 定义了使用这些存储库的顺序。默认情况下，会使用上游的 FreeBSD.org 存储库。但由于我们希望我们自己的软件包具有优先权，只需为其分配一个高于零的优先级，以使其首先使用我们自己的软件包存储库。
 
 您还可以通过添加以下内容完全禁用 FreeBSD 存储库：
 
@@ -264,7 +264,7 @@ Poudriere repository update completed. 232 packages processed.
 All repositories are up to date.
 ```
 
-请注意软件包的数量。这绝对是我们自己的本地存储库，因为主 FreeBSD 存储库在此时包含了超过 31500 个软件 包，而这个只有 232 个。这些是我们根据自己的 pkglist.txt 中的列表构建的软件包，以及使这些软件包构建和运行所需的依赖关系。查看可用存储库的另一种方式是通过 `pkg stats`，在我的系统上产生了以下输出：
+请注意软件包的数量。这绝对是我们自己的本地存储库，因为主 FreeBSD 存储库在此时包含了超过 31500 个软件包，而这个只有 232 个。这些是我们根据自己的 pkglist.txt 中的列表构建的软件包，以及使这些软件包构建和运行所需的依赖关系。查看可用存储库的另一种方式是通过 `pkg stats`，在我的系统上产生了以下输出：
 
 ```
 Local package database:
@@ -323,7 +323,7 @@ FreeBSD: {
 
 那么您运行 FreeBSD 的其他日益增长的机器呢？特别是对于虚拟机或嵌入式系统，您不会在每台机器上运行一个单独的 poudriere 构建器。一种方法是通过 NFS 将 repo URL 共享到每台机器。更好的方法是配置一个中央的、强大的 poudriere 构建机器，通过 http 共享其软件包作为存储库。您网络中的其他 FreeBSD 机器可以像添加官方 FreeBSD 存储库一样将其添加。与 NFS 共享相比，这种方法的额外好处是您可以对这些软件包进行签名。这确保了密码学上的完整性和对源的信任（这些软件包确实是您自定义构建的）。这样，机器会检查构建机器的公钥是否与它们必须确保软件包来自真实源的记录匹配。让我们接下来进行设置。
 
-为了为其他机器提供软件包，我们将 nginx 安装为 web 服务器。如果其他 web 服务器能够向客户端共享一个 URL 作为文档根目录，则其他 web 服务器也可以工作。在 “poudriere bulk” 运行期间，我们还可以共享构建日志， 以查看当前构建的进度并调试失败的端口。
+为了为其他机器提供软件包，我们将 nginx 安装为 web 服务器。如果其他 web 服务器能够向客户端共享一个 URL 作为文档根目录，则其他 web 服务器也可以工作。在 “poudriere bulk” 运行期间，我们还可以共享构建日志， 以查看当前构建的进度并调试失败的 ports。
 
 ```
 poudriere# pkg install nginx
@@ -350,7 +350,7 @@ server {
 }
 ```
 
-在保存并退出 `nginx.conf` 后，我们需要进行一个更改，以便我们的构建日志也能在浏览器中正确显示。这意味着，当打开日志文件（.log 扩展名）时，它将不会被提供为下载，而是立即在浏览器中显示。为此，我们访问 `/usr/local/etc/nginx/mime.types`。找到以 text/plain 开头的行，并更改它以包括日志文件：
+在保存并退出 `nginx.conf` 后，我们需要进行一个更改，以便我们的构建日志也能在浏览器中正确显示。这意味着，当打开日志文件（.log 扩展名）时，它将不会被提供为下载，而是立即在浏览器中显示。为此，我们访问 `/usr/local/etc/nginx/mime.types`。找到以 `text/plain` 开头的行，并更改它以包括日志文件：
 
 ```
 text/plain             txt log;
@@ -411,7 +411,7 @@ PKG_REPO_SIGNING_KEY=/usr/local/etc/ssl/keys/poudriere.key
 URL_BASE=http://my.domain.or.IP
 ```
 
-由 `URL_BASE` 定义的网站显示了有关过去和当前软件包构建的许多统计信息。在构建过程中，它会刷新自身以显示构建状态。您还可以深入了解每个构建，查看哪些端口已成功构建，被跳过或被忽略。非常不错！
+由 `URL_BASE` 定义的网站显示了有关过去和当前软件包构建的许多统计信息。在构建过程中，它会刷新自身以显示构建状态。您还可以深入了解每个构建，查看哪些 ports 已成功构建，被跳过或被忽略。非常不错！
 
 添加了这些行之后，poudriere 就可以签署新构建的软件包。确实，在下一个
 
