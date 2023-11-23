@@ -13,31 +13,33 @@
 
 FreeBSD 为我们提供了支持信息安全控制实施的各种活动的应用程序和工具。Jails 是 FreeBSD 的一个强大特性，允许您创建隔离的环境，非常适合与信息安全或网络安全相关的任务，帮助保持干净的主机环境，使用脚本或工具（如 AppJail）自动化部署任务，模拟安全环境以进行分析，并使用测试工具最快地部署安全解决方案。
 
-在这篇文章中，我们将专注于部署两个开源工具，当结合使用时，可以补充由红队和蓝队执行的培训练习。它基于《使用 CALDERA 和 Wazuh 进行对抗仿真》这篇文章，但使用了 FreeBSD、AppJail（Jail 管理）、Wazuh 和 MITRE Caldera。这项工作的主要目标是增强 FreeBSD 作为信息安全或网络安全有用平台的可见性。
+在这篇文章中，我们将专注于部署两个开源工具，当结合使用时，可以补充由红队和蓝队执行的培训练习。它基于《使用 CALDERA 和 [Wazuh](https://wazuh.com/blog/adversary-emulation-with-caldera-and-wazuh/) 进行对抗仿真》这篇文章，但使用了 FreeBSD、AppJail（Jail 管理）、Wazuh 和 MITRE Caldera。
+
+这项工作的主要目标是增强 FreeBSD 作为信息安全或网络安全有用平台的可见性。
 
 ## Wazuh
 
-Wazuh 是一个用于威胁预防、检测和响应的免费开源平台。它能够在本地、虚拟化、容器化和基于云的环境中保护工作负载。Wazuh 解决方案包括部署到受监视系统的端点安全代理以及由代理收集和分析的数据的管理服务器。Wazuh 的特点包括与 Elastic Stack 和 OpenSearch 的完全集成，通过这两者，用户可以导航安全警报的搜索引擎和数据可视化工具。
+[Wazuh](https://wazuh.com/) 是一个用于威胁预防、检测和响应的免费开源平台。它能够在本地、虚拟化、容器化和基于云的环境中保护工作负载。Wazuh 解决方案包括部署到受监视系统的端点安全代理以及由代理收集和分析的数据的管理服务器。Wazuh 的特点包括与 [Elastic Stack](https://www.elastic.co/elastic-stack/) 和 [OpenSearch](https://opensearch.org/) 的完全集成，通过这两者，用户可以导航安全警报的搜索引擎和数据可视化工具。
 
-Wazuh 在 FreeBSD 上的移植是由 Michael Muenz 发起的。他在 2021 年 9 月首次将 Wazuh 添加到 ports 树中，命名为 security/wazuh-agent。在 2022 年 7 月，我接手了该端口的维护，并开始移植其他 Wazuh 组件。
+Wazuh 在 FreeBSD 上的移植是由 [Michael Muenz](mailto:m.muenz@gmail.com) 发起的。他在 2021 年 9 月首次将 Wazuh 添加到 ports 树中，命名为 [security/wazuh-agent](https://cgit.freebsd.org/ports/tree/security/wazuh-agent/)。在 2022 年 7 月，我接手了该端口的维护，并开始移植其他 Wazuh 组件。
 
-目前，所有的 Wazuh 组件都已移植或调整：security/wazuh-manager、security/wazuh-agent、security/wazuh-server、security/wazuh-indexer 和 security/wazuh-dashboard。
+目前，所有的 Wazuh 组件都已移植或调整：[security/wazuh-manager](https://cgit.freebsd.org/ports/tree/security/wazuh-manager/)、[security/wazuh-agent](https://cgit.freebsd.org/ports/tree/security/wazuh-agent/)、[security/wazuh-server](https://cgit.freebsd.org/ports/tree/security/wazuh-server/)、[security/wazuh-indexer](https://cgit.freebsd.org/ports/tree/security/wazuh-indexer/) 和 [security/wazuh-dashboard](https://cgit.freebsd.org/ports/tree/security/wazuh-dashboard/)。
 
 在 FreeBSD 上，security/wazuh-manager 和 security/wazuh-agent 是从 Wazuh 源代码编译而来的。security/wazuh-indexer 是一个经过调整的 textproc/opensearch，用于存储代理数据。security/wazuh-server 包含了适用于 FreeBSD 的对配置文件的调整。运行时依赖项包括 security/wazuh-manager、sysutils/beats7（filebeat）和 sysutils/logstash8。security/wazuh-dashboard 使用了一个经过调整的 textproc/opensearch-dashboards，以及从 wazuh-kibana-app 源代码为 FreeBSD 生成的 wazuh-kibana-app 插件。
 
 ## MITRE Caldera
 
-MITRE Caldera 是一个旨在轻松自动化对抗仿真、协助手动红队行动并自动化事件响应的网络安全平台。它建立在 MITRE ATT&CK© 框架上，是 MITRE 的一项积极研究项目。
+[MITRE Caldera](https://caldera.mitre.org/) 是一个旨在轻松自动化对抗仿真、协助手动红队行动并自动化事件响应的网络安全平台。它建立在 MITRE ATT&CK© 框架上，是 MITRE 的一项积极研究项目。
 
-MITRE Caldera（security/caldera）于 2023 年 4 月加入了 ports 树。该端口包括对 MITRE Caldera 原子插件使用的 Atomic Red Team 项目的支持。
+MITRE Caldera（[security/caldera](https://cgit.freebsd.org/ports/tree/security/caldera/)）于 2023 年 4 月加入了 ports 树。该端口包括对 [MITRE Caldera 原子插件](https://github.com/mitre/atomic)使用的 [Atomic Red Team](https://github.com/redcanaryco/atomic-red-team) 项目的支持。
 
 ## AppJail
 
-AppJail 是一个完全由 sh(1) 和 C 编写的框架，用于使用 FreeBSD Jails 创建隔离的、便携的、易于部署的环境，这些环境行为类似于应用程序。AppJail 的一个有趣特性是 AppJail-Makejails 格式。它是一个文本文档，包含构建 jail 的所有指令。Makejail 是构建 jail、配置它、安装应用程序、配置它们等等的进程的另一层抽象。
+[AppJail](https://github.com/DtxdF/AppJail) 是一个完全由 sh(1) 和 C 编写的框架，用于使用 FreeBSD Jails 创建隔离的、便携的、易于部署的环境，这些环境行为类似于应用程序。AppJail 的一个有趣特性是 [AppJail-Makejails](https://github.com/AppJail-makejails) 格式。它是一个文本文档，包含构建 jail 的所有指令。Makejail 是构建 jail、配置它、安装应用程序、配置它们等等的进程的另一层抽象。
 
 ## 准备
 
-在进行 Wazuh 和 MITRE Caldera 部署之前，有一些最低要求需要处理。在本文中，我使用 FreeBSD 14.0-RC1-amd64 作为主机系统 # pkg install appjail-devel # 以包含 AppJail 添加的最新功能。
+在进行 Wazuh 和 MITRE Caldera 部署之前，有一些最低要求需要处理。在本文中，我使用 FreeBSD 14.0-RC1-amd64 作为主机系统 `# pkg install appjail-devel #` 以包含 AppJail 添加的最新功能。
 
 将锚点放入 pf.conf 中：
 
@@ -140,7 +142,7 @@ Password  :  @ugEwZHpUJ8a7oCsc1rxJKd3/hlk=
 
 ![image](https://github.com/Canvis-Me/freebsd-journal-cn/assets/55122738/d1e97b28-d360-4cf1-b23a-b1dee48d1365)
 
-最后，在每个代理上安装 net/curl。此工具将用于下载与 MITRE Caldera 进行交互的有效负载。
+最后，在每个代理上安装 `net/curl`。此工具将用于下载与 MITRE Caldera 进行交互的有效负载。
 
 ```
 # appjail pkg jail agent01 install curl
@@ -244,7 +246,7 @@ available data encoders=base64, plain-text
 
 ## 结论
 
-Wazuh 和 MITRE Caldera 提供了可定制的工具，以适应安全信息或网络安全需求。本文展示了包含在 Wazuh SIEM 和 MITRE Caldera 中的部分功能。如果您想了解更多关于这些工具的信息，Wazuh 项目和 MITRE Caldera 项目提供了出色的文档（https://documentation.wazuh.com/current/index.html）和（https://caldera.readthedocs.io/en/latest/），以及强大的社区支持。
+Wazuh 和 MITRE Caldera 提供了可定制的工具，以适应安全信息或网络安全需求。本文展示了包含在 Wazuh SIEM 和 MITRE Caldera 中的部分功能。如果您想了解更多关于这些工具的信息，Wazuh 项目和 MITRE Caldera 项目提供了出色的文档（<https://documentation.wazuh.com/current/index.html>）和（<https://caldera.readthedocs.io/en/latest/>），以及强大的社区支持。
 
 最后，AppJail 帮助快速将本文中使用的工具部署到 jail 容器中。
 
