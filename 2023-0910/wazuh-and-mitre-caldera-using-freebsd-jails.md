@@ -11,7 +11,7 @@
 
 此外，由于需要为企业中支持安全管理的团队提供持续的技术培训，因此传统的培训方法需要辅之以可模拟攻击（红队）和帮助培训事件响应团队（蓝队）的工具。
 
-FreeBSD 为我们提供了支持信息安全控制实施的各种活动的应用程序和工具。Jails 是 FreeBSD 的一个强大特性，允许您创建隔离的环境，非常适合与信息安全或网络安全相关的任务，帮助保持干净的主机环境，使用脚本或工具（如 AppJail）自动化部署任务，模拟安全环境以进行分析，并使用测试工具最快地部署安全解决方案。
+FreeBSD 为我们提供了支持信息安全控制实施的各种活动的应用程序和工具。Jail 是 FreeBSD 的一个强大特性，能让你创建隔离的环境，非常适合与信息安全或网络安全相关的任务，帮助保持干净的主机环境，使用脚本或工具（如 AppJail）自动化部署任务，模拟安全环境以进行分析，并使用测试工具最快地部署安全解决方案。
 
 在这篇文章中，我们将专注于部署两个开源工具，当结合使用时，可以补充由红队和蓝队执行的培训练习。它基于《使用 CALDERA 和 [Wazuh](https://wazuh.com/blog/adversary-emulation-with-caldera-and-wazuh/) 进行对抗仿真》这篇文章，但使用了 FreeBSD、AppJail（Jail 管理）、Wazuh 和 MITRE Caldera。
 
@@ -21,11 +21,11 @@ FreeBSD 为我们提供了支持信息安全控制实施的各种活动的应用
 
 [Wazuh](https://wazuh.com/) 是一个用于威胁预防、检测和响应的免费开源平台。它能够在本地、虚拟化、容器化和基于云的环境中保护工作负载。Wazuh 解决方案包括部署到受监视系统的端点安全代理以及由代理收集和分析的数据的管理服务器。Wazuh 的特点包括与 [Elastic Stack](https://www.elastic.co/elastic-stack/) 和 [OpenSearch](https://opensearch.org/) 的完全集成，提供搜索引擎和数据可视化工具，用户可通过这些工具浏览安全警报。
 
-Wazuh 在 FreeBSD 上的移植是由 [Michael Muenz](mailto:m.muenz@gmail.com) 发起的。他在 2021 年 9 月首次将 Wazuh 添加到 ports 树中，命名为 [security/wazuh-agent](https://cgit.freebsd.org/ports/tree/security/wazuh-agent/)。在 2022 年 7 月，我接手了该 port 的维护，并开始移植其他 Wazuh 组件。
+Wazuh 在 FreeBSD 上的移植是由 [Michael Muenz](mailto:m.muenz@gmail.com) 发起的。他在 2021 年 9 月首次将 Wazuh 添加到 ports 中，命名为 [security/wazuh-agent](https://cgit.freebsd.org/ports/tree/security/wazuh-agent/)。在 2022 年 7 月，我接手了该 port 的维护，并开始移植其他 Wazuh 组件。
 
-目前，所有的 Wazuh 组件都已移植或调整：[security/wazuh-manager](https://cgit.freebsd.org/ports/tree/security/wazuh-manager/)、[security/wazuh-agent](https://cgit.freebsd.org/ports/tree/security/wazuh-agent/)、[security/wazuh-server](https://cgit.freebsd.org/ports/tree/security/wazuh-server/)、[security/wazuh-indexer](https://cgit.freebsd.org/ports/tree/security/wazuh-indexer/) 和 [security/wazuh-dashboard](https://cgit.freebsd.org/ports/tree/security/wazuh-dashboard/)。
+目前，所有的 Wazuh 组件都已移植或修改：[security/wazuh-manager](https://cgit.freebsd.org/ports/tree/security/wazuh-manager/)、[security/wazuh-agent](https://cgit.freebsd.org/ports/tree/security/wazuh-agent/)、[security/wazuh-server](https://cgit.freebsd.org/ports/tree/security/wazuh-server/)、[security/wazuh-indexer](https://cgit.freebsd.org/ports/tree/security/wazuh-indexer/) 和 [security/wazuh-dashboard](https://cgit.freebsd.org/ports/tree/security/wazuh-dashboard/)。
 
-在 FreeBSD 上，security/wazuh-manager 和 security/wazuh-agent 是从 Wazuh 源代码编译而来的。security/wazuh-indexer 是一个经过调整的 textproc/opensearch，用于存储代理数据。security/wazuh-server 包含了适用于 FreeBSD 的对配置文件的调整。运行时依赖项包括 security/wazuh-manager、sysutils/beats7（filebeat）和 sysutils/logstash8。security/wazuh-dashboard 使用了一个经过调整的 textproc/opensearch-dashboards，以及来自 wazuh-kibana-app 源代码为 FreeBSD 生成的 wazuh-kibana-app 插件。
+在 FreeBSD 上，security/wazuh-manager 和 security/wazuh-agent 是从 Wazuh 源代码编译而来的。security/wazuh-indexer 是一个经过修改的 textproc/opensearch，用于存储代理数据。security/wazuh-server 包含了适用于 FreeBSD 的对配置文件的修改。运行时依赖项包括 security/wazuh-manager、sysutils/beats7（filebeat）和 sysutils/logstash8。security/wazuh-dashboard 使用了一个经过修改的 textproc/opensearch-dashboards，以及来自 wazuh-kibana-app 源代码为 FreeBSD 生成的 wazuh-kibana-app 插件。
 
 ## MITRE Caldera
 
@@ -35,7 +35,7 @@ MITRE Caldera（[security/caldera](https://cgit.freebsd.org/ports/tree/security/
 
 ## AppJail
 
-[AppJail](https://github.com/DtxdF/AppJail) 是一个完全由 sh(1) 和 C 编写的框架，用于使用 FreeBSD Jails 创建隔离的、便携的、易于部署的环境，这些环境行为类似于应用程序。AppJail 的一个有趣特性是 [AppJail-Makejails](https://github.com/AppJail-makejails) 格式。它是一个文本文档，包含构建 jail 的所有指令。Makejail 是构建 jail、配置它、安装应用程序、配置它们等等的进程的另一层抽象。
+[AppJail](https://github.com/DtxdF/AppJail) 是一个完全由 sh(1) 和 C 编写的框架，用于使用 FreeBSD Jail 创建隔离的、便携的、易于部署的环境，这些环境行为类似于应用程序。AppJail 的一个有趣特性是 [AppJail-Makejails](https://github.com/AppJail-makejails) 格式。它是一个文本文档，包含构建 jail 的所有指令。Makejail 是构建 jail、配置它、安装应用程序、配置它们等等的进程的另一抽象层。
 
 ## 准备
 
@@ -63,7 +63,7 @@ EOF
 sysctl net.inet.ip.forwarding=1
 ```
 
-是时候下载创建 jails 所需的文件。默认情况下，AppJail 下载与主机相同版本和架构的文件。
+是时候下载创建 jail 所需的文件。默认情况下，AppJail 下载与主机相同版本和架构的文件。
 
 ```
 # appjail fetch
@@ -75,7 +75,7 @@ sysctl net.inet.ip.forwarding=1
 # appjail fetch www -v 13.2-RELEASE -a amd64
 ```
 
-我们添加了一个名为 wazuh-net 的网络。wazuh-net 桥将用于 jails。
+我们添加了一个名为 wazuh-net 的网络。wazuh-net 桥将用于 jail。
 
 ```
 # appjail network add wazuh-net 11.1.0.0/24
@@ -89,7 +89,7 @@ wazuh-net 11.1.0.0 24 11.1.0.255 11.1.0.1 11.1.0.1 11.1.0.254 254 -
 
 ### 部署 Wazuh AIO（全一体）
 
-Wazuh makejail 将创建并配置一个 jail，其中包含 Wazuh SIEM 使用的所有组件（wazuh-manager、wazuh-server、wazuh-indexer 和 wazuh-dashboard）。目前在 ports 树中为 4.5.2 版本。
+Wazuh makejail 将创建并配置一个 jail，其中包含 Wazuh SIEM 使用的所有组件（wazuh-manager、wazuh-server、wazuh-indexer 和 wazuh-dashboard）。目前在 ports 中为 4.5.2 版本。
 
 使用 AppJail 通过 AppJail-Makejail 创建它。
 
@@ -111,7 +111,7 @@ Password  :  @ugEwZHpUJ8a7oCsc1rxJKd3/hlk=
 ################################################
 ```
 
-检查 wazuh-dashboard 服务是否就绪。尝试使用 Web 浏览器连接到 https://11.1.0.2:5601/app/wazuh。
+检查 wazuh-dashboard 服务是否就绪。尝试使用 Web 浏览器连接到 `https://11.1.0.2:5601/app/wazuh`。
 
 ![image](https://github.com/Canvis-Me/freebsd-journal-cn/assets/55122738/4b1770db-6891-4fbe-8c1d-fac3dc4cfc77)
 
@@ -150,7 +150,7 @@ Password  :  @ugEwZHpUJ8a7oCsc1rxJKd3/hlk=
 
 ### 部署 MITRE Caldera
 
-与之前的操作类似，我们继续使用 Caldera AppJail-Makejail 创建一个 jail。
+与之前的操作类似，我们继续使用 Caldera AppJail-Makejail 创建 jail。
 
 ```
 -f use a AppJail-Makejail from a github repository
@@ -192,7 +192,7 @@ Password  :  1TPza2NLp0h1scaZ2uA=
 ################################################
 ```
 
-测试 MITRE Caldera 服务是否就绪。尝试使用 Web 浏览器连接到 https://11.1.0.2:8443/。
+测试 MITRE Caldera 服务是否就绪。尝试使用 Web 浏览器连接到 `https://11.1.0.2:8443/`。
 
 ![image](https://github.com/Canvis-Me/freebsd-journal-cn/assets/55122738/1b7f5324-4c36-460d-8d7b-626783d54b01)
 
@@ -246,7 +246,7 @@ available data encoders=base64, plain-text
 
 ## 结论
 
-Wazuh 和 MITRE Caldera 提供了可定制的工具，以适应安全信息或网络安全需求。本文展示了包含在 Wazuh SIEM 和 MITRE Caldera 中的部分功能。如果您想了解更多关于这些工具的信息，Wazuh 项目和 MITRE Caldera 项目提供了出色的文档（<https://documentation.wazuh.com/current/index.html>）和（<https://caldera.readthedocs.io/en/latest/>），以及强大的社区支持。
+Wazuh 和 MITRE Caldera 提供了可定制的工具，以适应安全信息或网络安全需求。本文展示了包含在 Wazuh SIEM 和 MITRE Caldera 中的部分功能。如果你想了解更多关于这些工具的信息，Wazuh 项目和 MITRE Caldera 项目提供了出色的文档（<https://documentation.wazuh.com/current/index.html>）和（<https://caldera.readthedocs.io/en/latest/>），以及强大的社区支持。
 
 最后，AppJail 帮助快速将本文中使用的工具部署到 jail 容器中。
 
