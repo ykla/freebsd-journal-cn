@@ -120,4 +120,4 @@ FreeBSD 的一个优势是我们学会了如何进行对话，为不同的立场
 
 ---
 
-TOM JONES 是一个关注保持网络堆栈增速的 FreeBSD 提交者。
+TOM JONES 是一个关注保持网络堆栈敏捷性的 FreeBSD 提交者。
