@@ -17,7 +17,7 @@
 # portsnap auto
 ```
 
-然后，我切入到有关 port 的目录，即 `/usr/ports/databases/postgresql15-server`，并运行
+然后，我进入到有关 port 的目录，即 `/usr/ports/databases/postgresql15-server`，并运行
 
 ```
 # make config-recursive
