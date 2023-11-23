@@ -248,7 +248,7 @@ available data encoders=base64, plain-text
 
 Wazuh 和 MITRE Caldera 提供了可定制的工具，以适应安全信息或网络安全需求。本文展示了包含在 Wazuh SIEM 和 MITRE Caldera 中的部分功能。如果你想了解更多关于这些工具的信息，Wazuh 项目和 MITRE Caldera 项目提供了出色的文档（<https://documentation.wazuh.com/current/index.html>）和（<https://caldera.readthedocs.io/en/latest/>），以及强大的社区支持。
 
-最后，AppJail 帮助快速将本文中使用的工具部署到 jail 容器中。
+最后，AppJail 对快速将本文中使用的工具部署到 jail 容器中发挥了作用。
 
 ---
 
