@@ -7,9 +7,9 @@
 - 作者：ALONSO CÁRDENAS
 - 译者：Canvis-Me & ChatGPT
 
-在信息安全管理中，每天都需要越来越多支持实施控制的基础设施。组织中最常用的工具之一是 SIEM（安全信息与事件管理）。SIEM 通过在集中地点收集和分析普通消息、告警通知和日志文件，帮助实时识别攻击或攻击趋势。
+在信息安全管理中，每天都需要越来越多支持实施控制的基础设施。组织中最常用的工具之一是 SIEM（安全信息与事件管理）。SIEM 通过在集中地点收集和分析普通消息、警告通知和日志文件，帮助实时识别攻击或攻击趋势。
 
-此外，为支持组织中的安全管理团队提供持续的技术培训的需求已经导致传统培训方法的补充，采用可以模拟攻击（红队行动）的工具，帮助培训事件响应团队（蓝队行动）。
+此外，由于需要为企业中支持安全管理的团队提供持续的技术培训，因此传统的培训方法需要辅之以可模拟攻击（红队）和帮助培训事件响应团队（蓝队）的工具。
 
 FreeBSD 为我们提供了支持信息安全控制实施的各种活动的应用程序和工具。Jails 是 FreeBSD 的一个强大特性，允许您创建隔离的环境，非常适合与信息安全或网络安全相关的任务，帮助保持干净的主机环境，使用脚本或工具（如 AppJail）自动化部署任务，模拟安全环境以进行分析，并使用测试工具最快地部署安全解决方案。
 
@@ -19,19 +19,19 @@ FreeBSD 为我们提供了支持信息安全控制实施的各种活动的应用
 
 ## Wazuh
 
-[Wazuh](https://wazuh.com/) 是一个用于威胁预防、检测和响应的免费开源平台。它能够在本地、虚拟化、容器化和基于云的环境中保护工作负载。Wazuh 解决方案包括部署到受监视系统的端点安全代理以及由代理收集和分析的数据的管理服务器。Wazuh 的特点包括与 [Elastic Stack](https://www.elastic.co/elastic-stack/) 和 [OpenSearch](https://opensearch.org/) 的完全集成，通过这两者，用户可以导航安全警报的搜索引擎和数据可视化工具。
+[Wazuh](https://wazuh.com/) 是一个用于威胁预防、检测和响应的免费开源平台。它能够在本地、虚拟化、容器化和基于云的环境中保护工作负载。Wazuh 解决方案包括部署到受监视系统的端点安全代理以及由代理收集和分析的数据的管理服务器。Wazuh 的特点包括与 [Elastic Stack](https://www.elastic.co/elastic-stack/) 和 [OpenSearch](https://opensearch.org/) 的完全集成，提供搜索引擎和数据可视化工具，用户可通过这些工具浏览安全警报。
 
-Wazuh 在 FreeBSD 上的移植是由 [Michael Muenz](mailto:m.muenz@gmail.com) 发起的。他在 2021 年 9 月首次将 Wazuh 添加到 ports 树中，命名为 [security/wazuh-agent](https://cgit.freebsd.org/ports/tree/security/wazuh-agent/)。在 2022 年 7 月，我接手了该端口的维护，并开始移植其他 Wazuh 组件。
+Wazuh 在 FreeBSD 上的移植是由 [Michael Muenz](mailto:m.muenz@gmail.com) 发起的。他在 2021 年 9 月首次将 Wazuh 添加到 ports 树中，命名为 [security/wazuh-agent](https://cgit.freebsd.org/ports/tree/security/wazuh-agent/)。在 2022 年 7 月，我接手了该 port 的维护，并开始移植其他 Wazuh 组件。
 
 目前，所有的 Wazuh 组件都已移植或调整：[security/wazuh-manager](https://cgit.freebsd.org/ports/tree/security/wazuh-manager/)、[security/wazuh-agent](https://cgit.freebsd.org/ports/tree/security/wazuh-agent/)、[security/wazuh-server](https://cgit.freebsd.org/ports/tree/security/wazuh-server/)、[security/wazuh-indexer](https://cgit.freebsd.org/ports/tree/security/wazuh-indexer/) 和 [security/wazuh-dashboard](https://cgit.freebsd.org/ports/tree/security/wazuh-dashboard/)。
 
-在 FreeBSD 上，security/wazuh-manager 和 security/wazuh-agent 是从 Wazuh 源代码编译而来的。security/wazuh-indexer 是一个经过调整的 textproc/opensearch，用于存储代理数据。security/wazuh-server 包含了适用于 FreeBSD 的对配置文件的调整。运行时依赖项包括 security/wazuh-manager、sysutils/beats7（filebeat）和 sysutils/logstash8。security/wazuh-dashboard 使用了一个经过调整的 textproc/opensearch-dashboards，以及从 wazuh-kibana-app 源代码为 FreeBSD 生成的 wazuh-kibana-app 插件。
+在 FreeBSD 上，security/wazuh-manager 和 security/wazuh-agent 是从 Wazuh 源代码编译而来的。security/wazuh-indexer 是一个经过调整的 textproc/opensearch，用于存储代理数据。security/wazuh-server 包含了适用于 FreeBSD 的对配置文件的调整。运行时依赖项包括 security/wazuh-manager、sysutils/beats7（filebeat）和 sysutils/logstash8。security/wazuh-dashboard 使用了一个经过调整的 textproc/opensearch-dashboards，以及来自 wazuh-kibana-app 源代码为 FreeBSD 生成的 wazuh-kibana-app 插件。
 
 ## MITRE Caldera
 
 [MITRE Caldera](https://caldera.mitre.org/) 是一个旨在轻松自动化对抗仿真、协助手动红队行动并自动化事件响应的网络安全平台。它建立在 MITRE ATT&CK© 框架上，是 MITRE 的一项积极研究项目。
 
-MITRE Caldera（[security/caldera](https://cgit.freebsd.org/ports/tree/security/caldera/)）于 2023 年 4 月加入了 ports 树。该端口包括对 [MITRE Caldera 原子插件](https://github.com/mitre/atomic)使用的 [Atomic Red Team](https://github.com/redcanaryco/atomic-red-team) 项目的支持。
+MITRE Caldera（[security/caldera](https://cgit.freebsd.org/ports/tree/security/caldera/)）于 2023 年 4 月加入了 ports 树。该 port 包括对 [MITRE Caldera 原子插件](https://github.com/mitre/atomic)使用的 [Atomic Red Team](https://github.com/redcanaryco/atomic-red-team) 项目的支持。
 
 ## AppJail
 
@@ -63,7 +63,7 @@ EOF
 sysctl net.inet.ip.forwarding=1
 ```
 
-下载创建 jails 所需的文件所需的时间。默认情况下，AppJail 下载与主机相同版本和架构的文件。
+是时候下载创建 jails 所需的文件。默认情况下，AppJail 下载与主机相同版本和架构的文件。
 
 ```
 # appjail fetch
