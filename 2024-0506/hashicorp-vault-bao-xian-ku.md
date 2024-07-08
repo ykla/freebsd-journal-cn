@@ -42,13 +42,13 @@
 
 当新实例被配置或部署时，它将获得新的一次性令牌，绑定实例和时间。
 
-这种类型的功能非常适合将系统部署和相关机密信息的访问分离开来。这种掩人耳目的方式通常被称为小隔间部署 — — 一个仅限一次使用的令牌，紧密绑定到单个部署，在部署过程中由自动化工具集注入。此令牌在实例启动时使用，用于获取专用于该实例的运行时机密，可能是通过 IP 地址或其他注意事项绑定。
+这种类型的功能非常适合将系统部署和相关机密信息的访问分离开。这种掩人耳目的方式通常被称为小隔间部署 — — 单个仅限一次性的令牌，紧密绑定到单个部署，在部署过程中由自动化工具集注入。此令牌在实例启动时使用，用于获取专用于该实例的运行时机密，可能是通过 IP 地址或其他注意事项绑定。
 
 ## 入门指南
 
 本文主要介绍 Hashicorp Vault，它有一个功能等价的开源分支叫做 OpenBao，类似于 Terraform / OpenTofu 许可分支。
 
-有其他工具能用，但 Vault 已经移植到了 FreeBSD，我相信 OpenBao 也很快就会被移植。
+其他工具也能用，但 Vault 已经移植到了 FreeBSD，我相信 OpenBao 也很快就会被移植。
 
 ## Vault 的甜点
 
@@ -62,11 +62,11 @@ Vault 将所有密钥和值加密存储在磁盘上。因此，在启动时需�
 
 巧妙地，SSS 有可配置的冗余度 — 比如，需要 5 把钥匙中的 3 把来解锁保险柜。因此，您的 3 位主系统管理员可以解锁它，但如果都不在场，您可以请求您的律师及会计借用他们的钥匙（如果需要的话），以达到您的 3 位法定人数。每位管理员在本地提交其解锁钥匙，并使用 API 挑战来防止任一管理员获取主密钥的所有部分。
 
-一旦保险柜解锁，在用户视角下，它在很大程度上像任何其他可通过 HTTP 访问的键值存储。我们可以存储诸如 ssh 私钥、TLS 证书、常规密码，甚至让保险柜生成有限时间和有限目的的临时密码。
+保险柜解锁后，在用户视角下，它在很大程度上像任何其他可通过 HTTP 访问的键值存储。我们可以存储诸如 ssh 私钥、TLS 证书、常规密码，甚至让保险柜生成定时和有限权限的临时密码。
 
 ## 入门指南
 
-Vault 支持复杂部署，使用共识协议和多个服务器，但我发现一个小型高度可靠的物理服务器，配备热备份和 ZFS 复制备份，已经足够。当然，我依赖 Tarsnap 进行完全脱机备份——对于像我们的所有秘密这样关键的东西，这是绝对必需的！
+Vault 支持复杂部署，使用共识协议和多个服务器，但我发现一个小型高度可靠的物理服务器（配备热备份和 ZFS 复制备份）足矣。当然，我使用 Tarsnap 来进行彻底的离线备份——对于像我们全部的秘密这样关键的东西，这是绝对必需的！
 
 ## 安装和配置
 
@@ -78,7 +78,7 @@ Vault 支持复杂部署，使用共识协议和多个服务器，但我发现�
 
 `# /etc/rc.conf.d/vault or where-ever you prefervault_enable=YESvault_config=/usr/local/etc/vault/vault.hcl`
 
-还有 vault 的配置文件。 当然有许多选项，大部分是自解释的。对于我们的测试部署，我们将禁用 TLS 并使用回环 IP。
+还有 vault 的配置文件。 当然有许多选项，大部分是意义自明的。对于我们的测试部署，我们会禁用 TLS 并使用回环 IP。
 
 `# /usr/local/etc/vault/vault.hcldefault_lease_ttl = “72h”max_lease_ttl = “168h”ui = truedisable_mlock = falselistener “tcp” {address = “127.0.0.1:8200”tls_disable = 1tls_min_version = “tls12”tls_key_file = “/usr/local/etc/vault/vault.key”tls_cert_file = “/usr/local/etc/vault/vault.all”}storage “file” {path = “/var/db/vault”}`
 
@@ -104,9 +104,9 @@ Vault 支持复杂部署，使用共识协议和多个服务器，但我发现�
 
 随时查看，这里从未存储过任何秘密，所以它只是请求的审计日志。
 
-### Shamir 秘密环
+### Shamir 密钥环
 
-现在你已经打开了保险库，将你的秘密通过加密的鸟类信使分发给你选择的秘密保管者。需要进行某种适当的仪式，并确保这些秘密得到充分保护，既要防止无能或其他问题，也要防范摩萨德和朝鲜特工。
+现在你已经打开了保险库，将你的秘密通过加密的鸟类信使分发给你选择的秘密保管者。需要进行某种适当的仪式，并确保这些秘密得到充分保护，既要防止无能和其他问题，也要防范摩萨德和朝鲜特工。
 
 到现在，你应该已经准备好存储秘密了。
 
@@ -122,7 +122,7 @@ Vault 具有引擎的概念 - 包括简单的键值存储，还有用于 ssh 证
 
 ## 基于角色的访问控制
 
-Vault 可以配置为要求 GitHub 认证，并将角色和认证委托给除 LDAP 外的其他系统。你们中的许多人会为这个消息而高兴。使用 GitHub 认证可以强制所有用户使用双因素认证（2FA），因此对小团队来说这是一个合理的权衡。
+Vault 可以配置为通过 GitHub 认证，并将角色和认证委托给除 LDAP 外的其他系统。你们中的许多人会为这个消息而高兴。使用 GitHub 认证可以强制所有用户使用双因素认证（2FA），因此对小团队来说这是一个合理的权衡。
 
 `$ vault auth enable githubvault auth enable githubSuccess! Enabled github auth method at: github/$ vault write auth/github/config organization=skunkwerksSuccess! Data written to: auth/github/config$ vault write auth/github/map/teams/admin value=adminsSuccess! Data written to: auth/github/map/teams/admin`
 
@@ -134,11 +134,11 @@ Vault 可以配置为要求 GitHub 认证，并将角色和认证委托给除 LD
 
 `$ vault policy write admins /usr/local/etc/vault/admins.hclSuccess! Uploaded policy: admins`
 
-您当然可以为各种群体制定更为严格的策略，例如在权限、路径或选择的挂载点上，比如一个部署机器人。
+您当然可以为各种群体制定更为严格的策略，例如在权限、路径和选择的挂载点上，比如部署机器人。
 
-最后，每个希望使用 github 认证来访问保险箱的用户，必须转到 https://github.com/settings/tokens，并添加一个新的个人令牌，权限为 admin— read:org 。
+最后，每个希望通过 github 认证来访问保险箱的用户，必须转到 https://github.com/settings/tokens，并添加新的个人令牌，权限为 admin— read:org 。
 
-现在可以使用此令牌生成您的保险箱登录令牌。
+现在就可以使用此令牌生成您的保险箱登录令牌了。
 
 `$ vault login -method=github token=$GITHUBSuccess! You are now authenticated. The token information displayed belowis already stored in the token helper. You do NOT need to run “vault login”again. Future Vault requests will automatically use this token.Key Value--- -----token hvs....token_accessor ...token_duration 72htoken_renewable truetoken_policies [“admins” “default”]identity_policies []policies [“admins” “default”]token_meta_org skunkwerkstoken_meta_username dch$ vault kv get -mount=kv -format=yaml blackadder...`
 
@@ -169,7 +169,7 @@ AppRole 是一种内置的认证方法，专门用于机器和应用程序进行
 
 这些可以通过时间限制、有限的使用次数等进行限制。我们的受信根进程生成此受限密钥 ID，并将其和角色 ID 传递给守护进程以获取其自身凭据。受限密钥 ID 的生成可以设置为仅限制此类凭据的发行。
 
-再次启用 approle 挂载点，然后创建我们的应用程序特定凭据，因为这是一种形式的认证。为了方便起见，这个 approle 将重复使用之前使用的 admins 组策略，但它应该有一个更为严格的策略，专门用于这个守护程序/服务。
+再次启用 approle 挂载点，然后创建我们的应用程序特定凭据，因为这是一种形式的认证。为了方便起见，这个 approle 将重复使用之前使用的 admins 组策略，但它应该有一个更为严格的策略，专门用于这个守护程序和服务。
 
 `$ vault auth enable approleSuccess! Enabled approle auth method at: approle/$ vault write auth/approle/role/beastie \<br/>secret_id_ttl=60m \<br/>token_num_uses=10 \<br/>token_ttl=1h \<br/>token_max_ttl=4h \<br/>secret_id_num_uses=40 \<br/>policies=”default,admins”Success! Data written to: auth/approle/role/beastie$ vault read auth/approle/role/beastie/role-idKey Value--- -----role_id 6caaeac3-d8fa-a0e3-83ba-7d37750603c2$ vault write -f auth/approle/role/beastie/secret-idKey Value--- -----secret_id 8dd54c92-fe54-0d6d-bee6-e433e815aaa1secret_id_accessor cb9bc17c-c756-42b3-c391-b61ebde12bffsecret_id_num_uses 0secret_id_ttl 0s`
 
@@ -191,11 +191,11 @@ Vault 还提供了代理模式，可以为您处理大部分凭据管理工作�
 
 `$ vault operator sealSuccess! Vault is sealed.`
 
-DAVE COTTLEHUBER 在过去的 2 十年里一直努力保持在互联网上的恶意行为者至少一步之先，从 OpenBSD 2.8 开始，过去 9 年则使用 FreeBSD 自 9.3 起，这段时间他获得了 ports 提交位，并且倾向于使用 jails，以及与他对分布式系统和极具危险边缘性质的电动工具非常相契的晦涩的函数式编程语言。
+DAVE COTTLEHUBER 在过去的 2 十年里一直努力保持在互联网上的恶意者至少一步之先，从 OpenBSD 2.8 开始，过去 9 年从自 FreeBSD 9.3 起，这段时间他获得了 ports 提交权限，并且倾向于使用 jail，以及与他对分布式系统和极具危险边缘性质的电动工具非常相契的晦涩的函数式编程语言感兴趣。
 
 * 自 2000 年左右开始，从事专业的牦牛牧羊人，剃 BSD 色的牦牛。
-* 自由的ports@ 提交者
-* Ansible DevOops 主人
+* FreeBSD ports@ 提交者
+* Ansible DevOops 维护者
 * Elixir 开发人员
 * 使用 RabbitMQ 和 Apache CouchDB 构建分布式系统
 * 热衷于电销滑雪，并在多种乐器上演奏凯尔特民间音乐
