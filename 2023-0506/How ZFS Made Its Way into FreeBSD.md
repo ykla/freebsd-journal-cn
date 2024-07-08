@@ -49,4 +49,4 @@ ZFS 文件系统进入 FreeBSD 操作系统的故事是一段对编程的热情�
 
 ---
 
-PAWEL DAWIDEK 是 Fudo Security 的联合创始人兼首席技术官，这是一家专注于构建安全远程访问产品的安全供应商。他还参与了 FreeBSD 操作系统的开发，在安全和存储相关的项目上工作，比如 GELI 磁盘加密、Capsicum 能力和沙箱框架、jail 容器、ZFS 和各种 GEOM 类。Pawel 在技术之外的爱好是练习巴西柔术。
+PAWEL DAWIDEK 是 Fudo Security 的联合创始人兼首席技术官，这是一家专注于构建安全远程访问产品的安全供应商。他还参与了 FreeBSD 操作系统的开发，在安全和存储相关的项目上工作，比如 GELI 磁盘加密、Capsicum 能力和沙箱框架、jail 容器、ZFS 和各种 GEOM 类。Pawel 在技术之余的爱好是练习巴西柔术。
