@@ -1,27 +1,26 @@
 # 在 GitHub 上向 FreeBSD 提交 PR
 
+作者：WARNER LOSH
 
- 由 WARNER LOSH 撰写
+FreeBSD 项目最近开始支持 GitHub 拉取请求（PR）以让人们更易贡献。我们发现使用缺陷跟踪器 Bugzilla 接受补丁会导致许多有用的贡献被忽视并过期，因此贡献者应该更倾向于使用 GitHub PR 进行修改，只把 Bug 放在 Bugzilla。虽然 Phabricator 对开发人员很有效，但我们也发现在那里极易丢失外部贡献者的提交。除非您与直接告诉您使用 Phabricator 的 FreeBSD 开发人员一起工作，否则还是建议用 GitHub。GitHub PR 更易跟踪和处理，并且对大部分开源社区都更为熟悉。我们希望更快的决策，更少的提交被放弃，并为所有人提供更好的体验。
 
-自由 BSD 项目最近开始支持 GitHub 拉取请求（PRs）以便更容易贡献。我们发现通过我们的缺陷跟踪器 Bugzilla 接受补丁导致许多有用的贡献被忽视并变得陈旧，因此贡献者应该更倾向于使用 GitHub PRs 进行更改，将漏洞留在 Bugzilla 中。虽然 Phabricator 对开发人员很有效，但我们也发现很容易在那里丢失外部贡献者的更改。除非您直接与告诉您使用 Phabricator 的 FreeBSD 开发人员一起工作，请改用 GitHub。GitHub PRs 更容易跟踪，更容易处理，并且对更广泛的开源社区更为熟悉。我们希望更快的决策，更少的丢弃更改，并为所有人提供更好的体验。
+由于 FreeBSD 的志愿者时间有限，本项目制定了标准、规范和政策，以有效利用他们的时间。您需要了解这些内容才能提交好的 PR。我们有一些自动化程序来帮助提交者修复常见错误，从而使志愿者可以审查几乎就绪的提交。请理解我们只能接受最有用的贡献，有些贡献是无法被接受的。
 
-由于 FreeBSD 的志愿者时间有限，本项目制定了标准、规范和政策，以有效利用他们的时间。您需要了解这些内容才能提交一个好的 PR。我们有一些自动化程序帮助提交者修复常见错误，从而使志愿者可以审查几乎就绪的提交。请理解我们只能接受最有用的贡献，有些贡献是无法被接受的。
+接下来，我将介绍如何将您的提交切换为 Git 分支，如何完善它们以符合 FreeBSD 项目的标准和规范，如何从您的分支创建 PR，以及如何预期审查过程。然后，我将为志愿者介绍如何评估 PR，并提供完善 PR 的技巧。
 
-接下来，我将介绍如何将您的更改转换为 Git 分支，如何完善它们以符合 FreeBSD 项目的标准和规范，如何从您的分支创建 PR，以及如何预期审查过程。然后，我将介绍志愿者如何评估 PR，并提供完善 PR 的技巧。
-
-本文关注于基础系统的提交，而不是文档或ports树。这些团队仍在修订这些存储库的详细信息。
+本文关注于基本系统的提交，不涉及文档和 ports。这些团队仍在修订有关这些存储库的详细内容。
 
 ## 项目标准
 
-该项目对系统的各个方面有详细的标准。这些标准在 FreeBSD 开发者手册和 FreeBSD 提交者指南中进行了描述。编码标准在 FreeBSD 手册页中记录。根据惯例，手册页被分为多个部分。所有样式手册页出于历史原因都在第 9 部分。对手册页的引用通常呈现为页面名称，后跟其部分编号在括号中，例如 style(9)或 cat(1)。这些文档可以在任何 FreeBSD 系统上使用 man 命令获取，也可以在线查看。
+FreeBSD 项目对系统的各个方面都有详细的标准。这些标准在 FreeBSD 开发者手册和 FreeBSD 提交者指南中进行了说明。代码标准在 FreeBSD 手册页中有记述。根据惯例，手册页被分为多个部分。出于历史原因都所有风格手册页在第 9 部分。对手册页的引用通常呈现为页面名称，后跟其部分编号在括号中，例如 style(9) 或 cat(1)。这些文档可以在任何 FreeBSD 系统上使用 man 命令获取，也可在线浏览。
 
-该项目致力于创建一个文档齐全的集成系统，涵盖了控制机器的内核以及常见 Unix 工具的用户空间实现。贡献应写得清晰，并包含相关评论。当行为发生变化时，应更新相关手册页。例如，当您向命令添加一个标志时，也应将其添加到手册页中。当库中添加新功能时，应为这些功能添加新的 man 页面。最后，该项目认为源代码控制系统中的元数据是系统的一部分，因此提交消息应符合项目的标准。
+FreeBSD 项目致力于创建文档齐全的集成系统，涵盖了控制机器的内核以及常见 Unix 工具的用户空间实现。提交应写得清晰，并包含相关评论。当行为发生变化时，应更新相关手册页。例如，当您向命令添加了参数时，也应将其添加到手册页中。当库中添加新功能时，应为这些功能添加新的 man 页面。最后，FreeBSD 项目认为源代码控制系统中的元数据是系统的一部分，因此提交信息也应符合项目的标准。
 
-该项目对 C 和 C++代码的标准在 style(9)中描述。这种风格通常被称为“内核规范形式”，并采用了 Kernighan 和 Ritchie 的《C 程序设计语言》中使用的风格。这是研究 unix 使用的标准，后来在 Berkeley 的 CSRG 中继续使用，并产生了 BSD 版本。FreeBSD 项目在这些实践的基础上进行了现代化。这种风格是贡献代码的首选风格，并描述了系统中大多数代码使用的风格。更改这些代码的贡献应遵循这种风格，但有一些文件有自己独特的风格。Lua 和 Makefiles 也有自己的标准，分别在 style.lua(9)和 style.Makefile(9)中找到。
+FreeBSD 项目对 C 和 C++ 代码的规范在 style(9) 中说明。这种风格通常被称为“内核规范形式”，并采用了 Kernighan 和 Ritchie 的《C 程序设计语言》中使用的风格。这是研究 unix 使用的标准，后来在伯克利的 CSRG 中继续使用，并产生了 BSD 发行版。FreeBSD 项目在这些实践的基础上进行了现代化。这种风格是提交代码的首选风格，并说明了系统中大多数代码使用的风格。更改这些代码的贡献应遵循这种风格，但某些文件有自己独特的风格。Lua 和 Makefiles 也有自己的标准，分别能在 style.lua(9)和 style.Makefile(9)找到。
 
 Commit messages follow the form favored by the Open Source communities that use git. The first line of the commit message should summarize the entire commit, but do so in 50 or so characters. The rest of the message should describe what changed and why. If what changes is obvious, only explaining why is preferred. The lines should be 72 characters or fewer. It should be written in the present tense, with an imperative tone. It ends with a series of lines that Git calls “trailers” which The Project uses to track additional data about the commits: where they came from, where details about the bug can be found, etc. The Commit Log Message section of the [Committer’s Guide](https://docs.freebsd.org/en/articles/committers-guide/#commit-log-message) covers all the details.
 
-## 不接受的更改
+## 无法接受的提交
 
 在通过 GitHub 接受更改的几年实验后，该项目不得不设定一些限制，以确保未获得项目仓库写入权限的人员通过 GitHub 提交的更改限制在合理范围内。这些限制确保了验证和应用更改的志愿者能够最有效地利用他们的时间。因此，该项目无法接受以下内容：
 
