@@ -30,15 +30,15 @@ BSD 的 “r” 命令（如 rsh）是不安全的。今天的 rdist 传输实�
 
 rdist 本身不进行身份验证。它依赖于传输机制进行身份验证。与 ansible 相比，它还依赖于 ssh 传输机制进行身份验证，并依赖于 su(1)、sudo(1)或 ksu(1)进行权限提升。
 
-rdist 可用于管理服务账户中的应用程序文件，例如 mysql、oracle 或其他应用程序账户。用所需的账户名替换 root。
+rdist 可用于管理服务账户中的应用程序文件，例如 mysql、oracle 和其他应用程序账户。用所需的账户名替换 root 即可。
 
 rdistd(8) 必须在目标服务器的用户搜索路径($PATH)中。
 
-rdist 协商协议版本。systuils/rdist6 port/package 使用 RDIST 版本 6 协议，而 sysutils/rdist7（alpha）使用 RDIST 版本 7 协议。
+rdist 协商协议版本：systuils/rdist6 port/package 使用 RDIST 第六版本协议，而 sysutils/rdist7（alpha）使用 RDIST 第七版本协议。
 
 ## 安装 RDIST
 
-要安装 rdist，只需，
+安装 rdist，只需，
 
 `pkg install rdist6`
 
@@ -52,19 +52,19 @@ rdist 协商协议版本。systuils/rdist6 port/package 使用 RDIST 版本 6 �
 
 ## 使用 RDIST
 
-類似於主機 make 使用其配置文件，如前所述，rdist 使用類似於其配置文件的配置文件。我們必須構建我們的 Distfile。
+如前所述，类似于主机 make 使用其配置文件，rdist 使用类似于其配置文件的配置文件。我们必须编写我们自己的 Distfile。
 
-有三種 Distfile 聲明類型。
+Distfile 有三种类型声明。
 
 ### Distfile
 
-像 make 一样，rdist 寻找一个名为 Distfile 或 distfile 的文件。就像我们可以覆盖 make 使用的 Makefile 的名称一样，我们也可以覆盖 rdist Distfile 的名称。
+像 make 一样，rdist 会寻找名为 Distfile 和 distfile 的文件。就像我们可以覆盖 make 使用的 Makefile 的名称一样，我们也可以覆盖 rdist Distfile 的名称。
 
-Distfiles 包含一系列条目，指定要分发（复制）的文件，要将这些文件复制到哪些节点，以及在分发文件后要执行的后续操作。
+Distfiles 应包含一系列条目，指定要分发（复制）的文件，要将这些文件复制到哪些节点，以及在分发文件后要执行的后续操作。
 
 ### 变量
 
-可以使用以下格式将一个或多个项目分配给变量。
+可以使用以下格式将一个及多个项目分配给变量。
 
 `<variable name> '=' <name list>`
 
@@ -74,14 +74,14 @@ Distfiles 包含一系列条目，指定要分发（复制）的文件，要将�
 
 此将字符串 matisse 和 root@arpa 定义为变量 HOSTS。
 
-另一个示例将三个目录名分配给名为 FILES 的变量。
+另一个示例是将三个目录名分配给变量 FILES。
 
 `FILES = ( /bin /lib /usr/bin /usr/games )`
 
 ### 将文件分发到其他主机
 
-第二种语句类型告诉 rdist 将文件分发到其他主机。其格式是，
+第二种语句是告诉 rdist 将文件分发到其他主机。其格式是，
 
 `[ label: ] <source list> '->' <destination list> <command list>`
 
-是文件或变量的名称。是要将文件复制到的主机列表。在复制操作中，是要应用的一组 rdist 指令。
+是文件名及变量名。是要将文件复制到的主机列表。在复制操作中，是要应用的一组 rdist 指令。
