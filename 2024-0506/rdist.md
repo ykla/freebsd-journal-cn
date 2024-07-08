@@ -1,10 +1,10 @@
 # rdist
 
-由 CY SCHUBERT 撰写
+作者：CY SCHUBERT
 
 ## 什么是 RDIST？
 
-引用手册的话说，“rdist 是一个用于在多个主机之间保持文件相同副本的程序。” rdist 是一个通用工具，可以用于多种用途，比如在网络上保持文件的一致副本，类似于 rsync 和 unison 的功能，或作为分布式配置管理工具，如 cfengine、ansible、puppet、salt 或其他配置管理工具。
+引用手册的话说，“rdist 是在多个主机之间实现文件同步的程序。” rdist 是一款可用于多种用途的通用工具，比如在网络上保持文件的一致性，类似于 rsync 和 unison 的功能，或作为分布式配置管理工具，如 cfengine、ansible、puppet、salt 或其他配置管理工具。
 
 ## 为什么使用 RDIST？
 
