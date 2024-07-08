@@ -4,23 +4,23 @@
 
 ## 什么是 RDIST？
 
-引用手册的话说，“rdist 是在多个主机之间实现文件同步的程序。” rdist 是一款可用于多种用途的通用工具，比如在网络上保持文件的一致性，类似于 rsync 和 unison 的功能，或作为分布式配置管理工具，如 cfengine、ansible、puppet、salt 或其他配置管理工具。
+引用手册的话说，“rdist 是在多个主机之间实现文件同步的程序。” rdist 是一款可用于多种用途的通用工具，比如在网络上确保文件的同步，类似于 rsync 和 unison。又比如作为分布式配置管理工具，如 cfengine、ansible、puppet、salt 和其他配置管理工具。
 
 ## 为什么使用 RDIST？
 
-要理解为什么要了解 rdist，了解一点它的历史将让我们更好地了解它为何被创建。
+要理解为什么要使用 rdist，了解点历史能让我们更好地了解它因何产生。
 
-Ralph Campbell 在 UCB 于 1983-1984 年编写，rdist 首次出现在 4.3BSD（1986 年），是第一个解决分布式软件管理问题的应用程序之一。在 20 世纪 80 年代末和 90 年代期间，它几乎与每个商业 UNIX 一起分发。当时它成为远程平台管理的标准。
+Ralph Campbell 在1983-1984 年间的 UCB 编写了它。rdist 首次出现在 4.3BSD（1986 年），是第一个解决分布式软件管理问题的软件。从 20 世纪 80 年代末到 90 年代初，它几乎随所有商业 UNIX 一同分发。当时它成为了远程平台管理的标准。
 
-rdist 早于其它同类软件。它也早于 rsync。Rsync 是一个备份工具，用于备份或克隆目录树，而 rdist 通常用作网络文件分发应用程序。每个都根据其设计目的进行了定制。
+rdist 早于其它同类软件。甚至早于 rsync。Rsync 是一款备份工具，用于备份和克隆目录树，而 rdist 通常用作网络文件分发工具。它们都根据其设计目的进行了定制。
 
-有了这么多选择，为什么要使用 rdist 呢？
+有了这么多选择，为什么要用 rdist 呢？
 
-* rdist 比诸如 ansible 等后续配置分发应用程序更轻量级。
-* rdist 容易集成到shell脚本和 Makefiles 中。
-* rsync 不能像 rdist 一样并行分发到多个主机。rsync 也不能使用配置文件来同步文件，就像 rdist 那样。Rsync 和 rdist 设计用于不同目的，rsync 用于备份和文件克隆，而 rdist 更适用作为配置管理工具。
+* rdist 比后辈配置分发应用程序（如 ansible 等）更轻量化。
+* rdist 容易集成到 shell 脚本和 Makefiles 中。
+* rsync 不能像 rdist 一样并行分发到多个主机。rsync 也不能使用配置文件来同步文件，但是 rdist 可以。Rsync 和 rdist 设计用于不同目的，rsync 用于备份和文件克隆，而 rdist 更适合用作配置管理工具。
 
-另一方面，为什么有人想使用另一个工具呢？与诸如 cfengine 和 ansible 之类的工具相比，rdist 更轻量级，其配置远程节点的能力仅限于分发文件和执行简单的分发后任务。而更重量级工具可以执行分发前任务，可以通过简单的shell脚本或 Makefile 解决此问题。举个个人例子，我使用一个配置工具（名为 ipfmeta）来管理我的 ipfilter 防火墙规则，该工具从规则文件和对象文件生成防火墙配置文件，然后使用 Makefile 将生成的文件分发到在 rdist 的 Distfile 中定义的远程防火墙上。可以将 Distfile 看作与 rdist 的关系类似于 Makefile 与 make 的关系。与 rsync 不同，rdist 使用在其 Distfile 中编码的规则来分发文件。
+另一方面，为什么有人想使用另外的工具呢？与诸如 cfengine 和 ansible 之类的工具相比，rdist 更轻量化，其配置远程节点的能力仅限于分发文件和执行简单的分发后任务。而更重量级的工具可以用来执行分发前任务，通过简单的 shell 脚本和 Makefile 就能解决此问题。举个个人例子，我使用了配置工具（名为 ipfmeta）来管理我的 ipfilter 防火墙规则，该工具从规则文件和对象文件生成防火墙配置文件，然后使用 Makefile 将生成的文件分发到在 rdist 的 Distfile 中定义的远程防火墙上。可以将 Distfile 看作与 rdist 的关系类似于 Makefile 与 make 的关系。与 rsync 不同，rdist 使用在其 Distfile 中编码的规则来分发文件。
 
 ## RDIST 是如何工作的？
 
