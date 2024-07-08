@@ -42,7 +42,7 @@
 * [现在用 Webhooks 触发我](2023-1112/xian-zai-yong-webhooks-chu-fa-wo.md)
 * [黑客马拉松：十月的奥斯陆](2023-1112/hei-ke-ma-la-song-shi-yue-de-ao-si-lu.md)
 * [新的 Port 提交者：oel Bodenmann (jbo@freebsd.org)](2023-1112/xin-de-port-ti-jiao-zhe-oel-bodenmann-jbofreebsd.org.md)
-* [2023 年 11 月/12 月 来信来信：.0 版本的发布就像是换轮胎一样](2023-1112/lai-xin-.0-ban-ben-de-fa-bu-jiu-xiang-shi-huan-lun-tai-yi-yang.md)
+* [2023 年 11 月/12 月 来信：.0 版本的发布就像是换轮胎一样](2023-1112/lai-xin-.0-ban-ben-de-fa-bu-jiu-xiang-shi-huan-lun-tai-yi-yang.md)
 
 ## 2023-0910
 
