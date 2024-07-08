@@ -195,7 +195,7 @@ DAVE COTTLEHUBER 在过去的 2 十年里一直努力保持在互联网上的恶
 
 * 自 2000 年左右开始，从事专业的牦牛牧羊人，剃 BSD 色的牦牛。
 * FreeBSD ports@ 提交者
-* Ansible DevOops 维护者
+* Ansible DevOops 用户
 * Elixir 开发人员
 * 使用 RabbitMQ 和 Apache CouchDB 构建分布式系统
 * 热衷于电销滑雪，并在多种乐器上演奏凯尔特民间音乐
