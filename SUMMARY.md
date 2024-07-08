@@ -27,7 +27,7 @@
 ## 2024-0102
 
 * [RACK 和 FreeBSD 可用的 TCP 堆栈](2024-0102/rack-he-freebsd-ke-yong-de-tcp-dui-zhan.md)
-* [FreeBSD 14 有关 TCP 的更新](2024-0102/freebsd-14-you-guan-tcp-de-geng-xin.md)
+* [FreeBSD 14 中有关 TCP 的更新](2024-0102/freebsd-14-you-guan-tcp-de-geng-xin.md)
 * [if\_ovpn 还是 OpenVPN](2024-0102/ifovpn-hai-shi-openvpn.md)
 * [SR-IOV 已成为 FreeBSD 中重要的功能](2024-0102/sriov-yi-cheng-wei-freebsd-zhong-zhong-yao-de-gong-neng.md)
 * [FreeBSD 接口 API（IfAPI）](2024-0102/freebsd-jie-kou-apiifapi.md)
