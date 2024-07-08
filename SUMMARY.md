@@ -37,7 +37,7 @@
 
 ## 2023-1112
 
-* [LinuxBoot： 从 Linux 启动 FreeBSD](2023-1112/linuxboot-cong-linux-qi-dong-freebsd.md)
+* [LinuxBoot：从 Linux 启动 FreeBSD](2023-1112/linuxboot-cong-linux-qi-dong-freebsd.md)
 * [FreeBSD 容器镜像](2023-1112/freebsd-rong-qi-jing-xiang.md)
 * [现在用 Webhooks 触发我](2023-1112/xian-zai-yong-webhooks-chu-fa-wo.md)
 * [黑客马拉松：十月的奥斯陆](2023-1112/hei-ke-ma-la-song-shi-yue-de-ao-si-lu.md)
