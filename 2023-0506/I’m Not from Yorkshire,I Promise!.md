@@ -6,7 +6,7 @@
 
 我这篇文章的初稿保存在一个文件名为“Unix_from_Yorkshire.txt”的文件中，随着文章变得越来越长，越发像是 UNIX 版本的蒙提·派森的“[四个约克郡人](https://juejin.cn/s/monty%20python%20sketch%20four%20yorkshiremen%20script)”小品：
 
-> 在一颗 Zilog Z8001 16 位 CPU 和 4MB 内存的计算机上运行整个石油大亨游戏？
+> 在一颗 Zilog Z8001 16 位 CPU 和 4MB 内存的计算机上运行完整版的石油大亨游戏？
 > 
 > 使用 103 张单面单密度软盘安装 UNIX 操作系统，但是第 92 张软盘是坏的？
 > 
