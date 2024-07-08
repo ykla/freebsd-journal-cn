@@ -9,7 +9,7 @@
 * [Hashicorp Vault（保险库）](2024-0506/hashicorp-vault-bao-xian-ku.md)
 * [在 GitHub 上向 FreeBSD 提交 PR](2024-0506/zai-github-shang-xiang-freebsd-ti-jiao-pr.md)
 * [悼念 Mike Karels](2024-0506/dao-nian-mike-karels.md)
-* [2024 年 5 月/6 月 来信](2024-0506/2024-nian-5-yue-6-yue-lai-xin.md)
+* [2024 年 5 月/6 月来信](2024-0506/2024-nian-5-yue-6-yue-lai-xin.md)
 * [嵌入式 FreeBSD 面包板](2024-0506/qian-ru-shi-freebsdbreadcrumbs.md)
 * [TCP/IP 历险记：TCP BBLog](2024-0506/tcpip-li-xian-ji-tcp-bblog.md)
 * [实用软件：开发定制 Ansible 模块](2024-0506/shi-yong-ruan-jian-kai-fa-ding-zhi-ansible-mo-kuai.md)
@@ -20,7 +20,7 @@
 * [KDE 持续集成（CI）和 FreeBSD](2024-0304/kde-chi-xu-ji-cheng-ci-he-freebsd.md)
 * [更现代的内核调试工具](2024-0304/geng-xian-dai-de-nei-he-tiao-shi-gong-ju.md)
 * [从零开始的 ZFS 镜像及 makefs -t zfs](2024-0304/cong-ling-kai-shi-de-zfs-jing-xiang-ji-makefstzfs.md)
-* [2024 年 3 月/4 月 来信](2024-0304/2024-nian-3-yue-4-yue-lai-xin.md)
+* [2024 年 3 月/4 月来信](2024-0304/2024-nian-3-yue-4-yue-lai-xin.md)
 * [提升 Git 使用体验](2024-0304/ti-sheng-git-shi-yong-ti-yan.md)
 * [EuroBSDCon 2023](2024-0304/eurobsdcon-2023.md)
 
@@ -42,7 +42,7 @@
 * [现在用 Webhooks 触发我](2023-1112/xian-zai-yong-webhooks-chu-fa-wo.md)
 * [黑客马拉松：十月的奥斯陆](2023-1112/hei-ke-ma-la-song-shi-yue-de-ao-si-lu.md)
 * [新的 Port 提交者：oel Bodenmann (jbo@freebsd.org)](2023-1112/xin-de-port-ti-jiao-zhe-oel-bodenmann-jbofreebsd.org.md)
-* [2023 年 11 月/12 月 来信：.0 版本的发布就像是换轮胎一样](2023-1112/lai-xin-.0-ban-ben-de-fa-bu-jiu-xiang-shi-huan-lun-tai-yi-yang.md)
+* [2023 年 11 月/12 月来信：.0 版本的发布就像是换轮胎一样](2023-1112/lai-xin-.0-ban-ben-de-fa-bu-jiu-xiang-shi-huan-lun-tai-yi-yang.md)
 
 ## 2023-0910
 
