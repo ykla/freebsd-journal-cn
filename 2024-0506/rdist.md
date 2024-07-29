@@ -194,7 +194,7 @@ rsync -aHW --delete /t/tmp /home/cy/freebsd/rdist
 
 ## 总结
 
-`rdist` 是一个很好的工具，当与脚本、makefile、其他工具结合使用时，尤其是在没有一个工具能完成所有任务的情况下，可与其他工具结合使用。正如我管理 `ipfilter` 防火墙、`ipfmeta`、make Makefile、`rdist` Distfile 和 git `rdist` 的方式一样，`rdist` 可以很好地被集成以创建一个轻量级的应用程序。在与 ansible 或 cfengine 这类不能与脚本和 makefile 集成的重量级工具集成时，`rdist` 填补了这一独特的空白。`rdist` 恪守了最初的 UNIX 哲学——即单一工具用于单一目的，可以与其他工具集成以创建新工具和应用程序。
+`rdist` 是一个很好的工具，当与脚本、makefile、其他工具结合使用时，尤其是在单个工具不能完成全部任务的情况下，可与其他工具联合使用。正如我管理 `ipfilter` 防火墙、`ipfmeta`、make Makefile、`rdist` Distfile 和 git `rdist` 的方式一样，`rdist` 可以很好地被集成以创建一个轻量级的应用程序。在与 ansible 或 cfengine 这类不能与脚本和 makefile 集成的重量级工具集成时，`rdist` 填补了这一独特的空白。`rdist` 恪守了最初的 UNIX 哲学——即单一工具用于单一目的，可以与其他工具集成以创建新工具和应用程序。
 
 ## 参考文献
 
