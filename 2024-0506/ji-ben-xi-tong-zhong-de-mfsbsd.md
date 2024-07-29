@@ -35,7 +35,7 @@ mkdir /mnt/distmount /dev/ada0p3 /mnt/dist
 mkdir /usr/freebsd-distcp /mnt/dist/<version>/*.txz /usr/freebsd-dist/bsdinstall
 ```
 
-mfsBSD 能够把整个 FreeBSD 系统都加载到内存。加载完成后，就可以随意对原始磁盘进行修改了，因为现在所有的 mfsBSD 文件都运行在内存。正如 Matuška 在其白皮书（2009 年）中所述，“mfsBSD 是个工具集，能创建基于 mfsroot 的短小精悍版 FreeBSD，它将所有文件都放在在内存。”②
+mfsBSD 能够把整个 FreeBSD 系统都加载到内存。加载完成后，就可以对原始磁盘进行修改任意了，因为现在所有的 mfsBSD 文件都运行在内存。正如 Matuška 在其白皮书（2009 年）中所述，“mfsBSD 是个工具集，能创建基于 mfsroot 的短小精悍版 FreeBSD，它将所有文件都放在在内存。”②
 
 ## mfsBSD 简史
 
