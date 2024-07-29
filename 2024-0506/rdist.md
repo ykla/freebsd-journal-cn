@@ -41,15 +41,21 @@ rdist 协商协议版本：systuils/rdist6 port/package 使用 RDIST 第六版�
 
 安装 rdist，只需，
 
-`pkg install rdist6`
+```
+pkg install rdist6
+```
 
  或者
 
-`pkg install rdist7`
+```
+pkg install rdist7
+```
 
 或者使用 ports，以 rdist7 为例，
 
-`cd /usr/ports/sysutils/rdist7make install clean`
+```
+cd /usr/ports/sysutils/rdist7make install clean
+```
 
 ## 使用 RDIST
 
@@ -67,22 +73,32 @@ Distfiles 应包含一系列条目，指定要分发（复制）的文件，要�
 
 可以使用以下格式将一个及多个项目分配给变量。
 
-`<variable name> '=' <name list>`
+```
+<variable name> '=' <name list>
+```
 
  例如，
 
-`HOSTS = ( matisse root@arpa )`
+```
+HOSTS = ( matisse root@arpa )
+```
 
 此将字符串 matisse 和 root@arpa 定义为变量 HOSTS。
 
 另一个示例是将三个目录名分配给变量 FILES。
 
-`FILES = ( /bin /lib /usr/bin /usr/games )`
+```
+FILES = ( /bin /lib /usr/bin /usr/games )
+```
 
 ### 将文件分发到其他主机
 
 第二种语句是告诉 rdist 将文件分发到其他主机。其格式是，
 
-`[ label: ] <source list> '->' <destination list> <command list>`
+```
+[ label: ] <source list> '->' <destination list> <command list>
+```
 
 是文件名及变量名。是要将文件复制到的主机列表。在复制操作中，是要应用的一组 rdist 指令。
+
+
