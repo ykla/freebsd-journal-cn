@@ -60,7 +60,7 @@ make install clean
 
 ## 使用 rdist
 
-如前所述，类似于主机 make 使用其配置文件，rdist 使用类似于其配置文件的配置文件。我们必须编写我们自己的 Distfile。
+如上所述，类似于主机 make 使用其配置文件，rdist 使用类似于其配置文件的配置文件。我们必须编写我们自己的 Distfile。
 
 Distfile 有三种类型声明。
 
@@ -72,21 +72,21 @@ Distfiles 应包含一系列条目，指定要分发（复制）的文件，要�
 
 ### 变量
 
-可以使用以下格式将一个及多个项目分配给变量。
+可以使用以下格式将一个或多个项目分配给变量。
 
 ```
 <variable name> '=' <name list>
 ```
 
- 例如，
+比如，
 
 ```
 HOSTS = ( matisse root@arpa )
 ```
 
-此将字符串 matisse 和 root@arpa 定义为变量 HOSTS。
+以上将字符串 matisse 和 root@arpa 定义成变量 HOSTS。
 
-另一个示例是将三个目录名分配给变量 FILES。
+以下示例将三个目录名分配给了变量 FILES。
 
 ```
 FILES = ( /bin /lib /usr/bin /usr/games )
@@ -107,7 +107,9 @@ FILES = ( /bin /lib /usr/bin /usr/games )
 例如，从我的防火墙 Distfile 中：
 
 ```
-install-ipf: ipf.conf -> ${HOSTS}install /etc/ipf.conf ;special "chown root:wheel /etc/ipf.conf; chmod 0400 /etc/ipf.conf" ;
+install-ipf: ipf.conf -> ${HOSTS}
+install /etc/ipf.conf ;
+special “chown root:wheel /etc/ipf.conf; chmod 0400 /etc/ipf,conf” ;
 ```
 
 这告诉 `rdist` 将 `ipf.conf` 安装到 HOSTS 变量中列出的节点。安装命令行告诉 `rdist` 文件要安装到 `/etc/ipf.conf`。
@@ -118,8 +120,9 @@ install-ipf: ipf.conf -> ${HOSTS}install /etc/ipf.conf ;special "chown root:whee
 
 命令列表包括关键字如 `install`、`except`、`special` 和 `cmdspecial`。
 
-| install        | 指定目标文件的安装位置。                      |
+|关键字|说明|
 | -------------- | ------------------------------------------ |
+| install        | 指定目标文件的安装位置。                      |
 | notify         | 列出复制操作完成后要通知的电子邮件地址。       |
 | except         | 不要复制的文件的例外模式。                  |
 | except_pat     | 与 `except` 相同，但使用正则表达式模式。        |
@@ -130,8 +133,11 @@ install-ipf: ipf.conf -> ${HOSTS}install /etc/ipf.conf ;special "chown root:whee
 
 ```
 HOSTS = ( localhost )
+
 FILES = ( /t/tmp/rdist.odt )
-${FILES} -> ${HOSTS}install /home/cy/freebsd/rdist/rdist.odt ;
+
+${FILES} -> ${HOSTS}
+install /home/cy/freebsd/rdist/rdist.odt ;
 ```
 
 这里我们将文件 `/t/tmp/rdist.odt` 复制到我的笔记本电脑上的 `/home/cy/freebsd/rdist/rdist.odt`。当然，一个简单的 `cp(1)` 命令就可以完成，但这个简单的例子让我们初步了解如何复制单个文件。还要注意，目标是同名的文件。如果目标是一个目录，即 `/home/cy/freebsd/rdist`，它将删除目标目录中的所有文件和子目录，并用一个单独的 `rdist.odt` 文件替换。指定目标文件或目录时要小心。这类似于：
@@ -145,18 +151,33 @@ rsync -aHW --delete /t/tmp /home/cy/freebsd/rdist
 `rdist(1)` 手册页提供了一个更好的例子：
 
 ```
-HOSTS = ( matisse root@arpa)
-FILES = ( /bin /lib /usr/bin /usr/games /usr/lib /usr/man/man? /usr/ucb /usr/local/rdist )
-EXLIB = ( Mail.rc aliases aliases.dir aliases.pag crontab dshrc sendmail.cf sendmail.fc sendmail.hf sendmail.st uucp vfont )
-${FILES} -> ${HOSTS} install -oremove,chknfs ; except /usr/lib/${EXLIB} ; except /usr/games/lib ; special /usr/lib/sendmail "/usr/lib/sendmail -bz" ;
+             HOSTS = ( matisse root@arpa)
 
-srcs:
-  /usr/src/bin -> arpa except_pat ( \\.o\$ /SCCS\$ ) ;
+              FILES = ( /bin /lib /usr/bin /usr/games
+                       /usr/lib /usr/man/man? /usr/ucb /usr/local/rdist )
 
-IMAGEN = (ips dviimp catdvi)
-imagen:
-  /usr/local/${IMAGEN} -> arpa install /usr/local/lib ; notify ralph ;
-  ${FILES} :: stamp.cory notify root@cory ;
+              EXLIB = ( Mail.rc aliases aliases.dir aliases.pag crontab dshrc
+                       sendmail.cf sendmail.fc sendmail.hf sendmail.st uucp vfont )
+
+              ${FILES} -> ${HOSTS}
+                       install -oremove,chknfs ;
+                       except /usr/lib/${EXLIB} ;
+                       except /usr/games/lib ;
+                       special /usr/lib/sendmail “/usr/lib/sendmail -bz” ;
+
+              srcs:
+              /usr/src/bin -> arpa
+                       except_pat ( \\.o\$ /SCCS\$ ) ;
+
+              IMAGEN = (ips dviimp catdvi)
+
+              imagen:
+              /usr/local/${IMAGEN} -> arpa
+                       install /usr/local/lib ;
+                       notify ralph ;
+
+              ${FILES} :: stamp.cory
+                       notify root@cory ;
 ```
 
 在上述例子中，列在 `FILES` 变量中的文件将从本地主机复制到 `HOSTS` 变量中列出的机器上。除了 `EXLIB` 变量中列出的文件、`/usr/games/lib` 和一个模式之外。每个文件复制后，运行带有 `-bz` 选项的 `sendmail`。
