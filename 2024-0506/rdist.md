@@ -5,7 +5,7 @@
 
 ## 什么是 rdist？
 
-引用手册的话说，“rdist is a program to maintain identical copies of files over multiple hosts.（rdist 是一款在多个主机上维护相同文件副本的程序）” rdist 是一款可用于多种用途的通用工具，比如通过网络实现文件的同步——类似于 rsync 和 unison；亦可作为分布式配置管理工具：如 cfengine、ansible、puppet、salt 等其他配置管理工具。
+引用手册的话说，“rdist is a program to maintain identical copies of files over multiple hosts（rdist 是一款在多个主机上维护相同文件副本的程序）” rdist 是一款可用于多种用途的通用工具，比如通过网络实现文件的同步——类似于 rsync 和 unison；亦可作为分布式配置管理工具：如 cfengine、ansible、puppet、salt 等其他配置管理工具。
 
 ## 为什么要使用 rdist？
 
