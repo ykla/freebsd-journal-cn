@@ -93,12 +93,95 @@ FILES = ( /bin /lib /usr/bin /usr/games )
 
 ### 将文件分发到其他主机
 
-第二种语句是告诉 rdist 将文件分发到其他主机。其格式是，
+第二种语句类型告诉 `rdist` 将文件分发到其他主机。其格式为：
 
 ```
 [ label: ] <source list> '->' <destination list> <command list>
 ```
 
-是文件名及变量名。是要将文件复制到的主机列表。在复制操作中，是要应用的一组 rdist 指令。
+`<source list>` 是文件或变量的名称。`<destination list>` 是文件将被复制到的主机列表。而 `<command list>` 是要应用于复制操作的 `rdist` 指令列表。
 
+可选的标签用于在命令行引用时识别语句以进行部分更新。
 
+例如，从我的防火墙 Distfile 中：
+
+```
+install-ipf: ipf.conf -> ${HOSTS}install /etc/ipf.conf ;special "chown root:wheel /etc/ipf.conf; chmod 0400 /etc/ipf.conf" ;
+```
+
+这告诉 `rdist` 将 `ipf.conf` 安装到 HOSTS 变量中列出的节点。安装命令行告诉 `rdist` 文件要安装到 `/etc/ipf.conf`。
+
+特殊命令行告诉 `rdist` 在复制操作之后运行 `chown` 和 `chmod`。
+
+标签 `install-ipf` 可以在 `rdist` 命令行中引用，限制操作仅限于该操作，即 `rdist install-ipf`。
+
+命令列表包括关键字如 `install`、`except`、`special` 和 `cmdspecial`。
+
+| install        | 指定目标文件的安装位置。                      |
+| -------------- | ------------------------------------------ |
+| notify         | 列出复制操作完成后要通知的电子邮件地址。       |
+| except         | 不要复制的文件的例外模式。                  |
+| except_pat     | 与 `except` 相同，但使用正则表达式模式。        |
+| special        | 每个文件复制后要执行的 shell 命令。            |
+| cmdspecial     | 所有文件复制后要执行的 shell 命令。            |
+
+下面是一个简单的例子。它将我这篇文章的工作副本复制到 FreeBSD 工作目录树中的一个目录。
+
+```
+HOSTS = ( localhost )
+FILES = ( /t/tmp/rdist.odt )
+${FILES} -> ${HOSTS}install /home/cy/freebsd/rdist/rdist.odt ;
+```
+
+这里我们将文件 `/t/tmp/rdist.odt` 复制到我的笔记本电脑上的 `/home/cy/freebsd/rdist/rdist.odt`。当然，一个简单的 `cp(1)` 命令就可以完成，但这个简单的例子让我们初步了解如何复制单个文件。还要注意，目标是同名的文件。如果目标是一个目录，即 `/home/cy/freebsd/rdist`，它将删除目标目录中的所有文件和子目录，并用一个单独的 `rdist.odt` 文件替换。指定目标文件或目录时要小心。这类似于：
+
+```
+rsync -aHW --delete /t/tmp /home/cy/freebsd/rdist
+```
+
+意外的结果可能会导致糟糕的一天。
+
+`rdist(1)` 手册页提供了一个更好的例子：
+
+```
+HOSTS = ( matisse root@arpa)
+FILES = ( /bin /lib /usr/bin /usr/games /usr/lib /usr/man/man? /usr/ucb /usr/local/rdist )
+EXLIB = ( Mail.rc aliases aliases.dir aliases.pag crontab dshrc sendmail.cf sendmail.fc sendmail.hf sendmail.st uucp vfont )
+${FILES} -> ${HOSTS} install -oremove,chknfs ; except /usr/lib/${EXLIB} ; except /usr/games/lib ; special /usr/lib/sendmail "/usr/lib/sendmail -bz" ;
+
+srcs:
+  /usr/src/bin -> arpa except_pat ( \\.o\$ /SCCS\$ ) ;
+
+IMAGEN = (ips dviimp catdvi)
+imagen:
+  /usr/local/${IMAGEN} -> arpa install /usr/local/lib ; notify ralph ;
+  ${FILES} :: stamp.cory notify root@cory ;
+```
+
+在上述例子中，列在 `FILES` 变量中的文件将从本地主机复制到 `HOSTS` 变量中列出的机器上。除了 `EXLIB` 变量中列出的文件、`/usr/games/lib` 和一个模式之外。每个文件复制后，运行带有 `-bz` 选项的 `sendmail`。
+
+通常，`special` 用于运行 shell 命令，但在上述例子中，执行了 `/usr/lib/sendmail`（就像它是一个 shell 一样），将引用的参数传递给 `sendmail`。
+
+三个 `/usr/local` 中的文件将被复制到目标系统上的 `/usr/local/lib`，复制完成后发送电子邮件通知 `ralph`。
+
+作业完成时会触摸一个时间戳文件，发送邮件给 `root@cory`。时间戳文件用于避免不必要的复制。例如，如果任何列出的文件比时间戳文件更新，则会复制该文件。（相反，ansible 使用校验和。）
+
+## 注意事项
+
+如前所述，如果不小心，事情可能会出错。像 `rsync` 一样，`rdist` 不会验证源文件与目标文件是否为同一类型的对象（文件或目录）。很容易用一个目录替换目标文件或用一个文件替换目标目录。像 `rsync` 一样，它可能会使系统无法使用。请小心，并在沙箱或监狱中进行测试。
+
+## 总结
+
+`rdist` 是一个很好的工具，当与脚本、makefile 或其他工具结合使用时，尤其是在没有一个工具能完成所有任务的情况下，与其他工具结合使用正如我管理我的 `ipfilter` 防火墙、`ipfmeta`、make Makefile、`rdist` Distfile 和 git `rdist` 的方式一样，`rdist` 可以很好地集成以创建一个轻量级的应用程序。在与 ansible 或 cfengine 这类不能与脚本和 makefile 集成的重量级工具集成时，`rdist` 填补了这一独特的空白。`rdist` 遵循了原始 UNIX 的哲学，即单一工具用于单一目的，可以与其他工具集成以创建新工具和应用程序。
+
+## 参考文献
+
+* [FreeBSD 14.0-RELEASE 和端口的 44bsd-rdist 手册页](https://man.freebsd.org/cgi/man.cgi?query=44bsd-rdist&sektion=1&apropos=0&manpath=FreeBSD+14.0-RELEASE+and+Ports)
+* [Magnicomp 的 rdist 重新设计 PDF](https://www.magnicomp.com/download/rdist/overhaul.pdf)
+* [UMB 计算机科学课程的 rdist 项目 PDF](https://www.cs.umb.edu/~ckelly/teaching/common/project/linux/sys_admin/p7_rdist.pdf)
+
+---
+
+**Cy Schubert** 是 FreeBSD src 和 Ports 的提交者。他的职业生涯始于五十多年前，编写和维护用 Fortran 写就的电气工程应用程序。他的经验包括 IBM MVS（大型机）系统编程，编写 MVS 内核和作业输入子系统 2（JES/2）的扩展。在三十五年前，他的职业生涯转向 UNIX 之路，移至 SunOS、Solaris、Tru64、NCR AT&T、DG/UX、HP-UX、SGI、Linux 和 FreeBSD 系统管理。
+
+Cy 的 FreeBSD 之旅也始于三十五年前。在尝试了一个带有 Linux 内核 0.95 的 Linux 发行版并发现它不支持 UNIX 域套接字后，他尝试了一个实验性的 Linux 内核。在一个灾难性的月份里恢复了被实验性内核破坏的 EXTFS 文件系统后，Cy 在 FreeBSD 和 NetBSD 的 USENET 新闻组上发布了一个查询。唯一回复 Cy 问题的人是 FreeBSD 项目的 Jordan Hubbard。由于 Jordan 是第一个也是唯一一个回复的人，Cy 决定首先尝试 FreeBSD。从那时起，他一直在使用 FreeBSD，自 2.0.5 版本以来。他在 2001 年成为端口提交者，十一年前成为源代码提交者。目前，他受雇于一家大型托管服务提供商的加拿大子公司。
