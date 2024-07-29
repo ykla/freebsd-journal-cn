@@ -39,7 +39,7 @@ mfsBSD 能够把整个 FreeBSD 系统都加载到内存。加载完成后，就�
 
 ## mfsBSD 简史
 
-mfsBSD 的作者是 Martin Matuška（`mm@FreeBSD.org`）。回顾 mfsBSD 存储库的提交日志，他首次提交于 2007 年 11 月 11 日，大约是在 FreeBSD 7.0 BETA 发布同期。“这个项目[mfsBSD]基于 Depenguinator 项目的想法”，Depenguinator 是 Colin Percival 在 2003 年创建的项目，旨在为仅提供 Linux 发行版③的专用服务器远程安装 FreeBSD③。Matuška 想开发 FreeBSD 6.x Depenguinator 的功能实现，这就是 mfsBSD 的起源。
+mfsBSD 的作者是 Martin Matuška（`mm@FreeBSD.org`）。回顾 mfsBSD 存储库的提交日志，他首次提交于 2007 年 11 月 11 日，大约是在 FreeBSD 7.0 BETA 的发布同期。“这个项目[mfsBSD]基于 Depenguinator 项目的想法”，Depenguinator 是 Colin Percival 在 2003 年创建的项目，旨在为仅提供 Linux 发行版③的专用服务器远程安装 FreeBSD③。Matuška 想开发 FreeBSD 6.x Depenguinator 的功能实现，这就是 mfsBSD 的起源。
 
 自此以降，Matuška 维护着 <https://mfsbsd.vx.sk/> ，用于分发 mfsBSD 的镜像。他已经在 GitHub④ 上维护了十七年的 mfsBSD，一路修复了无数 bug，并添加了对 zfsinstall、`/usr` tar 压缩包的支持等。在此期间，mfsBSD 知名度不断增长，
 
