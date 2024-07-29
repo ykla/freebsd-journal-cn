@@ -206,4 +206,4 @@ rsync -aHW --delete /t/tmp /home/cy/freebsd/rdist
 
 **Cy Schubert** 是 FreeBSD src 和 Ports 的提交者。他的职业生涯始于五十多年前，编写和维护着用 Fortran 写就的电气工程应用程序。他的经验包括 IBM MVS（大型机）系统编程，编写 MVS 内核和作业输入子系统 2（JES/2）的扩展。在三十五年前，他的职业生涯转向 UNIX 之路，涉足 SunOS、Solaris、Tru64、NCR AT&T、DG/UX、HP-UX、SGI、Linux 和 FreeBSD 系统管理。
 
-Cy 的 FreeBSD 之旅亦始于三十五年前。在尝试了某个 Linux 内核 0.95 的 Linux 发行版后，发现它不支持 UNIX 域套接字（UDS）；他又试了试了某个实验性的 Linux 内核。在那个悲惨的月份，恢复了被实验性内核破坏的 EXTFS 文件系统以后，Cy 在 FreeBSD 和 NetBSD 的 USENET 新闻组上提出了一个问题。唯一回复了 Cy 问题的人是 FreeBSD 项目的 Jordan Hubbard。由于 Jordan 是第一个也是最后一个回复的人，Cy 决定先试试 FreeBSD。自那时起，他就一直在使用着 FreeBSD（从 2.0.5 开始）。他在 2001 年成为 Port 提交者，于十一年前成为了源代码提交者。目前，他受雇于一家大型托管服务提供商的加拿大子公司。
+Cy 的 FreeBSD 之旅亦始于三十五年前。在尝试了某个 Linux 内核 0.95 的 Linux 发行版后，发现它不支持 UNIX 域套接字（UDS）；他又试了试了某个实验性的 Linux 内核。在那个悲惨的月份，恢复了被实验性内核破坏的 EXTFS 文件系统以后，Cy 在 FreeBSD 和 NetBSD 的 USENET 新闻组上提出了一个问题。唯一回复了 Cy 问题的人是 FreeBSD 项目的 Jordan Hubbard。由于 Jordan 是第一个也是最后一个回复的人，Cy 决定先试试 FreeBSD。自那时起，他就一直在使用着 FreeBSD（从 2.0.5 开始）。他在 2001 年成为了 Port 提交者，于十一年前成为了源代码提交者。目前，他受雇于一家大型托管服务提供商的加拿大子公司。
