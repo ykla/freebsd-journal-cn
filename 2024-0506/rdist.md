@@ -35,9 +35,9 @@ rdist 可用于管理服务账户中的应用程序文件，例如 mysql、oracl
 
 rdistd(8) 必须在目标服务器的用户搜索路径($PATH)中。
 
-rdist 协商协议版本：systuils/rdist6 port/package 使用 RDIST 第六版本协议，而 sysutils/rdist7（alpha）使用 RDIST 第七版本协议。
+rdist 协商协议版本：systuils/rdist6（软件包、Port）使用 RDIST 第六版本协议，而 sysutils/rdist7（alpha 版本）使用 RDIST 第七版本协议。
 
-## 安装 RDIST
+## 安装 rdist
 
 安装 rdist，只需，
 
@@ -45,19 +45,20 @@ rdist 协商协议版本：systuils/rdist6 port/package 使用 RDIST 第六版�
 pkg install rdist6
 ```
 
- 或者
+或
 
 ```
 pkg install rdist7
 ```
 
-或者使用 ports，以 rdist7 为例，
+若使用 ports，以 rdist7 为例，
 
 ```
-cd /usr/ports/sysutils/rdist7make install clean
+cd /usr/ports/sysutils/rdist7
+make install clean
 ```
 
-## 使用 RDIST
+## 使用 rdist
 
 如前所述，类似于主机 make 使用其配置文件，rdist 使用类似于其配置文件的配置文件。我们必须编写我们自己的 Distfile。
 
@@ -65,7 +66,7 @@ Distfile 有三种类型声明。
 
 ### Distfile
 
-像 make 一样，rdist 会寻找名为 Distfile 和 distfile 的文件。就像我们可以覆盖 make 使用的 Makefile 的名称一样，我们也可以覆盖 rdist Distfile 的名称。
+像 make 一样，rdist 会寻找名为 Distfile（及 distfile）的文件。就像我们可以覆盖 make 所使用的 Makefile 的名称一样，我们同样可以覆盖 rdist Distfile 的名字。
 
 Distfiles 应包含一系列条目，指定要分发（复制）的文件，要将这些文件复制到哪些节点，以及在分发文件后要执行的后续操作。
 
