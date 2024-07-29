@@ -43,19 +43,19 @@ mfsBSD 的作者是 Martin Matuška（`mm@FreeBSD.org`）。回顾 mfsBSD 存储
 
 自此以降，Matuška 维护着 <https://mfsbsd.vx.sk/> ，用于分发 mfsBSD 的镜像。他已经在 GitHub④ 上维护了十七年的 mfsBSD，一路修复了无数 bug，并添加了对 zfsinstall、`/usr` tar 压缩包的支持等。在此期间，mfsBSD 知名度不断增长，
 
-2023 年 5 月（也就是在这篇文章写作的前一年），谷歌编程之夏（Google Summer of Code，GSoC）项目开始了把 mfsBSD 集成到基本系统中的尝试。
+2023 年 5 月（即此篇文章写作的前一年），这个谷歌编程之夏（Google Summer of Code，GSoC）项目开始了把 mfsBSD 集成到基本系统中的尝试。
 
 ## 谷歌编程之夏
 
-这一切是如何开始的呢？我当时正在阅读黑客新闻（可能当时我在拖延大学作业）。这是我第一次知道谷歌编程之夏（GSoC）。那里的一条热门评论说 FreeBSD 项目也参与了。有趣的是，评论中只字未提其他事情，好像其他事情都是不言自明的。
+这一切是如何开始的呢？当时，我正在阅读黑客新闻（可能我正在拖延大学作业）。这是我第一次知道谷歌编程之夏（GSoC）。那里的某条热门评论说 FreeBSD 项目也参与了。有趣的是，评论中只字未提其他事情，好像其他事情都是不言自明的。
 
-我立刻被吸引住了。关于 FreeBSD 最令我惊讶的是：macOS 衍生于 FreeBSD，而且 Netflix 也在其 CDN 中使用了 FreeBSD。谷歌编程之夏的申请过程包括提交项目提案。原则上要求申请者从各组织的项目创意列表中寻找项目主题（除非你有自己的打算）。我看了看列表，对我来说，mfsBSD 项目最有趣，因为其他项目创意似乎比我能接受的内核开发更遥远。
+我立刻被吸引住了。关于 FreeBSD 最令我惊讶的是：macOS 衍生于 FreeBSD，而且 Netflix 也在其 CDN 中使用了 FreeBSD。谷歌编程之夏的申请流程包括提交项目提案。原则上要求申请者从各组织的项目创意列表中寻找项目主题（除非你有自己的打算）。我看了看列表，对我来说，mfsBSD 项目最有趣，因为其他项目创意似乎比我能接受的内核开发更遥远。
 
-在给我的导师们发了封电子邮件后，我收到了 Joseph Mingrone(`jrm@FreeBSD.org`) 和 Juraj Lutter（`otis@FreeBSD.org`） 的回复；进行了简短的 Zoom 通话；几周后我收到了谷歌编程之夏的录取通知。之后，我们进入了所谓的社区粘合期（community bonding period）。在这期间，所有的贡献者和导师们相聚集于虚拟会议，总共开了半个小时，每个人都进行了自我介绍。那是 2023 年 5 月 12 日（星期五）。
+在给我的导师们发了封电子邮件后，我收到了 Joseph Mingrone(`jrm@FreeBSD.org`) 和 Juraj Lutter（`otis@FreeBSD.org`） 的回复，并进行了简短的 Zoom 通话。几周后，我收到了谷歌编程之夏的录取通知。然后，我们进入到了所谓的社区粘合期（community bonding period）。在这期间，所有的贡献者和导师们相聚集于虚拟会议，总共开了半个小时，所有人都进行了自我介绍。那天是 2023 年 5 月 12 日（星期五）。
 
 ## 基本系统中的 mfsBSD
 
-三个月又二十二天后，将 mfsBSD 集成到基本系统中的项目终于完成了，历经许多的反复调试（很多 Bug 是通过谷歌搜索和翻阅所有过去的 GitHub 问题来解决的），测试（使用我的两台笔记本电脑 Thinkpad T440 和 P17 来运行 shell 脚本），并且我向导师提出了许多问题。一整套的三个补丁提交到了 Phabricator⑤。
+三个月又二十二天，将 mfsBSD 集成到基本系统中的项目终于完成了，历经许多的反复调试（很多 Bug 是通过谷歌搜索和翻阅所有过去的 GitHub 问题来解决的），测试（使用我的两台笔记本电脑 Thinkpad T440 和 P17 来运行 shell 脚本），并且我向导师提出了许多问题。一整套的三个补丁提交到了 Phabricator⑤。
 
 简单地说，第一个提交“mfsBSD: Vendor import mfsBSD（mfsBSD: 引入 mfsBSD）”将 mfsBSD 集成为 `contrib/mfsbsd`。主要提交“release: Integrate mfsBSD image build targets into the release tool set（发行: 将 mfsBSD 镜像构建目标集成到发行工具集）”：在 `release/Makefile` 中添加了目标 `mfsbsd-se.img` 和 `mfsbsd-se.iso`（作为 `release/Makefile.mfsbsd`）。最后一次提交“release(7): Add entries for the new mfsBSD build targets（release(7): 为新的 mfsBSD 构建目标添加条目）”在 `share/man/man7/release.7` 上添加了相应的条目。这意味着，现在我们可以在构建所有 FreeBSD 安装介质（如 cdrom、dvdrom、memstick 和 mini-memstick）的同时，在相同的发行版 Makefile 中使用 `make release WITH_MFSBSD=1` 构建 mfsBSD  。
 
