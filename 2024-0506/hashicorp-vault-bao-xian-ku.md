@@ -53,15 +53,15 @@
 
 ## Vault 的甜蜜点
 
-Vault 和其他的 KMS 并非是存储 Webstorm IDE 激活码和护照扫描件的好地方。它对终端用户并不友好，在移动设备上也肯定无法使用。
+Vault（和其他 KMS）并非存储 Webstorm IDE 激活码和护照扫描件的好地方。Vault 对终端用户并不友好，也肯定无法在移动设备上使用。
 
 但如果你正管理着服务器、数据库和网络，那它就非常棒。它可以轻松与 Terraform、Chef、Puppet、Ansible 以及几乎所有带有和使用命令行及终端界面的东西集成。
 
 ## 内部设计
 
-Vault 将所有密钥和信息加密存储在磁盘上。因此，在启动时需要一个主密钥来解锁所有其他密钥。为了避免单一轻量化密钥，Vault 使用 [SSS](https://en.wikipedia.org/wiki/Shamir%27s_secret_sharing) 和 Shamir 的秘密共享将一个庞大而复杂的密钥分割成单独的秘密，这些秘密可重新组合用以解锁 Vault 。在支持 WASM 的现代网页浏览器中可测试 [Shamir 示例](https://bakaoh.com/sss-wasm/%5D)。
+Vault 将所有密钥和信息加密存储在磁盘上。因此，在启动时需要一个主密钥来解锁所有其他密钥。为了避免单一轻量化密钥，Vault 使用 [SSS](https://en.wikipedia.org/wiki/Shamir%27s_secret_sharing) 和 Shamir 的秘密共享将一个庞大又复杂的密钥分割成单独的秘密，这些秘密可重新组合用以解锁 Vault。在支持 WASM 的现代网页浏览器中可测试 [Shamir 示例](https://bakaoh.com/sss-wasm/%5D)。
 
-[SSS](https://en.wikipedia.org/wiki/Shamir%27s_secret_sharing) 有着精巧地可配置的冗余度——比如需要 5 把钥匙中的 3 把即可解锁保险柜。因此，你需要 3 位主系统管理员就能解锁它，但如果都不在场，你可以请求你的律师或会计借用他们的钥匙（如果需要），以达到你的 3 位法定人数。每位管理员都在本地提交其解锁钥匙，并使用 API 质询来防止单一管理员窃取所有的主密钥。
+[SSS](https://en.wikipedia.org/wiki/Shamir%27s_secret_sharing) 有着精巧地可配置的冗余度——比如仅需 5 把钥匙中的 3 把即可解锁保险柜。因此，你需要 3 位主系统管理员就能解锁它。但如果都不在场，你可以请求你的律师、会计借用他们的钥匙（如需要），以达到你的 3 位法定人数。每位管理员都在本地提交其解锁钥匙，并使用 API 质询来防止单一管理员窃取所有的主密钥。
 
 在保险柜解锁后，从用户视角看，它的功能基本等价于其他 HTTP 可访问的键值存储。我们可以存储诸如 ssh 私钥、TLS 证书、常规密码，甚至让保险柜生成定时的限临时权限密码。
 
@@ -89,7 +89,7 @@ vault_enable=YES
 vault_config=/usr/local/etc/vault/vault.hcl
 ```
 
-以及 vault 的配置文件。 这有很多选项，大部分意义自明。对于我们的测试部署，我们会禁用 TLS 并使用回环 IP。
+以及 vault 的配置文件。它很多选项，但大部分意义自明。对于我们的测试部署，我们会禁用 TLS 并使用回环 IP。
 
 ```
 # /usr/local/etc/vault/vault.hcl
@@ -145,7 +145,7 @@ Storage Type       file
 HA Enabled         false
 ```
 
-注意，vault 尚未初始化，并且仍然处于密封状态。让我们解决这个问题：
+注意，vault 尚未初始化，并且仍然处于封闭状态。让我们解决这个问题：
 
 ```
 $ vault operator init --key-shares=3 --key-threshold=2
@@ -173,7 +173,7 @@ Storage Type       file
 HA Enabled         false
 ```
 
-注意，vault 已初始化，但仍处于密封状态。接下来让我们使用新生成的密钥共享来解决这个问题：
+注意，vault 已初始化，但仍处于封闭状态。接下来让我们使用新生成的密钥共享来解决这个问题：
 
 ```
 $ vault operator unseal
@@ -204,13 +204,13 @@ Success! Enabled the file audit device at: file/
 
 ### Shamir 密钥环
 
-现在你已经打开了 Vault ，将你的秘密通过加密的信鸽分发给你选择的秘密保管者。需要进行某种对应的仪式，并确保这些秘密得到充分保护，既要避免失误和其他问题，也要防范摩萨德和朝鲜特工。
+现在你已经打开了 Vault，把你的秘密通过加密的信鸽分发给你选择的秘密保管者。需要进行某种对应的仪式，并确保这些秘密得到充分保护，既要避免失误和其他问题，也要防范摩萨德和朝鲜特工。
 
 到现在，你应该已经准备好存储秘密了。
 
 ### 存储秘密
 
-Vault 具有引擎的概念——涉及简单的键值存储，还有用于 ssh 证书、AWS 和 Google Cloud 集成、RabbitMQ、PostgreSQL 等的引擎。每个引擎都需要单独启用。
+Vault 有引擎这么一个概念——涉及简单的键值存储，还有用于 ssh 证书、AWS 和 Google Cloud 集成、RabbitMQ、PostgreSQL 等的引擎。每个引擎都需要单独启用。
 
 ```
 $ vault secrets enable -version=2 kv
@@ -302,7 +302,7 @@ $ vault write auth/github/map/teams/admin value=admins
 Success! Data written to: auth/github/map/teams/admin
 ```
 
-将这个小策略文件放置在 `/usr/local/etc/vault/admins.hcl` 中：
+将这个小策略文件放置在 `/usr/local/etc/vault/admins.hcl`：
 
 ```
 # 授予 GitHub 管理员组成员在 `kv/` 挂载点中的所有权限
@@ -361,7 +361,7 @@ $ vault kv get -mount=kv -format=yaml blackadder
 
 ### Ansible
 
-有许多 ansible 插件，令人困惑的是，有一个自带的 ansible 模块 “vault”，但与 Hashicorp Vault 不兼容。
+有许多 ansible 插件，令人困惑的是，ansible 自带模块 “vault” 与 Hashicorp Vault 并不兼容。
 
 安装插件，并使用典型的 lookup 功能：
 
@@ -373,7 +373,7 @@ super_secret: “{{lookup('hashivault', 'kv', 'blackadder', version=2)}}”
 
 AppRole 是一种自带的认证方法，专门用于机器和应用程序进行 Vault 认证，随后获取令牌，仅允许获取相关密钥。这通常被称为 cubby-hole（小单间）凭据，因为它只允许解包外层，获取内部密钥。
 
-这些可以通过时间限制、有限的使用次数等进行限制。我们的受信根进程生成此受限密钥 ID，并将其和角色 ID 传递给守护进程以获取其自身凭据。受限密钥 ID 的生成可以设置为仅限制此类凭据的发行。
+这些限制涉及时间限制、使用次数限制等。我们以受信任根进程生成这个受限的秘密 ID，并将其与角色 ID 一同传递给守护进程，以获取其自身的凭证。秘密 ID 可以设置为只有这些凭据才能被生成。
 
 再次启用 `approle` 挂载点，然后创建我们的应用程序特定凭据，因为它是一种身份验证形式。为方便起见，这个 approle 将复用之前使用的 `admins` 组策略，但它应该有一个更为严格的策略，专门用于这个守护程序和服务。
 
@@ -437,7 +437,7 @@ Vault 还提供了代理模式，可以为你处理大部分凭据管理工作�
 
 ## 关停 Vault
 
-在通常情况下， Vault 会保持长达数月之久的开启状态，除非进行补丁和升级。在发生安全事件时，只需中止运行 Vault 守护程序的服务器，或者执行 seal 命令。这会关停 Vault ，并卸载主密钥。
+在通常情况下， Vault 会保持长达数月之久的开启状态，除非进行补丁和升级。在发生安全事件时，只需中止运行 Vault 守护程序的服务器，或者执行命令 `seal`。这会关停 Vault ，并卸载主密钥。
 
 ```
 $ vault operator seal
@@ -446,7 +446,7 @@ Success! Vault is sealed.
 
 ---
 
-在过去二十年间， **DAVE COTTLEHUBER** 一直致力于领先网络上的恶意者至少一步之遥。从 OpenBSD 2.8 开始，到 9.3 以来的九年里，这段时间内他获得了 Ports 提交权限，并且倾向于使用 jail，和晦涩的的函数式编程语言，这与他喜欢分布式系统和边缘非常锋利的电动工具有异曲同工之处。
+在过去二十年间， **DAVE COTTLEHUBER** 一直致力于领先于网络上的恶意者至少一步之遥。从 OpenBSD 2.8 到 9.3 共九年，在这段时间内他获得了 Ports 提交权限。他倾向于使用 jail，和晦涩的的函数式编程语言，这与他喜欢分布式系统和边缘异常锋利的电动工具有异曲同工之处。
 
 
 - 职业牦牛牧人，自 2000 年以来剃 BSD 色的牦牛（**译者注：即一直在开发使用 FreeBSD，解决相关故障**）
