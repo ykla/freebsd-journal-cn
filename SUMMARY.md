@@ -1,7 +1,7 @@
 # Table of contents
 
 * [FreeBSD 杂志简体中文版本](README.md)
-* [编辑日志](bian-ji-ri-zhi.md)
+* [编辑日志](CHANGELOG.md)
 
 ## 2024-0506
 
