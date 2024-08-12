@@ -59,7 +59,7 @@ PR 应该以某种用户可见的方式上改进项目。
 
 ## 流程概述
 
-从顶层来看，提交到 FreeBSD 的过程简单明了，尽管深入细节可能会使这种简单性变得不是那么明显。
+从顶层来看，提交到 FreeBSD 的过程简单明了，尽管深入到细节可能会使这种简洁性变得不是那么明显。
 
 ![](https://freebsdfoundation.org/wp-content/uploads/2024/07/basicflowchart.png)
 
