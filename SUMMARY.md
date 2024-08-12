@@ -7,7 +7,7 @@
 
 * [基本系统中的 mfsBSD](2024-0506/ji-ben-xi-tong-zhong-de-mfsbsd.md)
 * [rdist](2024-0506/rdist.md)
-* [Hashicorp Vault（保险库）](2024-0506/hashicorp-vault-bao-xian-ku.md)
+* [Hashicorp Vault](2024-0506/hashicorp-vault-bao-xian-ku.md)
 * [在 GitHub 上向 FreeBSD 提交 PR](2024-0506/zai-github-shang-xiang-freebsd-ti-jiao-pr.md)
 * [悼念 Mike Karels](2024-0506/dao-nian-mike-karels.md)
 * [2024 年 5 月/6 月来信](2024-0506/2024-nian-5-yue-6-yue-lai-xin.md)
