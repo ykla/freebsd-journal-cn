@@ -53,7 +53,7 @@
 
 ## Vault 的甜蜜点
 
-Vault（和其他 KMS）并非存储 Webstorm IDE 激活码和护照扫描件的好地方。Vault 对终端用户并不友好，也肯定无法在移动设备上使用。
+Vault（和其他 KMS）并非存储 Webstorm IDE 激活码和护照扫描件的好地方。Vault 对终端用户并不友好，也注定无法在移动设备上使用。
 
 但如果你正管理着服务器、数据库和网络，那它就非常棒。它可以轻松与 Terraform、Chef、Puppet、Ansible 以及几乎所有带有和使用命令行及终端界面的东西集成。
 
