@@ -1,4 +1,4 @@
-# Hashicorp Vault（保险库）
+# Hashicorp Vault
 
 - 作者：Dave Cottlehuber
 - 原文链接：<https://freebsdfoundation.org/our-work/journal/browser-based-edition/configuration-management-2/hashicorp-vault/>
