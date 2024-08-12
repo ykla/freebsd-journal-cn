@@ -117,7 +117,7 @@ PR 工作流通常需要一个分支。我们假设你已经按照类似以下�
 % git commit
 ```
 
-你进行的所有提交都必须将你的真实姓名和电子邮件地址作为提交的“作者”。Git 有两个配置字段用于此目的。`user.name` 包含你的真实姓名。`user.email` 包含你的电子邮件地址。你可以这样设置它们：
+你进行的所有提交，都必须把你的真实姓名和电子邮件地址作为提交的“作者”。Git 有两个配置字段用于此目的。`user.name` 是你的真实姓名。`user.email` 是你的电子邮件地址。你可以这样设置它们：
 
 ```
 % git config --global user.name “Pat Bell”
@@ -130,7 +130,7 @@ PR 工作流通常需要一个分支。我们假设你已经按照类似以下�
 
 ## 提交你的 PR
 
-下一步是把 journal-demo 分支推送到 GitHub（与上述类似，用你的 GitHub 用户名替换下面的“user”：
+下一步是把分支 journal-demo 推送到 GitHub（与上述类似，用你的 GitHub 用户名替换下方的“user”：
 
 ```
 % git push github
