@@ -4,4 +4,4 @@
 - 2024.7.9 机器翻译 2024-0506、2024-0102、2024-0304、2023-1112。校对《悼念 Mike Karels》
 - 2024.7.29 校对《基本系统中的 mfsBSD》
 - 2024.7.30 校对《rdist》
-- 2024.8.12 校对《Hashicorp Vault》
+- 2024.8.12 校对《Hashicorp Vault》、《在 GitHub 上向 FreeBSD 提交 PR》
