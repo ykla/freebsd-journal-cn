@@ -3,14 +3,13 @@
 - 作者：**Michael W Lucas**
 - 原文链接：<https://freebsdfoundation.org/our-work/journal/browser-based-edition/configuration-management-2/we-get-letters-may-june
 
-
->亲爱的来信专栏，
+> 亲爱的来信专栏，
 >
->我的雇主有数十台服务器，我不知道有多少个操作系统。其中一台的运行时间比我还长，没人敢碰它。但有个傻瓜把一本电脑杂志留在了洗手间，老板发现了，现在他的脑袋抓住了“配置管理”作为解决所有问题的方法，而数据中心真正需要的是背包核弹。我怎样才能让他明白这些工具不适合我们这种环境？
+> 我的雇主有数十台服务器，我不知道有多少个操作系统。其中一台的运行时间比我还长，没人敢碰它。但有个傻瓜把一本电脑杂志留在了洗手间，老板发现了，现在他的脑袋抓住了“配置管理”作为解决所有问题的方法，而数据中心真正需要的是背包核弹。我怎样才能让他明白这些工具不适合我们这种环境？
 >
->“我已经注定要失败了，问你也不会有什么影响。”
+> “我已经注定要失败了，问你也不会有什么影响。”
 
- 亲爱的失败者，
+亲爱的失败者，
 
 “问我也不会有什么影响。” 好像系统管理员可以承受的痛苦有所限制，或者说他们会失败的程度有限。失败并非可以溢出的整数值。失败是一种社会构建，你的失败已经完全确定。
 
@@ -24,22 +23,34 @@
 
 每台服务器都是独特的雪花，尽管是一种患有狂犬病的雪花。当您开始控制这些系统时，从相对简单的东西开始，具有已知的良好值，在 Unix 变体中基本一致。关于问题有一个陈词滥调：“一切问题都是 DNS 问题。”问题总是 DNS 问题，因为系统管理员不理解 DNS，并且在名称服务器更改时不一致地更新 /etc/resolv.conf。这是我总是开始的地方。您不仅在初步配置管理下使系统生效，还要对当前的 DNS 配置进行审计，作为该项目的先决条件。您的经理会喜欢它。将您的主机按操作系统分组，并将它们的解析器纳入您的管理范围。如果您友善的话，注释该文件。
 
-`# under configuration management# your changes will be overwritten without a human ever seeing themsearch mwl.io tiltedwindmillpress.comnameserver 203.0.113.53nameserver 2001:db8::53`
+```
+# under configuration management
+# your changes will be overwritten without a human ever seeing them
+search mwl.io tiltedwindmillpress.com
+nameserver 203.0.113.53
+nameserver 2001:db8::53
+```
 
 恭喜！您已经控制了 DNS 解析。它会经常更改吗？希望不会。但是您现在可以轻松地进行更改。如果您希望别人认真对待您，您必须始终实施您的威胁，因此请安排每月运行配置管理以更新 resolv.conf。
 
 你可以合法地声称你的主机已经在配置管理下运行，但你还没有利用它让生活变得更轻松。看看另一个常见的服务，每个主机都有但通常配置不一致的：SSH。你的组织可能有像“禁止基于密码的认证”这样的规则。如果没有，等到发生安全事件再提议。绝不能浪费一场好危机！锁定 SSH 并确保它保持锁定的最简单方法是将 sshd_config 纳入集中管理。是的，每个操作系统都有自己的 sshd_config 调整，因为在集成软件之前，Unix 的维护者们总要将其搓捏成自己喜欢的样子，但管理系统使用模板来适应这种不卫生的行为。你可能能在通勤路上睡着的时候背诵默认的 sshd_config，所以确保你的管理配置看起来与默认配置截然不同。
 
-`#Configuration Under Management#Manual Changes Will be OverwrittenPort 9991PasswordAuthentication noSubsystem       sftp    /usr/libexec/sftp-server`
+```
+#Configuration Under Management
+#Manual Changes Will be Overwritten
+Port 9991
+PasswordAuthentication no
+Subsystem       sftp    /usr/libexec/sftp-server
+```
 
-任何系统管理员认为“我只需注释掉默认选项”都会对此感到非常警觉，直到这种感觉蔓延至他们的脑干。
+所有系统管理员都认为“我只需注释掉默认选项”都会对此感到非常警觉，直到这种感觉蔓延至他们的脑干。
 
-逐步，你可以将环境的广泛部分纳入你的控制之下。对受管理服务的更改将变得微不足道。同事们会看到这一点。关于改变不受管理服务的讨论将变成“我们如何将这项服务纳入管理？”利用这些讨论来实施环境中必要的变更，或者让自己得到一个更好的第四个监视器。毁灭是一种社会构建，但通过配置管理，你可以将其转化为一种保护性shell。或者一把撬棍。至少，你可以分享那份痛苦。
+逐步，你可以将环境的广泛部分纳入你的控制之下。对受管理服务的更改将变得微不足道。同事们会看到这一点。关于改变不受管理服务的讨论将变成“我们如何将这项服务纳入管理？”利用这些讨论来实施环境中必要的变更，或者让自己得到一个更好的第四个监视器。毁灭是一种社会构建，但通过配置管理，你可以将其转化为一种保护性 shell。或者一把撬棍。至少，你可以分享那份痛苦。
 
 部署配置管理很少被讨论，但有一个可怕的副作用：控制环境的人，控制着环境。任何变化都必须经过你。人们不能在那台面向公众的服务器上永久启用密码验证，但这并不意味着他们不会向你抱怨。他们会期望你参与解决问题，没有人能够在变成一个解决问题者的情况下生存。那无法根除的声誉污点将只会让你成为公司替罪羊的称号。
 
 幸运的是，你已经知道山羊是干什么用的了。开始吃草吧。
 
-有关于迈克尔的问题？发送至<letters@freebsdjournal.org>。
+有关于 Michael 的问题？请发送至 <letters@freebsdjournal.org>。
 
-**Michael W Lucas** 是 *Networking for System Administrators* 等多本著作的作者，他还犯下了许多其他危害人类文明的罪行。其中的专栏文章集《Dear Abyss》（亲爱的深渊）即将在 Kickstarter 上启动，他的预谋证据确凿。详情请访问 https://mwl.io/ks。
+**Michael W Lucas** 是 _Networking for System Administrators_ 等多本著作的作者，他还犯下了许多其他危害人类文明的罪行。其中的专栏文章集《Dear Abyss》（亲爱的深渊）即将在 Kickstarter 上启动，他的预谋证据确凿。详情请访问 https://mwl.io/ks。
