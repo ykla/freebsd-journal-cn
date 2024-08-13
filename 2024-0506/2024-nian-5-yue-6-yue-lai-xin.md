@@ -43,7 +43,7 @@ PasswordAuthentication no
 Subsystem       sftp    /usr/libexec/sftp-server
 ```
 
-任何想着“我把默认选项注释掉就好了”的系统管理员在看到此处时，就会惊醒。
+任何想着“我把默认选项注释掉就好了”的系统管理员在看到此处时，大脑就会瞬间惊醒。
 
 慢慢的，你就可以将大部分环境都纳入你的掌控之下。对受管理服务的更改将变得微不足道。同事们会看到这一点。关于改变不受管理服务的讨论将变成“我们如何将这项服务纳入管理？”利用这些讨论来实施环境中必要的变更，或者让自己得到一个更好的第四个监视器。毁灭是一种社会构建，但通过配置管理，你可以将其转化为一种保护性 shell。或者一把撬棍。至少，你可以分享那份痛苦。
 
@@ -53,4 +53,6 @@ Subsystem       sftp    /usr/libexec/sftp-server
 
 有关于 Michael 的问题？请发送至 <letters@freebsdjournal.org>。
 
-**Michael W Lucas** 是 *Networking for System Administrators* 等多本著作的作者，他还犯下了许多其他危害人类文明的罪行。其中的专栏文章集《Dear Abyss》（亲爱的深渊）即将在 Kickstarter 上启动，他的预谋证据确凿。详情请访问 https://mwl.io/ks。
+---
+
+**Michael W Lucas** 是 *Networking for System Administrators* 等多本著作的作者，他还犯下了许多其他危害人类文明的罪行。其中的专栏文章集《Dear Abyss》（亲爱的深渊）即将在 Kickstarter（**译者注：美国的一间众筹平台**，该文章集在 <https://www.kickstarter.com/projects/mwlucas/dear-abyss-the-freebsd-journal-letters-column-years-1-6>）上连载，他预谋的证据确凿。详情请访问 <https://mwl.io/ks>。
