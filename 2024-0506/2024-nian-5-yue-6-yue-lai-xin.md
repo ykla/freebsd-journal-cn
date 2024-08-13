@@ -1,4 +1,4 @@
-# 2024 年 5-6 月 来信
+# 2024 年 5-6 月来信
 
 - 作者：**Michael W Lucas**
 - 原文链接：<https://freebsdfoundation.org/our-work/journal/browser-based-edition/configuration-management-2/we-get-letters-may-june>
