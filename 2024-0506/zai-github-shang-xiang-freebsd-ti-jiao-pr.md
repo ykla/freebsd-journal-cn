@@ -18,7 +18,7 @@ FreeBSD 项目对 FreeBSD 系统的各方面均有详细的标准。这些标准
 
 FreeBSD 项目致力于创建文档齐全的集成系统，涉及控制机器的内核以及常见 Unix 工具于用户空间之实现。提交应写得清晰，且包含相关评论（comment）。当行为发生变化，应同步更新相关手册页。例如，当你向命令添加了参数时，也应同时将其添加到手册页上。当库中添加新功能时，应同事把这些功能添加新的 man 页。最后，FreeBSD 项目认为源代码控制系统中的元数据也是系统的一部分，因此提交信息也应符合 FreeBSD 项目的标准。
 
-FreeBSD 项目对 C 和 C++ 的代码规范在 style(9) 中有所说明。这种风格通常被称为“内核规范形式（Kernel Normal Form，KNF）”，即采用了 Kernighan & Ritchie 的《C 程序设计语言》中使用的风格。这是研究 unix（research unix）使用的标准，后来在伯克利的 CSRG（Computer Systems Research Group，计算机系统研究小组）中沿用，进而催生了 BSD 发行版。FreeBSD 项目在这些实践的基础上进行了现代化。这种风格是提交代码的首选风格，且 FreeBSD 系统中大多数代码使用的风格亦如此。有关这些代码的变更贡献应遵循此风格，但某些文件有自己独特的风格。Lua 和 Makefile 也有各自的标准：能在 style.lua(9)、style.Makefile(9) 中找到。
+FreeBSD 项目对 C 和 C++ 的代码规范在 style(9) 中有所说明。这种风格通常被称为“内核规范形式（Kernel Normal Form，KNF）”，即采用了 Kernighan & Ritchie 的《C 程序设计语言》中使用的风格。这是研究 unix（research unix）使用的标准，后来在伯克利的 CSRG（Computer Systems Research Group，计算机系统研究小组）中沿用，进而催生了 BSD 发行版。FreeBSD 项目在这些实践的基础上进行了现代化。这是提交代码的首选风格，且 FreeBSD 系统中大多数代码使用的风格亦如此。有关这些代码的变更贡献应遵循此风格，但某些文件有自己独特的风格。Lua 和 Makefile 也有各自的标准：能在 style.lua(9)、style.Makefile(9) 中找到。
 
 提交信息（Commit messages）采用了使用 git 的开源社区的通行形式。第一行应概述整个提交，字数在 50 个字符以内。其余部分的提交信息应陈述提交内容及原因。如果改动是显而易见的，最好只解释原因。每行字数不超过 72 个字符。应使用一般现在时，采用祈使语气书写。结尾部分包含一系列 Git 称为“trailers（预告片）”的行，项目用这些行来跟踪有关提交的附加数据，例如提交的来源、与 bug 相关的详细信息等。有关提交日志消息的详细说明，请参阅提交者指南的“[提交日志消息](https://docs.freebsd.org/en/articles/committers-guide/#commit-log-message)”部分。
 
