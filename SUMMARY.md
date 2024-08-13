@@ -10,7 +10,7 @@
 * [Hashicorp Vault](2024-0506/hashicorp-vault-bao-xian-ku.md)
 * [在 GitHub 上向 FreeBSD 提交 PR](2024-0506/zai-github-shang-xiang-freebsd-ti-jiao-pr.md)
 * [悼念 Mike Karels](2024-0506/dao-nian-mike-karels.md)
-* [2024 年 5 月/6 月来信](2024-0506/2024-nian-5-yue-6-yue-lai-xin.md)
+* [2024 年 5-6 月来信](2024-0506/2024-nian-5-yue-6-yue-lai-xin.md)
 * [嵌入式 FreeBSD 面包板](2024-0506/qian-ru-shi-freebsdbreadcrumbs.md)
 * [TCP/IP 历险记：TCP BBLog](2024-0506/tcpip-li-xian-ji-tcp-bblog.md)
 * [实用软件：开发定制 Ansible 模块](2024-0506/shi-yong-ruan-jian-kai-fa-ding-zhi-ansible-mo-kuai.md)
