@@ -4,7 +4,7 @@
 - 原文链接：<https://freebsdfoundation.org/our-work/journal/browser-based-edition/configuration-management-2/submitting-github-pull-requests-to-freebsd/>
 
 
-为了让人们更易贡献，FreeBSD 项目在最近支持了 GitHub 上的拉取请求（pull request，PR）。我们发现使用缺陷跟踪器 Bugzilla 接受补丁会造成许多有用的贡献被搁置直至过期。因此我们建议贡献者首选 GitHub PR 来进行修改，仅把 Bug 放在 Bugzilla。虽然 Phabricator 对开发人员很有效，但我们也发现，在那里极易丢失外部贡献者的提交。除非你与直接告诉你使用 Phabricator 的 FreeBSD 开发人员一起工作，否则建议还是用 GitHub。GitHub PR 更易跟踪和处理，并且大部分开源社区对此都更为熟悉。我们希望有更快的决策，更少的被放弃的提交，能为所有人提供更佳的体验。
+为了让人们更易贡献，FreeBSD 项目在最近支持了 GitHub 上的拉取请求（pull request，PR）。我们发现使用缺陷跟踪器 Bugzilla 接受补丁会造成许多有用的贡献被搁置直至过期。因此我们建议贡献者首选 GitHub PR 来进行修改，仅把 Bug 放在 Bugzilla。虽然 Phabricator 对开发人员很有效，但我们也发现，在 Phabricator 极易失去外部贡献者的贡献。除非你和直接让你用 Phabricator 的 FreeBSD 开发人员一起工作，否则建议还是用 GitHub。GitHub PR 更易跟踪和处理，并且大部分开源社区对此都更为熟悉。我们希望有更快的决策，更少的被放弃的提交，能为所有人提供更佳的体验。
 
 由于 FreeBSD 的志愿者时间有限，本项目制定了标准、规范和政策，以合理规划志愿者的时间。你需要了解这些内容才能提交好的 PR。我们有一些自动化程序来帮助提交者修复常见错误，从而使志愿者可以审查几乎就绪的提交。请理解我们仅接受最有用的贡献，而某些贡献我们无法接受。
 
