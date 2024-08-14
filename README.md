@@ -10,7 +10,7 @@
 
 freebsd journal in Simplified Chinese
 
-原文位于 <https://freebsdfoundation.org/our-work/journal/>
+原文位于：<https://freebsdfoundation.org/our-work/journal/>
 
-<https://freebsd-journal-cn.bsdcn.org/>
+本书部署网站：<https://freebsd-journal-cn.bsdcn.org/>
 
