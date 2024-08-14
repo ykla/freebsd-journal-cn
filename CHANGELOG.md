@@ -6,3 +6,4 @@
 - 2024.7.30 校对《rdist》
 - 2024.8.12 校对《Hashicorp Vault》、《在 GitHub 上向 FreeBSD 提交 PR》
 - 2024.8.14 校对《2024 年 5-6 月来信》
+- 2024.8.15 校对《嵌入式 FreeBSD 面包板》
