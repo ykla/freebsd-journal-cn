@@ -243,7 +243,7 @@ git config --global gpg.ssh.allowedSignersFile “~/.config/git/allowed_signers�
 git config --global pull.ff only
 ```
 
-当然，你也可以为其创建别名。这是一项“一次性”的设置。
+当然，你也可以为其创建别名。这是一项“一次但永久性”的设置。
 
 在查看差异时，我一直在想为什么 git 使用 a/ 和 b/ 来区分文件。我不需要这些，文件名已经可以代表它们自己。我发现可以通过以下选项禁用此行为：
 
