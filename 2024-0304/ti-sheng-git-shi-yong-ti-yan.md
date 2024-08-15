@@ -251,19 +251,19 @@ git config --global pull.ff only
 git config --global diff.noprefix true
 ```
 
-说到差异，我想至少看到我更改周围的 5 行内容。 这是一个个人偏好，但任何人都可以使用此选项设置自己喜欢的方式：
+说到差异，我想至少看到我更改周围的 5 行内容。这是一个个人偏好，但任何人都可以使用此选项设置自己喜欢的方式：
 
 ```sh
 git config --global diff.context 5
 ```
 
-在像 FreeBSD 这样的国际项目上工作教会我日期可以有多种书写方式。git 使用的默认显示方式是 `Fri Mar 01 12:34:56 2024`。 这并没有什么，但我习惯于以下方式：`2024-03-01 12:34:56`。 这个选项将日期设置为我喜欢的样子：
+在像 FreeBSD 这样的国际项目上工作教会我日期可以有多种书写方式。git 使用的默认显示方式是 `Fri Mar 01 12:34:56 2024`。这并没有什么，但我习惯于以下方式：`2024-03-01 12:34:56`。这个选项将日期设置为我喜欢的样子：
 
 ```sh
 git config --global log.date iso
 ```
 
-我发现，另外一件奇怪的事情是 git 在运行 `git branch` 时列出分支的顺序。 我希望最近提交的分支显示在顶部，而不是其他随机的顺序。 要更改这个设置，我的 `.gitconfig` 包含这个内容：
+我发现，另外一件奇怪的事情是 git 在运行 `git branch` 时列出分支的顺序。我希望最近提交的分支显示在顶部，而不是其他随机的顺序。要更改这个设置，我的 `.gitconfig` 包含这个内容：
 
 ```sh
 git config --global branch.sort -committerdate
@@ -273,7 +273,7 @@ git config --global branch.sort -committerdate
 
 ## 结论
 
-随着时间的推移，我的配置可能会不断增加，因为我大概发现了其他有用的选项。 Git 配置十分灵活。默认设置对大多数人来说都很好，而且也很容易修改。这篇文章应该可以帮助你开始编写自己的配置，可在使用 git 时减少某些磨合问题。
+随着时间的推移，我的配置不断增加，因为我大概发现了其他有用的选项。Git 配置十分灵活。默认设置对大多数人来说都很好，而且也很容易修改。这篇文章应该可以帮助你开始编写自己的配置，可在使用 git 时减少某些磨合问题。
 
  参考资料：
 
@@ -285,4 +285,4 @@ git config --global branch.sort -committerdate
 
 ---
 
-**BENEDICT REUSCHLING** 是 FreeBSD 项目的文档提交者和文档工程团队成员。他曾任两届 FreeBSD 核心团队成员。他在德国达姆施塔特应用技术大学管理着一个大数据集群。他还为本科生教授“Unix 开发者”这门课。Benedict 是 bsdnow.tv 每周播客的主持人。
+**BENEDICT REUSCHLING** 是 FreeBSD 项目的文档提交者和文档工程团队成员。他曾任两届 FreeBSD 核心团队成员。他在德国达姆施塔特应用技术大学管理着一个大数据集群。他还为本科生教授着“Unix 开发者”这门课。Benedict 是 bsdnow.tv 每周播客的主持人。
