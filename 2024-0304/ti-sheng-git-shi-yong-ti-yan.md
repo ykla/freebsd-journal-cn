@@ -160,4 +160,6 @@ allowed_signers 的内容如下：
 
 [https://blog.dbrgn.ch/2021/11/16/git-ssh-signatures/](https://blog.dbrgn.ch/2021/11/16/git-ssh-signatures/)
 
-BENEDICT REUSCHLING 是 FreeBSD 项目的文档提交者和文档工程团队成员。过去，他曾担任 FreeBSD 核心团队成员两届。他在德国达姆施塔特应用科技大学管理一个大数据集群。他还为本科生教授“Unix 开发者课程”。Benedict 是每周 bsdnow.tv 播客的主持人之一。
+---
+
+**BENEDICT REUSCHLING** 是 FreeBSD 项目的文档提交者和文档工程团队成员。他曾任两届 FreeBSD 核心团队成员。他在德国达姆施塔特应用技术大学管理着一个大数据集群。他还为本科生教授“Unix 开发者课程”。Benedict 是 bsdnow.tv 每周播客的主持人。
