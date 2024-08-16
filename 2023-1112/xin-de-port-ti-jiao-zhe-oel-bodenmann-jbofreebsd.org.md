@@ -4,7 +4,7 @@
 - 原文链接：<https://freebsdfoundation.org/our-work/journal/browser-based-edition/freebsd-14-0/new-ports-committer-joel-bodenmann/>
 
 
-![](https://freebsdfoundation.org/wp-content/uploads/2024/01/Bodenmann.jpg)
+![oel Bodenmann](https://freebsdfoundation.org/wp-content/uploads/2024/01/Bodenmann.jpg)
 
  **TJ：** 你好，Joel，欢迎你加入 FreeBSD 项目。你能给我介绍一下你自己以及你喜欢从事的技术项目吗？
 
