@@ -1,4 +1,4 @@
-# FreeBSD 期刊简体中文版本
+# FreeBSD 中文期刊
 
 > **PDF 文档**
 >
