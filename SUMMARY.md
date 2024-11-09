@@ -1,6 +1,6 @@
 # Table of contents
 
-* [FreeBSD 期刊简体中文版本](README.md)
+* [FreeBSD 中文期刊](README.md)
 * [编辑日志](CHANGELOG.md)
 
 ## 2024-0506
