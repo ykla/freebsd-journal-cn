@@ -8,27 +8,27 @@
 >
 >本文操作设定基于 FreeBSD。如果你更喜欢基于 OpenBSD 的版本，可以点击[这里](https://it-notes.dragas.net/2023/04/03/make-your-own-vpn-wireguard-ipv6-and-ad-blocking-included/)查看。
 
-VPN 是一种基础工具，用于安全地连接到自己的服务器和设备。许多人出于各种原因使用商业 VPN，从不信任自己的服务提供商（尤其是在公共热点连接时），到希望通过不同的 IP 地址“上网”，可能是来自另一个国家。在这里，我想突出一些已被引入基础堆栈的新特性——其中许多是默认启用的，有些可能需要特别激活。每个功能都会描述一些细节，帮助改善网络体验。
+VPN 是一种基础工具，用于安全地连接到自己的服务器和设备。许多人出于各种原因使用商业 VPN，从不信任自己的服务提供商（尤其通过公共热点连接时），到希望通过不同的 IP 地址（可能是来自另一个国家）“上网”。在这里，我想突出一些已被引入基础堆栈的新特性——其中许多是默认启用的，有些可能需要专门激活。每个功能都会描述一些细节，帮助改善网络体验。
 
-无论出于何种原因，解决方案从未匮乏。我一直在设置管理 VPN，以便服务器和/或客户端使用安全通道相互通信。最近，我[已在所有设备上启用 IPv6 连接](https://my-notes.dragas.net/posts/2023/the-urgency-of-transitioning-to-ipv6/)（包括桌面/服务器和移动设备），并且我需要快速创建一个节点，将一些网络聚合在一起，并允许它们通过 IPv6 连接到外部网络。我使用并将要描述的工具是：
+无论出于何种原因，解决方案从未匮乏。我一直在设置管理 VPN，以便服务器/客户端使用安全通道相互通信。最近，我[已在所有设备上启用 IPv6 连接](https://my-notes.dragas.net/posts/2023/the-urgency-of-transitioning-to-ipv6/)（包括桌面/服务器和移动设备），并且我需要快速创建一个节点，将一些网络聚合在一起，并让它们通过 IPv6 连接到外部网络。我使用并将要描述的工具是：
 
-* **VPS** – 在这个例子中，我使用了基本的 Hetzner Cloud VPS，但任何提供 IPv6 连接的服务商都可以——如果你需要 IPv6，当然。
-* **[FreeBSD](https://www.freebsd.org/)** – 一个多功能、稳定和安全的操作系统。
+* **VPS** – 在本例子中，我使用了基本的 Hetzner Cloud VPS，但所有提供 IPv6 连接的服务商都可以——如果你的确需要 IPv6。
+* **[FreeBSD](https://www.freebsd.org/)** – 一款多功能、稳定和安全的操作系统。
 * **[WireGuard](https://www.wireguard.com/)** – 轻量级、安全，并且不会占用太多带宽，所以在移动设备上也比较省电。当没有流量时，它根本不会传输/接收任何数据。得到了所有主要桌面和服务器操作系统以及 Android 和 iOS 设备的良好支持。
-* **[Unbound](https://nlnetlabs.nl/projects/unbound/about/)** – 可以直接向根 DNS 服务器发起查询，而不是通过转发器。它还允许插入拦截列表，产生类似 Pi-Hole 的效果（即广告拦截）。
-* **[SpamHaus](https://www.spamhaus.org/)** 列表 – 立即阻止与黑名单用户的连接。
+* **[Unbound](https://nlnetlabs.nl/projects/unbound/about/)** – 可以直接向根 DNS 服务器发起查询，而非转发器。它还允许插入拦截列表，产生类似 Pi-Hole 的效果（即广告拦截）。
+* **[SpamHaus](https://www.spamhaus.org/)** 列表 – 立即阻断与黑名单用户的连接。
 
 ### 步骤 1：激活 VPS 并安装 FreeBSD
 
-首先，激活一个 VPS 并安装 FreeBSD。在 Hetzner Cloud 控制台中，可能没有预构建的 FreeBSD 镜像，只有 Linux 发行版的选项。别担心，选择任何一个 Linux 发行版创建 VPS。创建完成后，FreeBSD ISO 镜像将出现在“ISO 镜像”中。只需插入虚拟光驱，重启 VPS，FreeBSD 安装程序就会出现在控制台中。
+首先，激活一台 VPS，再安装 FreeBSD。在 Hetzner Cloud 控制台中，可能没有预构建的 FreeBSD 镜像，只有 Linux 发行版能选。别担心，随便选择一个 Linux 发行版创建 VPS。创建完成后，FreeBSD ISO 镜像将出现在“ISO 镜像”中。只需插入虚拟光驱，重启 VPS，FreeBSD 安装程序就会出现在控制台中。
 
-我不会详细说明，操作非常简单。唯一需要注意的一点（在 Hetzner Cloud VPS 中）是，IPv4 使用“DHCP”进行配置，但暂时不要配置 IPv6。IPv6 将稍后配置。
+我不会详细说明，操作非常简单。唯一需要注意的一点（在 Hetzner Cloud VPS 中）是，IPv4 使用“DHCP”进行配置，但暂时不要配置 IPv6。IPv6 将在稍后配置。
 
 安装所有 FreeBSD 更新（使用 `freebsd-update fetch install` 命令）并重启。
 
 ### 步骤 2：安装 WireGuard
 
-在 FreeBSD 上，WireGuard 现在作为内核模块提供，用户空间工具可以通过 `pkg install wireguard-tools` 包管理器安装。这意味着你可以轻松地将它与系统上的其他软件一起更新。
+在 FreeBSD 上，现在 WireGuard 作为内核模块提供，可以用包管理器通过 `pkg install wireguard-tools` 安装用户空间工具。这意味着你可以轻松地将它与系统上的其他软件一起更新。
 
 ### 步骤 3：配置 VPS 上的 IPv6
 
@@ -90,7 +90,7 @@ service wireguard start
 wg
 ```
 
-至于防火墙，FreeBSD 默认没有配置 `pf`。在我的设置中，我倾向于阻止不需要的流量，而对可能有用的流量保持宽松。然而，我喜欢把“坏家伙”挡在外面，因此我使用黑名单。`pf` 允许在运行时将元素插入和移出表格，所以防火墙可以根据需要进行配置。
+至于防火墙，FreeBSD 默认未配置 `pf`。在我的设置中，我倾向于阻断不需要的流量，而对可能有用的流量保持宽松。然而，我喜欢把“坏家伙”挡在外面，因此我使用黑名单。`pf` 允许在运行时将元素插入和移出表格，所以防火墙可以根据需要进行配置。
 
 为了下载并应用 Spamhaus 列表，我使用了一个简单但有效的脚本，它在互联网上可以找到，但原本是为 OpenBSD 设计的。
 
@@ -154,7 +154,7 @@ pass in on $ext_if proto udp to port 51820
 pass out on $ext_if
 ```
 
-这是一个非常简单的配置：它阻止了从 Spamhaus 下载的列表中列出的所有流量，允许 WireGuard 网络通过 NAT 访问公共接口，允许 IPv6 的 ICMP 流量（这是网络正常运行所必需的），同时阻止进入 WireGuard IPv6 网络的流量（记住，IP 地址将是公开的并且可以直接访问，所以我们默认不想暴露我们的设备）。所有通过 WireGuard 接口的流量都会被允许通过。然后，所有其他流量都将被阻止，并且会指定一些例外规则，比如允许 SSH 和 WireGuard 连接（当然）。还会允许流量从公共网络接口外发。
+这是一个非常简单的配置：它阻止了从 Spamhaus 下载的列表中列出的所有流量，允许 WireGuard 网络通过 NAT 访问公共接口，允许 IPv6 的 ICMP 流量（这是网络正常运行所必需的），同时阻断进入 WireGuard IPv6 网络的流量（记住，IP 地址是公开的并且可以直接访问，所以我们默认不想暴露我们的设备）。所有通过 WireGuard 接口的流量都会被允许通过。然后，所有其他流量都将被阻止，并且会指定一些例外规则，比如允许 SSH 和 WireGuard 连接（当然）。还会允许流量从公共网络接口外发。
 
 将此配置保存到 `/etc/pf.conf` 文件中。
 
@@ -165,7 +165,7 @@ service pf enable
 service pf start
 ```
 
-你可能会被系统踢出。别担心，只需重新连接即可。`pf` 正在执行其工作。
+你可能会被系统踢出去。别担心，只需重新连接即可。`pf` 正在执行其工作。
 
 如果一切顺利，防火墙应该已经加载了新规则。
 
@@ -177,7 +177,7 @@ service pf start
 pkg install unbound
 ```
 
-不久前，我找到一个脚本并稍作修改。虽然我不记得从哪里得到的，但我会把它放在这里，而不引用原作者。
+不久前，我找到了一个脚本并稍作修改。虽然我不记得从哪里得到的，但我会把它放在这里，而不引用原作者。
 
 ### 创建更新 Unbound 广告拦截的脚本 `/usr/local/sbin/unbound-adhosts.sh`：
 
@@ -229,7 +229,7 @@ service unbound reload 1>/dev/null
 exit 0
 ```
 
-保存脚本后，使其可执行并运行：
+保存脚本后，使其可执行，然后运行：
 
 ```sh
 chmod a+rx /usr/local/sbin/unbound-adhosts.sh
@@ -283,7 +283,7 @@ service unbound enable
 service unbound start
 ```
 
-如果一切设置正确，`unbound` 将能够响应发送到 `172.14.0.1` 和 `2a01:4f8:cafe:cafe:100::1` 的 DNS 请求。接下来，配置 WireGuard 客户端。创建一个新的配置文件，插入 "172.14.0.2/32, 2a01:4f8:cafe:cafe:100::2/128"（这些地址稍后将在服务器的对等配置中使用）。将 DNS 服务器地址设置为 "172.14.0.1" 和/或其相应的 IPv6 地址（在此示例中为 `2a01:4f8:cafe:cafe:100::1` —— 你的地址将不同）。在对等配置中插入服务器的相关信息，包括其公钥、IP 地址和端口（在此示例中，端口为 51820）以及允许的地址（设置 "`0.0.0.0/0, ::0/0`" 意味着 "所有连接将通过 WireGuard" —— 所有流量将通过 VPN，无论是 IPv4 还是 IPv6）。
+如果一切设置正确，`unbound` 将能够响应发送到 `172.14.0.1` 和 `2a01:4f8:cafe:cafe:100::1` 的 DNS 请求。接下来，配置 WireGuard 客户端。创建一个新的配置文件，插入 "172.14.0.2/32, 2a01:4f8:cafe:cafe:100::2/128"（这些地址稍后将在服务器的对等配置中使用）。将 DNS 服务器地址设置为 "172.14.0.1" 和其相应的 IPv6 地址（在此示例中为 `2a01:4f8:cafe:cafe:100::1` —— 你的地址将不同）。在对等配置中插入服务器的相关信息，包括其公钥、IP 地址和端口（在此示例中，端口为 51820）以及允许的地址（设置 "`0.0.0.0/0, ::0/0`" 意味着 "所有连接将通过 WireGuard" —— 所有流量将通过 VPN，无论是 IPv4 还是 IPv6）。
 
 每种设备的配置程序有所不同（Android、iOS、MikroTik、Linux 等），但基本上只需在服务器和客户端都创建正确的配置即可。
 
@@ -337,4 +337,4 @@ echo “@daily /usr/local/sbin/update-blocklists.sh” >> /etc/crontab
 
 ---
 
-**Stefano Marinelli** 是一位 IT 顾问，拥有超过二十年的 IT 咨询、培训、研究和出版经验。他的专业领域涵盖了多种操作系统，尤其专注于 *BSD 系统（如 FreeBSD、NetBSD、OpenBSD、DragonFlyBSD）和 Linux 系统。Stefano 还是 BSD Cafe 的咖啡师，这是一个活跃的 *BSD 爱好者社区中心。他还领导了博洛尼亚大学的 FreeOsZoo 项目，为虚拟机提供开放源代码操作系统镜像。
+**Stefano Marinelli** 是一位 IT 顾问，拥有二十余年的 IT 咨询、培训、研究和出版经验。他的专业领域涵盖了多种操作系统，尤其专注于 *BSD 系统（如 FreeBSD、NetBSD、OpenBSD、DragonFlyBSD）和 Linux 系统。Stefano 还是 BSD Cafe 的咖啡师，这是一家活跃的 *BSD 爱好者社区中心。他还领导了博洛尼亚大学的 FreeOsZoo 项目，为虚拟机提供开放源代码操作系统镜像。
