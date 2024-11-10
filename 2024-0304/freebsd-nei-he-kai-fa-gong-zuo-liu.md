@@ -3,11 +3,11 @@
 - 原文链接：[FreeBSD Kernel Development Workflow](https://freebsdfoundation.org/our-work/journal/browser-based-edition/development-workflow-and-ci/freebsd-kernel-development-workflow/)
 - 作者：Navdeep Parhar
 
-内核就像其他软件一样，也是采用典型的工作流程进行开发，即克隆、编辑、构建、测试、调试和提交。但与用户空间软件不同，内核开发必然涉及反复重启（以及死锁和内核恐慌），而且没有专用的测试系统，开发过程会非常不便。本文描述了一种适用于内核开发的实用设置，使用虚拟机进行测试和调试。
+就像其他软件一样，内核也是采用典型的工作流程进行开发，即克隆、编辑、构建、测试、调试和提交。但与用户空间软件不同，内核开发必然涉及反复重启（以及死锁和内核 panic），而且没有专用的测试系统，开发过程会非常不便。本文介绍了一种适用于内核开发的实用设置，使用虚拟机进行测试和调试。
 
 基于虚拟机的内核开发设置有许多优点：
 
-- **隔离性**：虚拟机重启或崩溃不会影响主机系统。
+- **隔离性**：虚拟机重启和崩溃不会影响主机系统。
 - **速度**：虚拟机的重启速度远快于裸机系统。
 - **可调试性**：虚拟机易于设置用于实时源代码级的内核调试。
 - **灵活性**：虚拟机可以用来构建“盒中网络”，进行网络代码的开发，而无需实际的物理网络。例如，可以在飞机上的笔记本上进行开发。
@@ -39,7 +39,7 @@ WSDIR=/ws
 
 ### 源代码树
 
-FreeBSD 源代码可以通过 [https://git.FreeBSD.org/src.git](https://git.freebsd.org/src.git) 获取。新的开发工作通常在主分支上进行，适用于最近稳定分支的更改会在经过一段时间的稳定期后从主分支合并回去。
+可以通过 [https://git.FreeBSD.org/src.git](https://git.freebsd.org/src.git) 下载 FreeBSD 源代码。新的开发工作通常在主分支上进行，适用于最近稳定分支的更改会在经过一段时间的稳定期后从主分支合并回去。
 
 通过克隆官方仓库或镜像中的分支来创建本地工作副本。
 
@@ -230,7 +230,7 @@ disk0_name=”disk0.img”
 
 将 FreeBSD 安装在新虚拟机中最简单的方法是使用一个已经预安装 FreeBSD 的磁盘镜像。虚拟机将启动默认内核或开发内核，其用户空间需要与两者兼容，因此最好使用与开发树相同版本的 FreeBSD。
 
-可以从 FreeBSD.org 获取发布版本或主分支和稳定分支的最新快照的磁盘镜像。
+可以从 FreeBSD.org 获取 RELEASE 版本和 main 分支，STABLE 分支的最新快照的磁盘镜像。
 
 ```sh
 # fetch https://download.freebsd.org/releases/VM-IMAGES/14.0-RELEASE/amd64/Latest/FreeBSD-14.0-RELEASE-amd64.raw.xz
@@ -382,7 +382,7 @@ builder# vm console vm0
   ...
   ```
 
-- 虚拟机可以通过 SSH 从宿主机和桌面访问（使用虚拟机宿主机作为跳板）。
+- 虚拟机可以通过 SSH 从宿主机和桌面访问（使用虚拟机物理机作为跳板）。
 
   ```sh
   builder# ssh root@vm0
@@ -392,9 +392,9 @@ builder# vm console vm0
 
 ## 在虚拟机中进行 PCIe 设备驱动开发
 
-PCI 直通允许宿主机将 PCIe 设备导出（通过直通）到虚拟机，从而让虚拟机直接访问 PCIe 设备。这使得可以在虚拟机内进行真实 PCIe 硬件的设备驱动开发。
+PCI 直通允许物理机将 PCIe 设备导出（通过直通）到虚拟机，从而让虚拟机直接访问 PCIe 设备。能在虚拟机内进行真实 PCIe 硬件的设备驱动开发。
 
-设备由宿主机上的 ppt 驱动程序声明，并在虚拟机中显示为连接到虚拟机的 PCIe 根复合体。系统上的 PCIe 设备由 BSF（或 BDF）三元组标识，这在虚拟机中可能会有所不同。
+设备由物理机上的 ppt 驱动程序声明，并在虚拟机中显示为连接到虚拟机的 PCIe 根复合体。系统上的 PCIe 设备由 BSF（或 BDF）三元组标识，这在虚拟机中可能会有所不同。
 
 使用 `pciconf` 或 `vm-bhyve` 获取系统中 PCIe 设备的列表，并记录需要直通的设备的 BSF 三元组。注意，`pciconf` 选择器以冒号分隔 BSF，而 `bhyve/vmm/ppt` 使用斜杠（/）分隔来标识设备。例如，选择器为“none193@pci0:136:0:4”的 PCIe 设备，在 bhyve/ppt 标注中是“136/0/4”。
 
@@ -453,7 +453,7 @@ none1@pci0:0:7:0:       020000   00   00   1425   640d   1425   0000
 
 ### 编辑
 
-在桌面上编辑源代码树，并将其发送到构建机。
+在桌面上编辑源代码，再将其发送到构建机。
 
 ```sh
 desktop$ cd ~/work/ws/dev
@@ -495,7 +495,7 @@ builder# wsmake buildkernel
 
 ### 测试
 
-选择下次重启时使用的测试内核，或者永久性地设置。
+选择下次重启时使用的测试内核，或永久性地设置。
 
 ```sh
 vm0# nextboot -k ${WS}
@@ -534,7 +534,7 @@ vm0# sysctl debug.kdb.current=gdb
 
 ### 进入调试器
 
-1. 自动：在发生 panic 时。如果设置了此 `sysctl`，内核会在发生 panic 时进入调试器（而不是重启）。
+1. 自动：在发生 panic 时。如果设置了此 `sysctl`，内核会在发生 panic 时进入调试器（而非重启）。
 
    ```sh
    vm0# sysctl debug.debugger_on_panic
@@ -574,7 +574,7 @@ builder# gdb -iex ‘set sysroot /ws/sysroot’ -ex ‘target remote /dev/nmdm-v
 
 ### 核心转储分析
 
-与实时调试相同，只是目标是 vmcore，而不是远程调试。
+与实时调试相同，只是目标是 vmcore，而非远程调试。
 
 ```sh
 builder# gdb -iex ‘set sysroot ${WSDIR}/sysroot’ -ex ‘target vmcore ${VMCORE}’ ${WSDIR}/sysroot/boot/${INSTKERNNAME}/kernel
@@ -585,4 +585,4 @@ builder# gdb -iex ‘set sysroot /ws/sysroot’ -ex ‘target vmcore /ws/tmp/vmc
 
 ---
 
-**Navdeep Parhar** 已经使用 FreeBSD 超过 20 年，并自 2009 年起成为 FreeBSD 开发者。他目前在 Chelsio Communications 工作，负责为 Chelsio Terminator 系列网卡开发 FreeBSD 软件。他是 cxgbe(4) 驱动程序的作者和维护者，感兴趣的领域包括网络栈、设备驱动程序、一般内核调试和分析。
+**Navdeep Parhar** 使用 FreeBSD 已逾 20 年，自 2009 年起成为 FreeBSD 开发者。他目前在 Chelsio Communications 工作，负责为 Chelsio Terminator 系列网卡开发 FreeBSD 软件。他是 cxgbe(4) 驱动程序的作者和维护者，感兴趣的领域包括网络栈、设备驱动程序、通用内核调试和分析。
