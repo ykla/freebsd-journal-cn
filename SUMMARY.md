@@ -39,7 +39,7 @@
 * [if\_ovpn 还是 OpenVPN](2024-0102/ifovpn-hai-shi-openvpn.md)
 * [SR-IOV 已成为 FreeBSD 中重要的功能](2024-0102/sriov-yi-cheng-wei-freebsd-zhong-zhong-yao-de-gong-neng.md)
 * [FreeBSD 接口 API（IfAPI）](2024-0102/freebsd-jie-kou-apiifapi.md)
-* [BATMAN：更佳的可移动 ad-hoc 网络方式](2024-0102/batman-geng-jia-de-ke-yi-dong-adhoc-wang-luo-fang-shi.md)
+* [BATMAN：更优的可移动热点网络方式](2024-0102/batman-geng-jia-de-ke-yi-dong-adhoc-wang-luo-fang-shi.md)
 * [配置自己的 VPN——内置 FreeBSD、Wireguard、IPv6 和广告拦截（基于 FreeBSD）](2024-0102/zhi-zuo-zi-ji-de-vpn-nei-zhi-freebsdwireguardipv6-he-guang-gao-lan-jie.md)
 * [实用软件：使用 Zabbix 监控主机](2024-0102/shi-yong-ruan-jian-shi-yong-zabbix-jian-kong-zhu-ji.md)
 
