@@ -1,4 +1,4 @@
-# SR-IOV 已成为 FreeBSD 中重要的功能
+# SR-IOV 已成为 FreeBSD 的重要功能
 
 - 原文链接：[SR-IOV is a First Class FreeBSD Feature](https://freebsdfoundation.org/our-work/journal/browser-based-edition/networking-10th-anniversary/sr-iov-is-a-first-class-freebsd-feature/)
 - 作者：Mark McBride
