@@ -1,25 +1,25 @@
-# 现在用 Webhooks 触发我
+# 现在用 Webhook 触发我
 
 - 原文链接：[Kick Me Now with Webhooks](https://freebsdfoundation.org/our-work/journal/browser-based-edition/freebsd-14-0/kick-me-now-with-webhooks/)
 - 作者：Dave Cottlehuber
 
 ## 什么是 Webhook，为什么我需要它？
 
-Webhook 是一种基于 HTTP 的事件驱动的远程回调协议，脚本和任务几乎可通过所有编程语言和工具轻松调用。Webhook 的优点在于其广泛应用和简单性。仅一个简单的 HTTP 链接，你就可以请求远程服务器执行任务，如调暗灯光、部署代码和代表你运行任意命令。
+Webhook 是一种基于 HTTP 的事件驱动的远程回调协议几乎可通过所有编程语言和工具轻松调用脚本和任务。Webhook 的优点在于其广泛应用和简单性。仅一个简单的 HTTP 链接，你就可以请求远程服务器执行任务，如调暗灯光、部署代码和代表你运行任意命令。
 
-最简单的 Webhook 可能只是智能手机浏览器中的书签链接，更复杂的版本，则可能需要强认证和授权。
+最简单的 Webhook 可能只是智能手机浏览器中的书签链接；更为复杂的版本，则可能需要强认证和授权。
 
-尽管有像 Ansible 和 Puppet 这样更大规模的自动化工具集，但有时，简单的方案足够满足需求。Webhook 就是这种方案，它能让你在远程计算机上安全地执行任务，仅需发出请求即可。调用 Webhook 即是“触发”操作，因此本篇文章的标题亦如此。
+尽管有像 Ansible 和 Puppet 这样更大型的自动化工具集，但有时，简单的方案足以满足需求。Webhook 就是这种方案，它能让你在远程计算机上安全地执行任务，仅需发出请求即可。调用 Webhook 即是“触发”操作，因此本篇文章的标题亦如此。
 
 ## 集成
 
 目前尚无官方标准，但通常情况下，Webhook 是通过 POST 请求发送，并使用 JSON 对象作为消息体，通常会启用 TLS 加密，并通过签名确保防止篡改、网络伪造和重放攻击。
 
-常见的集成包括聊天服务如 Mattermost、Slack 和 IRC，软件仓库如 Github 和 Gitlab，通用托管服务如 Zapier 或 IFTT，以及许多家居自动化系统如 Home Assistant 等。几乎在所有地方，Webhook 都能发送和接收，因此 Webhook 的应用范围几乎是无限的。
+常见的集成，有聊天服务如 Mattermost、Slack 和 IRC；软件仓库如 Github 和 Gitlab；通用托管服务如 Zapier 或 IFTT；以及许多家居自动化系统如 Home Assistant 等。几乎在所有地方，Webhook 都能发送和接收，因此 Webhook 的应用范围几乎是无限的。
 
 虽然你可以在一个小时内编写一个最简单的 Webhook 客户端或服务器，但如今，几乎每种编程语言中都有不少现成的选择。聊天软件通常提供了内置的 Webhook 触发器，用户可以通过类似 `/command` 的语法来调用。IRC 服务器也未被遗忘，通常由守护进程和插件实现。
 
-Webhook 另一个不太明显的优势是它能够明确划分安全性和权限。一个低权限用户可以调用远程系统上的 Webhook。远程 Webhook 服务可以以低权限运行，先进行验证和基本语法检查，然后，在验证通过后再调用高权限任务。也许最终的任务有权限访问某个特权令牌，来重启服务、部署新代码，或者让孩子们再享受一个小时的电子娱乐时间。
+Webhook 另一个不太明显的优势是它能够明确划分安全性和权限。一个低权限用户可以调用远程系统上的 Webhook。远程 Webhook 服务可以以低权限运行，先进行验证和基本语法检查。然后，在验证通过后，再调用高权限任务。也许最终的任务有权限访问某个特权令牌，来重启服务、部署新代码，或者让孩子们再享受一个小时的电子娱乐时间。
 
 像 GitHub、GitLab 和自托管选项等常见的软件仓库也提供这类功能，触发时可以包括分支名、提交记录以及做出更改的用户。
 
@@ -27,19 +27,19 @@ Webhook 另一个不太明显的优势是它能够明确划分安全性和权限
 
 ## 架构
 
-典型的 Webhook 架构由一个监听传入请求的服务器和一个提交请求的客户端组成，客户端可能还会带上一些参数，包括认证和授权信息。
+典型的 Webhook 架构由一台监听传入请求的服务器和一部提交请求的客户端组成，客户端可能还会带上一些参数，包括认证和授权信息。
 
 ## 服务器端
 
-首先，我们来讨论服务器端。通常，服务器端会是一个守护进程，监听 HTTP 请求，并根据特定条件处理请求。如果请求不符合这些条件，服务器会拒绝该请求，并返回适当的 HTTP 状态码。如果请求成功提交，服务器可以从批准的请求中提取参数，然后根据需要执行自定义操作。
+首先，我们来讨论服务器端。服务器端一般会是一个守护进程，来监听 HTTP 请求，并根据特定条件处理请求。如果请求不符合这些条件，服务器会拒绝该请求，并返回适当的 HTTP 状态码。如果请求成功提交，服务器可以从批准的请求中提取参数，然后根据需要执行自定义操作。
 
 ## 客户端
 
-由于服务器使用 HTTP，几乎所有客户端都可以用来发送请求。[cURL](https://curl.se/) 是一种非常普遍的选择，但我们将使用一个稍微更友好的工具——[gurl](https://github.com/skunkwerks/gurl)，它内置了对 HMAC 签名的支持。
+由于服务器使用 HTTP，几乎所有客户端都能用来发送请求。[cURL](https://curl.se/) 是一种非常普遍的选择，但我们会使用一个更加友好的工具——[gurl](https://github.com/skunkwerks/gurl)，它内置了对 HMAC 签名的支持。
 
 ## 消息
 
-消息通常是个 JSON 对象。对于那些关注重放/时间攻击的用户，你应该在消息体中包含时间戳，并在进一步处理前验证该时间戳。如果你的 Webhook 工具包能够对特定的头部进行签名和验证，那也是一个可选方案，但大多数工具包不支持这一功能。
+消息通常是个 JSON 对象。对于那些关注重放/时间攻击的用户，你应该在消息体中包含时间戳，并在进一步处理前验证该时间戳。如果你的 Webhook 工具包能够对特定的头部进行签名和验证，那也是一个可选方案，但大多数工具包不支持该功能。
 
 ## 安全性
 
@@ -57,17 +57,17 @@ HTTP 请求的主体可以使用共享的密钥进行签名，生成的签名作
 
 ## 整合实现
 
-我们将安装一些帮助工具，包括 [Webhook 服务器](https://github.com/adnanh/webhook)、常用工具 [curl](https://github.com/skunkwerks/gurl)，以及 gurl——使 Webhook 签名变得轻松的工具。
+我们将安装一些实用工具，包括 [Webhook 服务器](https://github.com/adnanh/webhook)、常用工具 [curl](https://github.com/skunkwerks/gurl)，以及 gurl——使 Webhook 签名变得轻松的工具。
 
 ```sh
 $ sudo pkg install -r FreeBSD www/webhook ftp/curl www/gurl
 ```
 
-让我们启动服务器，运行一个简单的例子，将其保存为 `webhooks.yaml`。
+让我们启动服务器，运行个简单的例子，将其保存为 `webhooks.yaml`。
 
 它将使用 `logger(1)` 命令，在 `/var/log/messages` 中写入一个短条目，记录成功调用 Webhook 的 HTTP User-Agent 头。
 
-注意，这里有一个 `trigger-rule` 键，确保 HTTP 查询参数 `secret` 的值与字符串 `squirrel` 匹配。
+注意，这里有一个 `trigger-rule` 键，请确保 HTTP 查询参数 `secret` 的值与字符串 `squirrel` 匹配。
 
 目前我们没有 TLS 安全性，也没有 HMAC 签名，因此系统的安全性还不高。
 
@@ -96,9 +96,9 @@ $ sudo pkg install -r FreeBSD www/webhook ftp/curl www/gurl
        name: secret
 ```
 
-然后在终端运行 `webhook -debug -hotreload -hooks webhook.yaml`。使用的参数应该是浅显易懂的。
+然后在终端运行 `webhook -debug -hotreload -hooks webhook.yaml`。上述参数是浅显易懂的。
 
-在另一个终端里，运行 `tail -qF /var/log/messages | grep webhook`，这样我们就可以实时查看结果。
+在其他终端里，运行 `tail -qF /var/log/messages | grep webhook`，这样我们就可以实时查看结果。
 
 最后，我们使用 `curl` 来触发 Webhook，首先不带查询参数，然后再带上查询参数：
 
@@ -142,7 +142,7 @@ webhook executed
 * Connection #0 to host localhost left intact
 ```
 
-Webhook 被成功执行，我们可以在 syslog 输出中看到结果：
+Webhook 被成功执行后，我们可以在 syslog 输出中看到结果：
 
 ```sh
 Oct 20 12:50:39 akai webhook[67758]: invoked with HTTP User Agent: curl/8.3.0
@@ -331,11 +331,11 @@ webhook executed
 
 要成功完成此操作，你需要有一个自己的域名和一台小型服务器或虚拟机来托管 daemon。虽然本文无法覆盖所有细节，如设置自己的网站、TLS 加密证书和 DNS 配置，但以下步骤大致适用于任何软件平台。
 
-你需要设置一个代理服务器，例如 Caddy、nginx、haproxy 或类似的，确保启用有效的 TLS。一个好选择是通过 Let's Encrypt 使用 ACME 协议自动管理证书。
+你需要设置一台代理服务器，例如 Caddy、nginx、haproxy 或类似的，确保启用有效的 TLS。一个好选择是通过 Let's Encrypt 使用 ACME 协议自动管理证书。
 
 调整你的代理服务器，使其将适当的请求路由到 webhook daemon。你可以限制可以访问的 IP 地址，以及限制 HTTP 方法。GitHub 的 API 提供了 `/meta` 端点用于检索其 IP 地址，但需要保持更新。
 
-启用 webhook 服务并使用之前相同的参数启动你的 daemon：
+启用 webhook 服务，再使用之前相同的参数启动你的 daemon：
 
 ```sh
 # /etc/rc.conf.d/webhook
