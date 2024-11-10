@@ -1,7 +1,16 @@
 # Table of contents
 
 * [FreeBSD 中文期刊](README.md)
-* [编辑日志](CHANGELOG.md)
+* [编辑日志](CHANGELOG.md)、
+
+## 2024-0708
+
+* [FreeBSD 中的 NVMe-oF](2024-0708/NVMe-oF.md)
+* [FreeBSD iSCSI 入门](2024-0708/iscsi.md)
+* [使用 ZFS 原生加密保护数据](2024-0708/zfs.md)
+* [嵌入式 FreeBSD：打造自己的镜像](2024-0708/freebsd.md)
+* [TCP LRO](2024-0708/tcp.md)
+* [基于 Samba 的 Time Machine 备份](2024-0708/samba.md)
 
 ## 2024-0506
 
