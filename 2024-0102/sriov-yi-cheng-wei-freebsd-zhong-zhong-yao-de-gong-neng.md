@@ -5,11 +5,11 @@
 
 ### 如何在 FreeBSD 中使用支持 SR-IOV 的设备设置硬件驱动虚拟化
 
-我最喜欢的硬件功能之一是被称为[单根输入/输出虚拟化（SR-IOV）](https://en.wikipedia.org/wiki/Single-root_input/output_virtualization) 的技术。它使单一物理设备在操作系统中看起来像多个类似的设备。FreeBSD 在暴露 SR-IOV 功能方面的做法，是我[更倾向于在服务器上使用 FreeBSD 的几个原因之一](https://markmcb.com/freebsd/vs_linux/)。
+我最喜欢的硬件功能之一是被称为[单根输入/输出虚拟化（SR-IOV）](https://en.wikipedia.org/wiki/Single-root_input/output_virtualization)的技术。它使单一物理设备在操作系统中看起来像多个类似的设备。FreeBSD 在暴露 SR-IOV 功能方面的做法，是我[更倾向于在服务器上使用 FreeBSD 的几个原因之一](https://markmcb.com/freebsd/vs_linux/)。
 
 ## SR-IOV 网络概述
 
-虚拟化是当你的网络设备需求超过服务器上物理网络端口数量时的一个理想解决方案。虽然有很多软件方式可以实现这一点，但基于硬件的替代方案是 SR-IOV，它允许单个物理 PCIe 设备向操作系统呈现为多个设备。
+虚拟化是当你的网络设备需求超过服务器上物理网络端口数量时的一个理想解决方案。虽然有很多软件方式可以实现这一点，但基于硬件的替代方案是 SR-IOV，它能让单个物理 PCIe 设备向操作系统呈现为多个设备。
 
 使用 SR-IOV 有几个优势。与其他虚拟化方式相比，它提供了最佳的性能。如果你对安全性非常讲究，SR-IOV 更好地隔离了内存和它创建的虚拟化 PCI 设备。它还带来了非常整洁的设置，因为一切都作为 PCI 设备存在，也就是说，无需虚拟桥接、交换机等。
 
@@ -17,9 +17,9 @@
 
 ![](https://freebsdfoundation.org/wp-content/uploads/2024/02/mcbride_fig1.jpg)
 
-X710-DA2 拥有两个物理 SFP+ 光纤端口。在 SR-IOV 术语中，这些端口对应于物理功能（PF）。如果没有启用 SR-IOV，这些 PF 就像任何网络适配器卡上的端口一样工作，并将在 FreeBSD 中显示为两个网络接口。如果启用 SR-IOV，每个 PF 都能够创建、配置和管理多个虚拟功能（VF）。每个 VF 都会在操作系统中作为一个 PCIe 设备显示。
+X710-DA2 拥有两个物理 SFP+ 光纤端口。在 SR-IOV 术语中，这些端口对应于物理功能（PF）。如未启用 SR-IOV，这些 PF 就像任何网络适配器卡上的端口一样工作，将在 FreeBSD 中显示为两个网络接口。如启用 SR-IOV，每个 PF 都能够创建、配置和管理多个虚拟功能（VF）。每个 VF 都会在操作系统中作为一个 PCIe 设备显示。
 
-具体来说，对于 X710-DA2，它的 2 个 PF 最多可以虚拟化 128 个 VF。从 FreeBSD 的角度来看，就好像你有一张具有 128 个端口的网卡。这些 VF 然后可以分配给 jail 和虚拟机，用于隔离的网络连接。
+具体来说，对于 X710-DA2，它的 2 个 PF 最多可以为虚拟化 128 个 VF。从 FreeBSD 的角度来看，就好像你有一张带有 128 个端口的网卡。然后可以把这些 VF 分配给 jail 和虚拟机，用于隔离的网络连接。
 
 ## 在 FreeBSD 中使用 SR-IOV
 
@@ -33,13 +33,13 @@ X710-DA2 拥有两个物理 SFP+ 光纤端口。在 SR-IOV 术语中，这些端
 
 ## 硬件安装
 
-SR-IOV 支持的 X710-DA2 安装相当简单，但有一个主要的考虑因素。并非所有的 PCIe 插槽都是一样的。我强烈建议你在开始之前查看主板手册。在这个例子中，我将使用 [Supermicro X12STH-F 主板](https://www.supermicro.com/en/products/motherboard/x12sth-f)。其 [手册](https://www.supermicro.com/manuals/motherboard/X12/MNL-2367.pdf) 提供了两张非常有用的图表：
+支持 SR-IOV 的 X710-DA2 安装非常简单，但有一个主要的考虑因素。并非所有的 PCIe 插槽都是一样的。我强烈建议你在开始之前看看主板手册。在这个例子中，我将使用 [Supermicro X12STH-F 主板](https://www.supermicro.com/en/products/motherboard/x12sth-f)。其 [手册](https://www.supermicro.com/manuals/motherboard/X12/MNL-2367.pdf) 提供了两张非常有用的图表：
 
 ![](https://freebsdfoundation.org/wp-content/uploads/2024/02/mcbride_fig2.jpg)
 
 ![](https://freebsdfoundation.org/wp-content/uploads/2024/02/mcbride_fig3.jpg)
 
-在第一张图中，我们看到 PCIe 插槽被编号为 4、5 和 6，从左到右。如果仔细观察，你会看到插槽 4 有 “PCH” 前缀，而 5 和 6 则有 “CPU” 前缀。第二张图则更详细地显示了这些插槽的连接方式。插槽 5 和 6 直接连接到 LGA1200 插座上的 CPU，而插槽 4 连接到 [平台控制器集线器](https://en.wikipedia.org/wiki/Platform_Controller_Hub)。根据你系统中的具体组件，这可能会决定哪些插槽能够使 SR-IOV 按预期工作。直到后续配置 FreeBSD 时，你才会知道哪个插槽适合，通常来说，尤其是对于较旧的主板，CPU 插槽是一个可靠的选择。如果后续步骤中发现 SR-IOV 无法正常工作，可以尝试更换 PCIe 插槽。主板文档有时并不详尽，所以试验和错误有时是最快速的方式，帮助你找出哪个插槽能正常工作。
+在第一张图中，我们看到 PCIe 插槽被编号为 4、5 和 6，从左到右。如果仔细观察，你会看到插槽 4 有 “PCH” 前缀，而 5 和 6 则有 “CPU” 前缀。第二张图则更详细地显示了这些插槽的连接方式。插槽 5 和 6 直接连接到 LGA1200 插座上的 CPU，而插槽 4 连接到[平台控制器集线器](https://en.wikipedia.org/wiki/Platform_Controller_Hub)。根据你系统中的具体组件，这可能会决定哪些插槽能够使 SR-IOV 按预期工作。直到后续配置 FreeBSD 时，你才会知道哪个插槽适合，通常来说，尤其是对于较旧的主板，CPU 插槽是个可靠的选择。如果后续步骤中发现 SR-IOV 无法正常工作，可以尝试更换到 PCIe 插槽。主板文档有时并不详尽，所以试验和错误有时是最快速的方式，能帮助你找出哪个插槽能正常工作。
 
 ![](https://freebsdfoundation.org/wp-content/uploads/2024/02/mcbride_fig5.jpg)
 
