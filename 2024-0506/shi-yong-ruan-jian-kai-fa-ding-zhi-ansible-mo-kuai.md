@@ -1,130 +1,339 @@
 # 实用软件：开发定制 Ansible 模块
 
+- 原文链接：[Practical Ports: Developing Custom Ansible Modules](https://freebsdfoundation.org/our-work/journal/browser-based-edition/configuration-management-2/practical-ports-developing-custom-ansible-modules/)
+- 作者：Benedict Reuschling
 
- 由 BENEDICT REUSCHLING
+Ansible 提供了许多不同的模块，典型用户通常可以直接使用这些模块，而无需编写自己的模块，因为现有模块的数量庞大。即使在 `ansible.builtin` 模块中没有提供所需的功能，Ansible Galaxy 也提供了大量来自爱好者的第三方模块，这些模块进一步扩展了模块的数量。
 
-Ansible 提供了许多不同的模块，典型用户由于可用模块的数量庞大而无需编写自己的模块。即使在 ansible.builtin 模块中没有必要的功能，Ansible Galaxy 还提供了许多来自爱好者的第三方模块，扩展了模块数量。
+当所需的功能没有被单一模块或它们的组合覆盖时，就需要开发自己的模块。开发者可以选择将自定义模块保留为本地模块，而无需将其发布到互联网或通过 Ansible Galaxy 使用。模块通常用 Python 开发，但如果该模块不打算提交到官方 Ansible 生态系统中，使用其他编程语言也是可能的。
 
-当单个模块或它们的组合未涵盖所需的功能时，您需要开发自己的模块。开发人员可以选择将定制模块保留在本地，而无需将其发布到互联网或 Ansible Galaxy 中。模块通常用 Python 开发，但当模块不计划提交到官方 Ansible 生态系统时，也可以使用其他编程语言。
-
-为了测试模块，安装 ansible-core 软件包，这将帮助提供 Ansible 内部使用的通用代码。定制模块可以利用现有模块使用的大部分核心 Ansible 功能，并且既可靠又稳定。
+要测试自定义模块，可以安装 `ansible-core` 包，它通过提供 Ansible 内部使用的通用代码来提供帮助。然后，您可以将自定义模块与大部分现有模块使用的核心 Ansible 功能结合，从而确保其可靠性和稳定性。
 
 ## 使用 Shell 编程的示例模块
 
-我们将从一个简单的示例开始，以理解基础知识。稍后，我们将扩展其功能，使用 Python 实现更多功能。
+我们从一个简单的示例开始，帮助理解基本概念。稍后，我们将扩展它，使用 Python 实现更多功能。
 
-我们自定义模块的描述: 我们的自定义模块称为 touch 检查 /tmp 中名为 BSD.txt 的文件。如果存在，模块返回 true （状态未更改）。如果不存在，它将创建该（空）文件并返回 state: changed 。
+自定义模块的描述：我们的自定义模块名为 `touch`，它检查 `/tmp` 目录下是否有名为 `BSD.txt` 的文件。如果文件存在，模块返回 `true`（状态未更改）。如果文件不存在，模块会创建该空文件，并返回 `state: changed`。
 
-自定义模块位于使用该模块的 playbook 旁边的库目录中。使用 mkdir 创建该目录:
+自定义模块通常存放在与使用该模块的 playbook 同一目录下的 `library` 文件夹中。可以使用 `mkdir` 命令创建该目录：
 
-`mkdir library`
+```sh
+mkdir library
+```
 
-在库中创建一个shell脚本，其中包含模块代码:
+在 `library` 目录中创建一个包含模块代码的 Shell 脚本：
 
-`touch library/touch`
+```sh
+touch library/touch
+```
 
-在库/触摸器中输入以下代码作为模块逻辑：
+在 `library/touch` 文件中输入以下代码，作为模块逻辑：
 
-`&nbs;1&nbs;&nbs;FILENAME=/tmp/BSD.txt&nbs;2&nbs;&nbs;changed=false&nbs;3&nbs;&nbs;msg=''&nbs;4&nbs;&nbs;if [ ! -f ${FILENAME} ]; then&nbs;5&nbs;&nbs;&nbs;&nbs;&nbs;&nbs;touch ${FILENAME}&nbs;6&nbs;&nbs;&nbs;&nbs;&nbs;&nbs;msg=”${FILENAME} created”&nbs;7&nbs;&nbs;&nbs;&nbs;&nbs;&nbs;changed=true&nbs;8&nbs;&nbs;fi&nbs;9&nbs;&nbs;printf ‘{“changed”: “%s”, “msg”: “%s”}’ “$changed” “$msg”`
+```bash
+1  FILENAME=/tmp/BSD.txt
+2  changed=false
+3  msg=''
+4  if [ ! -f ${FILENAME} ]; then
+5      touch ${FILENAME}
+6      msg="${FILENAME} created"
+7      changed=true
+8  fi
+9  printf '{"changed": "%s", "msg": "%s"}' "$changed" "$msg"
+```
 
-首先，我们定义一些变量并设置一些默认值。第 4 行检查文件是否不存在。若如此，则让该模块创建文件并更新 msg 变量。我们需要通知 Ansible 更改的状态，因此我们返回一个名为 changed 的变量以及在行中更新的消息。
+首先，我们定义一些变量并设置默认值。第 4 行检查文件是否不存在。如果文件不存在，模块就创建该文件，并更新 `msg` 变量。我们需要通知 Ansible 状态已更改，因此在最后返回一个名为 `changed` 的变量，并附带更新后的消息。
 
-在与 library 目录相同位置创建一个名为 touch.yml 的 playbook。它看起来是这样的：
+接着，在与 `library` 目录相同的位置创建一个名为 `touch.yml` 的 playbook，内容如下：
 
-`---- hosts: localhost&nbs;&nbs;gather_facts: false&nbs;&nbs;tasks:&nbs;&nbs;&nbs;&nbs;- name: Run our custom touch module&nbs;&nbs;&nbs;&nbs;&nbs;&nbs;touch:&nbs;&nbs;&nbs;&nbs;&nbs;&nbs;register: result&nbs;&nbs;&nbs;&nbs;- debug: var=result`
+```yaml
+---- 
+hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Run our custom touch module
+      touch:
+        register: result
 
-注意：我们可以执行定制模块来操作任何远程节点，而不仅限于 localhost 。在开发过程中，先对 localhost 进行测试会更容易一些。
+    - debug: var=result
+```
 
-像我们之前编写的任何其他 Playbook 一样运行。
+注意：我们可以在任何远程节点上执行自定义模块，而不仅仅是 `localhost`。在开发过程中，首先在 `localhost` 上测试会更容易。
 
-`ansible-playbook touch.yml`
+像以前编写的其他 playbook 一样运行这个 playbook：
+
+```sh
+ansible-playbook touch.yml
+```
 
 ## 运行示例模块
 
-当文件 /tmp/BSD.txt 不存在时，playbook 输出为：
+当文件 `/tmp/BSD.txt` 不存在时，playbook 输出如下：
 
-`PLAY [localhost] *****************************************TASK [Run our custom touch module] ***********************changed: [localhost]TASK [debug] *********************************************ok: [localhost] => {&nbs;&nbs;&nbs;&nbs;“changed”: true,&nbs;&nbs;&nbs;&nbs;“result”: {&nbs;&nbs;&nbs;&nbs;&nbs;&nbs;&nbs;&nbs;“failed”: false,&nbs;&nbs;&nbs;&nbs;&nbs;&nbs;&nbs;&nbs;“msg”: “/tmp/BSD.txt created”&nbs;&nbs;&nbs;&nbs;}}`
+```json
+PLAY [localhost] *****************************************
 
-当文件 /tmp/BSD.txt 存在（来自先前运行），输出为：
+TASK [Run our custom touch module] ***********************
+changed: [localhost]
 
-`PLAY [localhost] *****************************************TASK [Run our custom touch module] ***********************ok: [localhost]TASK [debug] *********************************************ok: [localhost] => {“result”: {        “changed”: false,        “failed”: false,        “msg”: “”    }}`
+TASK [debug] *********************************************
+ok: [localhost] => {
+    “changed”: true,
+    “result”: {
+        “failed”: false,
+        “msg”: “/tmp/BSD.txt created”
+    }
+}
+```
 
-## 定制模块在 Python 中
+当文件 `/tmp/BSD.txt` 存在（来自之前的运行）时，输出如下：
 
-写 Python 模块的好处是什么，就像其他 ansible.builtin 模块一样？一个好处是我们可以使用现有的解析库来处理模块参数，而无需重新发明我们自己的。在shell中定义自己模块中每个参数的名称是困难的。在 Python 中，我们可以教模块接受某些参数为可选，其他参数为必需。数据类型定义了模块用户必须为每个参数提供何种类型的输入。例如，一个 dest ：参数应该是路径数据类型，而不是整数。Ansible 提供一些方便的功能，可以包含在我们的脚本中，这样我们就可以专注于模块的核心功能。
+```json
+PLAY [localhost] *****************************************
+
+TASK [Run our custom touch module] ***********************
+ok: [localhost]
+
+TASK [debug] *********************************************
+ok: [localhost] => {
+“result”: {
+        “changed”: false,
+        “failed”: false,
+        “msg”: “”
+    }
+}
+```
+
+## 使用 Python 编写自定义模块
+
+编写 Python 模块有哪些好处呢？像 `ansible.builtin` 模块一样，使用 Python 编写模块的一个好处是，我们可以使用现有的解析库来处理模块参数，而不必重新发明一个。用 Shell 编写模块时，定义每个参数的名称非常困难，而在 Python 中，我们可以教会模块接受一些参数作为可选项，其他的作为必需项。数据类型定义了模块用户为每个参数提供的输入类型。例如，`dest` 参数应该是路径类型，而不是整数类型。Ansible 提供了一些便捷的功能，可以让我们在脚本中使用，从而使我们能够专注于模块的核心功能。
 
 ## Ansiballz 框架
 
-现代 Ansible 模块使用 Ansiballz 框架。与 2.1 之前的 Ansible 版本使用的模块替换器不同，它使用 ansible/module_utils 的实际 Python 导入，而不是预处理模块。
+现代 Ansible 模块使用 Ansiballz 框架。与 2.1 版本之前使用的 Module Replacer 不同，它使用来自 `ansible/module_utils` 的真实 Python 导入，而不是预处理模块。
 
-模块功能: Ansiballz 构建一个 zip 文件。内容:
+模块功能：Ansiballz 构建了一个压缩文件，内容包括：
 
 * 模块文件
-* ansible/module_utils 文件由模块导入
-* 模块参数的样板
+* 模块导入的 `ansible/module_utils` 文件
+* 模块参数的模板代码
 
-zip 文件已经 Base64 编码并包装到一个小的 Python 脚本中以供解码。接下来，Ansible 将其复制到目标节点的临时目录中。当执行时，Ansible 模块脚本会提取 zip 文件并将其放入临时目录，然后将 PTHONPATH 设置为在 zip 文件内查找 Python 模块，并以特殊名称导入 Ansible 模块。Python 然后认为它执行的是一个普通脚本，而不是导入一个模块。这使得 Ansible 能够在目标主机上的单个 Python 副本中同时运行包装脚本和模块代码。
+压缩文件经过 Base64 编码，并被包装成一个小的 Python 脚本用于解码。接着，Ansible 会将其复制到目标节点的临时目录。当执行时，Ansible 模块脚本会解压该压缩文件并将其自身放置到临时目录中。然后它会设置 `PYTHONPATH` 来查找压缩文件中的 Python 模块，并以特殊名称导入 Ansible 模块。Python 会认为它正在执行一个常规的脚本，而不是导入一个模块。这允许 Ansible 在目标主机上通过同一个 Python 实例运行包装脚本和模块代码。
 
 ## 创建 Python 模块
 
-创建一个模块，使用 venv 或 virtualenv 进行开发部分。像以前一样，我们从创建一个 hello.py 模块的 library 目录开始，其中包含以下内容：
+要创建一个模块，可以使用 `venv` 或 `virtualenv` 来进行开发。我们像之前一样，从创建一个 `library` 目录开始，在其中创建一个新的 `hello.py` 模块，内容如下：
 
-`#!/usr/bin/env python3from ansible.module_utils.basic import *def main():    module = AnsibleModule(argument_spec={})    response = {“hello”: “world!”}    module.exit_json(changed=False, meta=response)if name == “__main__”:    main()`
+```python
+#!/usr/bin/env python3
+from ansible.module_utils.basic import *
+def main():
+    module = AnsibleModule(argument_spec={})
+    response = {"hello": "world!"}
+    module.exit_json(changed=False, meta=response)
 
-import 导入 Ansiballz 框架以构建模块。它包括代码结构，如参数解析，文件操作和格式化返回值为 JSON。
+if __name__ == "__main__":
+    main()
+```
+
+`import` 导入 Ansiballz 框架来构建模块。它包括参数解析、文件操作和将返回值格式化为 JSON 等代码构造。
 
 ## 从 Playbook 执行 Python 模块
 
-`---- hosts: localhost  gather_facts: false  tasks:    - name: Testing the Python module      hello:      register: result    - debug: var=result`
+创建一个名为 `hello.yml` 的 playbook，内容如下：
 
-再次，我们像这样运行播放书： ansible-playbook hello.yml
+```yaml
+---
+- hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Testing the Python module
+      hello:
+      register: result
 
-`PLAY [localhost] *****************************************TASK [Testing the Python module] *************************ok: [localhost]TASK [debug] *********************************************ok: [localhost] => {“result”: {        “changed”: false,        “failed”: false,        “meta”: {            “hello”: “world!”        }    }}`
+    - debug: var=result
+```
+
+再次像往常一样运行这个 playbook：
+
+```sh
+ansible-playbook hello.yml
+```
+
+输出如下：
+
+```json
+PLAY [localhost] *****************************************
+
+TASK [Testing the Python module] *************************
+ok: [localhost]
+
+TASK [debug] *********************************************
+ok: [localhost] => {
+“result”: {
+        “changed”: false,
+        “failed”: false,
+        “meta”: {
+            “hello”: “world!”
+        }
+    }
+}
+```
 
 ## 定义模块参数
 
-我们使用的模块具有类似 path: ， src: 或 dest: 的参数，以控制模块的行为。其中一些参数对于模块正确运行是必不可少的，而另一些是可选的。在我们自己的模块中，我们希望控制总体上采用哪些参数以及哪些是必需的。定义数据类型会使我们的模块抵御不正确的输入，从而使其更加健壮。
+我们使用的模块有一些参数，如 `path:`、`src:` 或 `dest:`，用于控制模块的行为。这些参数中的一些对于模块的正常运行至关重要，而其他一些则是可选的。在我们自己的模块中，我们希望控制哪些参数是必须的，哪些是可选的。定义数据类型可以让我们的模块在面对错误输入时更加健壮。
 
-由 argument_spec 提供的 AnsibleModule 定义了支持的模块参数，以及它们的类型、默认值等。
+`AnsibleModule` 提供的 `argument_spec` 定义了支持的模块参数，以及它们的类型、默认值等。
 
 示例参数定义：
 
-`parameters = {    'name': {“required”: True, “type”: 'str'},'age': {“required”: False, “type”: 'int', “default”: 0},    'homedir': {“required”: False, “type”: 'path'}}`
+```python
+parameters = {
+    'name': {“required”: True, “type”: 'str'},
+'age': {“required”: False, “type”: 'int', “default”: 0},
+    'homedir': {“required”: False, “type”: 'path'}
+}
+```
 
-所需参数 name 为字符串类型。 age （整数）和 homedir （路径）均为可选项，若未定义，则默认将 age 设置为 0。使用这些参数定义的新模块会通过传递两个数字和一个可选的数学运算符来计算结果。当未提供时，我们假设默认参数为加法。在 library 中创建一个名为 calc.py 的新 Python 文件：
+必需的参数 `name` 是字符串类型。`age`（整数类型）和 `homedir`（路径类型）是可选的，如果未定义，`age` 默认为 0。一个新的模块使用这些参数定义，计算通过传递两个数字和一个可选的数学运算符得到的结果。如果没有提供运算符，默认假定为加法。创建一个新的 Python 文件 `calc.py`，放在 `library` 目录下：
 
-`#!/usr/bin/env python3from ansible.module_utils.basic import AnsibleModuledef main():    parameters = {       “number1”: {“required”: True, “type”: “int”},“number2”: {“required”: True, “type”: “int”},        “math_op”: {“required”: False, “type”: “str”, “default”: “+”},    }    module = AnsibleModule(argument_spec=parameters)    number1 = module.params[“number1”]    number2 = module.params[“number2”]    math_op = module.params[“math_op”]    if math_op == “+”:        result = number1 + number2    output = {        “result”: result,    }    module.exit_json(changed=False, **output)if __name__ == “__main__”:    main()`
+```python
+#!/usr/bin/env python3
+from ansible.module_utils.basic import AnsibleModule
 
-## 模块的操作手册
+def main():
+    parameters = {
+       “number1”: {“required”: True, “type”: “int”},
+“number2”: {“required”: True, “type”: “int”},
+        “math_op”: {“required”: False, “type”: “str”, “default”: “+”},
+    }
 
-`---- hosts: localhost  gather_facts: false  tasks:    - name: Testing the calc module      calc:        number1: 4        number2: 3      register: result    - debug: var=result`
+    module = AnsibleModule(argument_spec=parameters)
 
-calc 模块可以选择接受参数 math_op ，但由于我们为其定义了默认操作 ( + ) ，因此用户可以在 Playbook 中或命令行中省略它。运行该模块的任务必须指定所需的参数，否则 Playbook 将无法执行。
+    number1 = module.params[“number1”]
+    number2 = module.params[“number2”]
+    math_op = module.params[“math_op”]
+
+    if math_op == “+”:
+        result = number1 + number2
+
+    output = {
+        “result”: result,
+    }
+
+    module.exit_json(changed=False, **output)
+
+if __name__ == “__main__”:
+    main()
+```
+
+## 模块的 Playbook
+
+```yaml
+---- 
+hosts: localhost  
+gather_facts: false  
+tasks:
+  - name: Testing the calc module      
+    calc:
+      number1: 4
+      number2: 3
+    register: result  
+  - debug: var=result
+```
+
+`calc` 模块可选地接受一个 `math_op` 参数，但由于我们为其定义了默认操作（`+`），用户可以在 playbook 或命令行中省略它。运行该模块的任务必须指定必需的参数，否则 playbook 执行将失败。
 
 ## 运行 calc 模块
 
 playbook 执行的相关输出如下：
 
-`ok: [localhost] => {    “result”: {        “changed”: false,        “failed”: false,“result”: 7    }}`
+```json
+ok: [localhost] => {
+    “result”: {
+        “changed”: false,
+        “failed”: false,
+“result”: 7
+    }
+}
+```
 
-我们扩展了这个示例来正确处理 +、-、*、/。当模块接收到一个与定义的运算符不同的 math_op 时，它会返回 false 。另外，处理除以零的情况并返回“无效操作”是学生从古至今的经典作业。我需要找时间好好学习 Python，但在那之前，我的解决方案如下：
+我们扩展了示例来正确处理 `+`、`-`、`*`、`/`。当模块接收到一个不同于已定义的 `math_op` 时，它返回 `false`。此外，通过返回“Invalid Operation”来处理除以零的情况，这一直是学生作业中的经典题目。从前我并没有好好学习 Python，但直到现在，我的解决方案看起来是这样的：
 
-`#!/usr/bin/env python3from ansible.module_utils.basic import AnsibleModuledef main():    parameters = {        “number1”: {“required”: True, “type”: “int”},“number2”: {“required”: True, “type”: “int”},        “operation”: {“required”: False, “type”: “str”, “default”: “+”},}    module = AnsibleModule(argument_spec=parameters)number1 = module.params[“number1”]    number2 = module.params[“number2”]    operation = module.params[“operation”]    result = “”    if operation == “+”:        result = number1 + number2    elif operation == “-”:        result = number1 - number2    elif operation == “*”:        result = number1 * number2    elif operation == “/”:        if number2 == 0:            module.fail_json(msg=”Invalid Operation”)        else:            result = number1 / number2    else:        result = False    output = {        “result”: result,    }    module.exit_json(changed=False, **output)if __name__ == “__main__”:main()`
+```python
+#!/usr/bin/env python3
+from ansible.module_utils.basic import AnsibleModule
 
-测试我们扩展的模块是直接的。以下是处理除以零的测试：
+def main():
+    parameters = {
+        “number1”: {“required”: True, “type”: “int”},
+“number2”: {“required”: True, “type”: “int”},
+        “operation”: {“required”: False, “type”: “str”, “default”: “+”},
+}
 
-`---- hosts: localhost  gather_facts: false  tasks:    - name: Testing the calc module      calc:        number1: 4        number2: 0        map_op: ‘/’      register: result    - debug: var=result`
+    module = AnsibleModule(argument_spec=parameters)
 
-这导致了以下期望的输出：
+number1 = module.params[“number1”]
+    number2 = module.params[“number2”]
+    operation = module.params[“operation”]
+    result = “”
 
-`TASK [Testing the calc module] **********************************************fatal: [localhost]: FAILED! => {“changed”: false, “msg”: “Invalid Operation”}`
+    if operation == “+”:
+        result = number1 + number2
+    elif operation == “-”:
+        result = number1 - number2
+    elif operation == “*”:
+        result = number1 * number2
+    elif operation == “/”:
+        if number2 == 0:
+            module.fail_json(msg=”Invalid Operation”)
+        else:
+            result = number1 / number2
+    else:
+        result = False
+
+    output = {
+        “result”: result,
+    }
+
+    module.exit_json(changed=False, **output)
+
+if __name__ == “__main__”:
+main()
+```
+
+测试扩展后的模块非常简单。以下是测试除以零的情况：
+
+```yaml
+---
+- hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Testing the calc module
+      calc:
+        number1: 4
+        number2: 0
+        map_op: ‘/’
+      register: result
+
+    - debug: var=result
+```
+
+这将得到如下预期的输出：
+
+```json
+TASK [Testing the calc module] **********************************************
+fatal: [localhost]: FAILED! => {“changed”: false, “msg”: “Invalid Operation”}
+```
 
 ## 结论
 
-有了这些基础知识，编写定制模块变得很容易。请记住，这些模块需要在不同的操作系统上运行。增加额外的检查来确定特定命令的可用性，或者让您的模块在某些环境下拒绝运行。尽可能地兼容，以增加模块的受欢迎程度和实用性。目前没有太多特定于 BSD 的模块可用。不妨添加一个 bhyve 模块，或者一个管理引导环境、pf 防火墙或 rc.conf 条目的模块？对于既有 Ansible 又擅长 Python 的开发者来说，有很多选择等待着探索。
+掌握了这些基础，开始编写自定义模块就变得容易了。请记住，这些模块需要在不同的操作系统上运行。添加额外的检查来确定某些命令的可用性，或者让模块在某些环境下直接拒绝运行。尽可能提高兼容性，以增加模块的普及度和实用性。目前可用的 BSD 特定模块并不多。为什么不尝试添加一个 bhyve 模块，或者一个管理启动环境、pf 防火墙或 `rc.conf` 条目的模块呢？对于有 Ansible 和 Python 背景的勇敢开发者来说，机会仍然很多。
 
-### 参考资料
+### 参考文献：
 
 * [Ansible 模块架构](https://docs.ansible.com/ansible/latest/dev_guide/developing_program_flow_modules.html#ansiballz)
 
-BENEDICT REUSCHLING 是 FreeBSD 项目的文档提交者，也是文档工程团队的成员。过去，他连续两届担任 FreeBSD 核心团队成员。他在德国达姆施塔特应用科学大学管理着一个大数据集群。他还为本科生开设名为“开发者 Unix”课程。Benedict 是每周 bsdnow.tv 播客的主持人之一。
+---
+
+**BENEDICT REUSCHLING** 是 FreeBSD 项目的文档贡献者，也是文档工程团队的成员。过去，他曾担任 FreeBSD 核心团队成员两届。他在德国达姆施塔特应用科技大学管理一个大数据集群，并且教授“开发者的 Unix”课程。Benedict 也是每周播出的 [bsdnow.tv](https://bsdnow.tv/) 播客的主持人之一。
