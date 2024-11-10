@@ -3,7 +3,10 @@
 - 原文链接：[Make Your Own VPN —FreeBSD, Wireguard, IPv6 and Ad-blocking Included](https://freebsdfoundation.org/our-work/journal/browser-based-edition/networking-10th-anniversary/make-your-own-vpn-freebsd-wireguard-ipv6-and-ad-blocking-included/)
 - 作者：Stefano Marinelli
 
-注意：本文假设基于 FreeBSD 的设置。如果你更喜欢基于 OpenBSD 的版本，可以点击[这里](https://it-notes.dragas.net/2023/04/03/make-your-own-vpn-wireguard-ipv6-and-ad-blocking-included/)查看。
+
+>**注意**
+>
+>本文操作设定基于 FreeBSD。如果你更喜欢基于 OpenBSD 的版本，可以点击[这里](https://it-notes.dragas.net/2023/04/03/make-your-own-vpn-wireguard-ipv6-and-ad-blocking-included/)查看。
 
 VPN 是一种基础工具，用于安全地连接到自己的服务器和设备。许多人出于各种原因使用商业 VPN，从不信任自己的服务提供商（尤其是在公共热点连接时），到希望通过不同的 IP 地址“上网”，可能是来自另一个国家。在这里，我想突出一些已被引入基础堆栈的新特性——其中许多是默认启用的，有些可能需要特别激活。每个功能都会描述一些细节，帮助改善网络体验。
 
