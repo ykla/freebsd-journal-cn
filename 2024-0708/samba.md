@@ -1,4 +1,4 @@
-# 基于 Samba 的 Time Machine 备份
+# 基于 Samba 的时间机器备份
 
 - 原文链接：[Samba-based Time Machine Backups](https://freebsdfoundation.org/our-work/journal/browser-based-edition/storage-and-filesystems/samba-based-time-machine-backups/)
 - 作者：Benedict Reuschling
