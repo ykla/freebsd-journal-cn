@@ -1,44 +1,47 @@
 # SR-IOV 已成为 FreeBSD 中重要的功能
 
-### 使用 FreeBSD 中支持 SR-IOV 设备的硬件驱动虚拟化的详细设置步骤演练。
+- 原文链接：[SR-IOV is a First Class FreeBSD Feature](https://freebsdfoundation.org/our-work/journal/browser-based-edition/networking-10th-anniversary/sr-iov-is-a-first-class-freebsd-feature/)
+- 作者：Mark McBride
 
- 由马克·麦克布赖德
+### 如何在 FreeBSD 中使用支持 SR-IOV 的设备设置硬件驱动虚拟化
 
-我最喜欢的硬件特性之一是称为单根输入/输出虚拟化（SR-IOV）的功能。它使单个物理设备在操作系统中显现为多个类似设备。FreeBSD 在展示 SR-IOV 功能方面的方法是我倾向于在我的服务器上使用 FreeBSD 的几个原因之一。
+作者：Mark McBride
 
-## 网络 SR-IOV 概述
+我最喜欢的硬件功能之一是称为 [单根输入/输出虚拟化（SR-IOV）](https://en.wikipedia.org/wiki/Single-root_input/output_virtualization) 的技术。它使单一物理设备在操作系统中看起来像多个相似的设备。FreeBSD 在暴露 SR-IOV 功能方面的做法，是我 [更倾向于在服务器上使用 FreeBSD 的几个原因之一](https://markmcb.com/freebsd/vs_linux/)。
 
-虚拟化是一个很好的解决方案，如果您对网络设备的需求超过服务器上物理网络ports的数量。有许多实现此目标的软件方式，但硬件方案是 SR-IOV，它允许一个物理 PCIe 设备向操作系统呈现为多个设备。
+## SR-IOV 网络概述
 
-使用 SR-IOV 有几个优点。与其他虚拟化手段相比，它提供了最佳性能。如果您对安全性特别重视，SR-IOV 更好地隔离了内存和创建的虚拟 PCI 设备。这也会带来非常整洁的设置，因为一切都是 PCI 设备，即没有虚拟桥接、交换机等。
+虚拟化是当你的网络设备需求超过服务器上物理网络端口数量时的一个理想解决方案。虽然有很多软件方式可以实现这一点，但基于硬件的替代方案是 SR-IOV，它允许单个物理 PCIe 设备向操作系统呈现多个设备。
 
-要利用 SR-IOV 网络，您需要一张支持 SR-IOV 的网络适配器和一台支持 SR-IOV 的主板。多年来，我使用过几款支持 SR-IOV 的网络卡，例如 Intel i350-T4V2 以太网适配器、Mellanox ConnectX-4 Lx 和 Chelsio T520-SO-CR 光纤网卡。在本文中，我将在 FreeBSD 14.0-RELEASE 服务器上使用一款 Intel X710-DA2 光纤网卡（产品简介）。这是一个不错的选择，因为它不需要特殊的固件配置，并且驱动程序支持已被默认构建到 FreeBSD 内核中。而且作为一个额外的好处，它只消耗少量功率，最大功率仅为 3.7 瓦特。
+使用 SR-IOV 有几个优势。与其他虚拟化方式相比，它提供了最佳的性能。如果你对安全性非常讲究，SR-IOV 更好地隔离了内存和它创建的虚拟化 PCI 设备。它还带来了非常整洁的设置，因为一切都作为 PCI 设备存在，也就是说，不需要虚拟桥接、交换机等。
+
+要使用 SR-IOV 网络，你需要一块支持 SR-IOV 的网络适配器和一块支持 SR-IOV 的主板。我多年来使用了几块支持 SR-IOV 的网卡，例如 [Intel i350-T4V2 Ethernet Adapter](https://ark.intel.com/content/www/us/en/ark/products/84805/intel-ethernet-server-adapter-i350-t4v2.html)、[Mellanox ConnectX-4 Lx](https://www.nvidia.com/en-us/networking/ethernet/connectx-4-lx/) 和 [Chelsio T520-SO-CR Fiber Network Adapter](https://www.chelsio.com/nic/unified-wire-adapters/t520-so-cr/)。在本文中，我将使用 [Intel X710-DA2 Fiber Network Adapter](https://ark.intel.com/content/www/us/en/ark/products/83964/intel-ethernet-converged-network-adapter-x710da2.html) ([产品简介](https://www.intel.com/content/dam/www/public/us/en/documents/product-briefs/ethernet-x710-brief.pdf))，它被安装在 [FreeBSD 14.0-RELEASE 服务器](https://www.freebsd.org/releases/14.0R/announce/) 上。这是一个不错的选择，因为它不需要特别的固件配置，并且 FreeBSD 内核默认内置了驱动支持。而且，它使用的功率比许多替代方案少，最多仅为 3.7 瓦。
 
 ![](https://freebsdfoundation.org/wp-content/uploads/2024/02/mcbride_fig1.jpg)
 
-X710-DA2 有两个物理 SFP+光纤端口。在 SR-IOV 术语中，这些对应于物理功能(PFs)。没有启用 SR-IOV 时，PFs 的行为类似于任何网络适配器卡上的端口，并将显示为 FreeBSD 中的两个网络接口。启用 SR-IOV 后，每个 PF 能够创建、配置和管理多个虚拟函数(VFs)。每个 VF 将在操作系统中显示为一个 PCIe 设备。
+X710-DA2 拥有两个物理 SFP+ 光纤端口。在 SR-IOV 术语中，这些端口对应于物理功能（PF）。如果没有启用 SR-IOV，这些 PF 就像任何网络适配器卡上的端口一样工作，并将在 FreeBSD 中显示为两个网络接口。如果启用 SR-IOV，每个 PF 都能够创建、配置和管理多个虚拟功能（VF）。每个 VF 都会在操作系统中作为一个 PCIe 设备显示。
 
-对于 X710-DA2 具体而言，其 2 个 PF 可以虚拟化多达 128 个 VF。从 FreeBSD 的角度来看，好像你拥有一张具有 128 个端口的网络卡。然后可以将这些 VF 分配给容器和虚拟机，实现网络隔离。
+具体来说，对于 X710-DA2，它的 2 个 PF 最多可以虚拟化 128 个 VF。从 FreeBSD 的角度来看，就好像你有一张具有 128 个端口的网卡。这些 VF 然后可以分配给 jail 和虚拟机，用于隔离的网络连接。
 
 ## 在 FreeBSD 中使用 SR-IOV
 
-我们已经简要介绍了 SR-IOV 的概念工作原理，但通过实际示例更容易理解。让我们从头开始在 FreeBSD 中设置 SR-IOV。为此，我们将专注于：
+我们已经简要介绍了 SR-IOV 的概念性工作原理，但我发现通过实际示例更容易理解。让我们一步步走过如何在 FreeBSD 中从头开始设置 SR-IOV。为此，我们将重点关注：
 
-* [ 硬件安装](https://freebsdfoundation.org/our-work/journal/browser-based-edition/networking-10th-anniversary/sr-iov-is-a-first-class-freebsd-feature/#hardware_installation)
-* [ 硬件配置](https://freebsdfoundation.org/our-work/journal/browser-based-edition/networking-10th-anniversary/sr-iov-is-a-first-class-freebsd-feature/#hardware_configuration)
-* [FreeBSD SR-IOV 配置](https://freebsdfoundation.org/our-work/journal/browser-based-edition/networking-10th-anniversary/sr-iov-is-a-first-class-freebsd-feature/#freebsd_configuration)
-* [在 Jail 中使用 SR-IOV 网络 VF](https://freebsdfoundation.org/our-work/journal/browser-based-edition/networking-10th-anniversary/sr-iov-is-a-first-class-freebsd-feature/#vf_jail)
-* [在 Bhyve 虚拟机中使用 SR-IOV 网络 VF](https://freebsdfoundation.org/our-work/journal/browser-based-edition/networking-10th-anniversary/sr-iov-is-a-first-class-freebsd-feature/#vf_bhyve)
+- [硬件安装](https://freebsdfoundation.org/our-work/journal/browser-based-edition/networking-10th-anniversary/sr-iov-is-a-first-class-freebsd-feature/#hardware_installation)
+- [硬件配置](https://freebsdfoundation.org/our-work/journal/browser-based-edition/networking-10th-anniversary/sr-iov-is-a-first-class-freebsd-feature/#hardware_configuration)
+- [FreeBSD 中的 SR-IOV 配置](https://freebsdfoundation.org/our-work/journal/browser-based-edition/networking-10th-anniversary/sr-iov-is-a-first-class-freebsd-feature/#freebsd_configuration)
+- [在 Jail 中使用 SR-IOV 网络 VF](https://freebsdfoundation.org/our-work/journal/browser-based-edition/networking-10th-anniversary/sr-iov-is-a-first-class-freebsd-feature/#vf_jail)
+- [在 Bhyve 虚拟机中使用 SR-IOV 网络 VF](https://freebsdfoundation.org/our-work/journal/browser-based-edition/networking-10th-anniversary/sr-iov-is-a-first-class-freebsd-feature/#vf_bhyve)
 
 ## 硬件安装
 
-安装支持 SR-IOV 的 X710-DA2 相对简单，但有一个主要考虑因素。并非所有主板上的 PCIe 插槽都是相同的。在开始之前，我强烈建议您查阅主板的手册。本例中，我将使用 Supermicro X12STH-F 主板。手册提供了两张有见地的图表：
+SR-IOV 支持的 X710-DA2 安装相当简单，但有一个主要的考虑因素。并非所有的 PCIe 插槽都是一样的。我强烈建议你在开始之前查看主板手册。在这个例子中，我将使用 [Supermicro X12STH-F 主板](https://www.supermicro.com/en/products/motherboard/x12sth-f)。其 [手册](https://www.supermicro.com/manuals/motherboard/X12/MNL-2367.pdf) 提供了两张非常有用的图表：
 
 ![](https://freebsdfoundation.org/wp-content/uploads/2024/02/mcbride_fig2.jpg)
 
 ![](https://freebsdfoundation.org/wp-content/uploads/2024/02/mcbride_fig3.jpg)
 
-在第一张图中，我们看到我们的 PCIe 插槽从左到右编号为 4、5 和 6。如果仔细观察，您会看到插槽 4 带有“PCH”前缀，而 5 和 6 带有“CPU”前缀。块图示说明了这一点的更多细节。插槽 5 和 6 直接连接到 LGA1200 插座中的 CPU，而插槽 4 连接到平台控制器集线器。根据系统中具体的组件，这可能决定哪些插槽可以如预期般支持 SR-IOV。在稍后配置 FreeBSD 时，这并没有简单的方法来知道，但作为一个经验法则，特别是对于较旧的主板，我发现 CPU 插槽是一个可靠的选择。如果在后续步骤中发现 SR-IOV 未能正常工作，请尝试使用不同的 PCIe 插槽。主板文档并非总是详细，因此有时试错可能是快速找到适合的插槽的方法。
+在第一张图中，我们看到 PCIe 插槽被编号为 4、5 和 6，从左到右。如果仔细观察，你会看到插槽 4 有 “PCH” 前缀，而 5 和 6 则有 “CPU” 前缀。第二张图则更详细地显示了这些插槽的连接方式。插槽 5 和 6 直接连接到 LGA1200 插座上的 CPU，而插槽 4 连接到 [平台控制器集线器](https://en.wikipedia.org/wiki/Platform_Controller_Hub)。根据你系统中的具体组件，这可能会决定哪些插槽能够使 SR-IOV 按预期工作。直到后续配置 FreeBSD 时，你才会知道哪个插槽适合，通常来说，尤其是对于较旧的主板，CPU 插槽是一个可靠的选择。如果后续步骤中发现 SR-IOV 无法正常工作，可以尝试更换 PCIe 插槽。主板文档有时并不详尽，所以试验和错误有时是最快速的方式，帮助你找出哪个插槽能正常工作。
 
 ![](https://freebsdfoundation.org/wp-content/uploads/2024/02/mcbride_fig5.jpg)
 
@@ -46,213 +49,504 @@ X710-DA2 有两个物理 SFP+光纤端口。在 SR-IOV 术语中，这些对应�
 
 ## 硬件配置
 
-X710-DA2 卡在您的主板设置中不支持 SR-IOV 时将表现为非 SR-IOV 能力卡，直到您启用 SR-IOV。这很容易做到，但也很容易忘记，所以务必不要跳过这一重要步骤。
+X710-DA2 在没有启用 SR-IOV 时会表现得像一张不支持 SR-IOV 的网卡。启用 SR-IOV 很简单，但也容易被遗忘，所以一定不要跳过这一重要步骤。
 
-具体的过程会因主板而异，但大多数主板都会有 PCIe 配置选项的屏幕。找到该屏幕并启用 SR-IOV。在那里的时候，检查其他您可能与 SR-IOV 一同使用的设置是否已启用，比如 CPU 虚拟化，是一个好主意。
+具体操作会根据主板的不同而有所变化，但大多数主板都有一个 PCIe 配置选项的界面。找到这个界面并启用 SR-IOV。与此同时，最好检查是否启用了你可能与 SR-IOV 一起使用的其他设置，例如 CPU 虚拟化。
 
 ![](https://freebsdfoundation.org/wp-content/uploads/2024/02/mcbride_fig7.jpg)
 
 ![](https://freebsdfoundation.org/wp-content/uploads/2024/02/mcbride_fig8.jpg)
 
-我们现在可以启动 FreeBSD 并查看 dmesg(8)。这是我机器上的一个片段。
+现在，我们可以启动 FreeBSD，并查看 [dmesg(8)](https://man.freebsd.org/dmesg)。以下是我系统中 dmesg 的一段输出。
 
-`ixl0: <Intel(R) Ethernet Controller X710 for 10GbE SFP+ - 2.3.3-k> mem      0x6000800000-0x6000ffffff,0x6001808000-0x600180ffff irq 16 at device 0.0 on pci1ixl0: fw 9.120.73026 api 1.15 nvm 9.20 etid 8000d87f oem 1.269.0ixl0: PF-ID[0]: VFs 64, MSI-X 129, VF MSI-X 5, QPs 768, I2Cixl0: Using 1024 TX descriptors and 1024 RX descriptorsixl0: Using 4 RX queues 4 TX queuesixl0: Using MSI-X interrupts with 5 vectorsixl0: Ethernet address: 3c:fd:fe:9c:9e:30ixl0: Allocating 4 queues for PF LAN VSI; 4 queues activeixl0: PCI Express Bus: Speed 2.5GT/s Width x8ixl0: SR-IOV ready ixl0: netmap queues/slots: TX 4/1024, RX 4/1024`
+```sh
+ixl0: <Intel(R) Ethernet Controller X710 for 10GbE SFP+ - 2.3.3-k> mem
+      0x6000800000-0x6000ffffff,0x6001808000-0x600180ffff irq 16 at device 0.0 on pci1
+ixl0: fw 9.120.73026 api 1.15 nvm 9.20 etid 8000d87f oem 1.269.0
+ixl0: PF-ID[0]: VFs 64, MSI-X 129, VF MSI-X 5, QPs 768, I2C
+ixl0: Using 1024 TX descriptors and 1024 RX descriptors
+ixl0: Using 4 RX queues 4 TX queues
+ixl0: Using MSI-X interrupts with 5 vectors
+ixl0: Ethernet address: 3c:fd:fe:9c:9e:30
+ixl0: Allocating 4 queues for PF LAN VSI; 4 queues active
+ixl0: PCI Express Bus: Speed 2.5GT/s Width x8
+ixl0: SR-IOV ready ixl0: netmap queues/slots: TX 4/1024, RX 4/1024
+```
 
-在第三行我们看到一些 SR-IOV 的引用。“PF-ID[0]”与 ixl0 相关联，此 PF 能够支持 64 个 VF。在第十行，我们得到一个很好的确认，这个 PCIe 设备是“SR-IOV ready”。ixl 名称的原因是该网卡使用了 ixl(4) Intel Ethernet 700 系列驱动程序。
+在第三行，我们可以看到一些 SR-IOV 的信息。“PF-ID[0]” 与 ixl0 相关，并且这个 PF 能支持 64 个 VF。而在第十行，我们可以看到明确的确认：这个 PCIe 设备已经是“SR-IOV 准备好”（SR-IOV ready）。之所以是“ixl”名称，是因为这张网卡使用了 [ixl(4)](https://man.freebsd.org/cgi/man.cgi?query=ixl) Intel Ethernet 700 系列驱动。
 
-配置 X710-DA2 的硬件不需要其他操作。一些网卡（如前面提到的 Mellanox）需要配置网卡的固件，而另一些网卡（如前面提到的 Chelsio）则需要在 /boot/loader.conf 中进行驱动程序配置。不过，使用 X710-DA2 则不需要这些操作，尽管您可能需要检查网卡的固件版本，并在必要时进行更新。
+除了检查硬件状态外，不需要做其他配置。有些网卡（比如前面提到的 Mellanox）需要你配置卡的固件，而其他卡（比如前面提到的 Chelsio）则需要在 `/boot/loader.conf` 中进行驱动配置。但 X710-DA2 并不需要这些配置，尽管你可能需要检查并更新卡的固件版本（如果有必要的话）。
 
-有了这个，我们准备从硬件设置转向 FreeBSD 配置。
+至此，我们可以从硬件设置转到 FreeBSD 配置的部分。
 
-## FreeBSD 的 SR-IOV 配置
+## FreeBSD 中的 SR-IOV 配置
 
-### 使用 PFs
+### 使用 PF（物理功能）
 
-SR-IOV 的一个好处是，无论您是否告诉 PF 创建 VF，您仍然可以将 PF 用作网络接口。 我将添加以下内容到我的 /etc/rc.conf 并为 PF 指定一个 IP 地址，以便在主机中使用
+SR-IOV 的一个优点是，无论是否要求 PF 创建 VF，你仍然可以将 PF 用作网络接口。我会在我的 `/etc/rc.conf` 中添加以下内容，并为 PF 分配一个 IP 地址，用于主机的连接：
 
-`ifconfig_ixl0=”inet 10.0.1.201 netmask 255.255.255.0” defaultrouter=”10.0.1.1”`
+```sh
+ifconfig_ixl0=”inet 10.0.1.201 netmask 255.255.255.0” defaultrouter=”10.0.1.1”
+```
 
-现在当我启动系统时，无论 SR-IOV 是否已启用，我都可以期望 ixl0 设备具有一个 IP 地址，我可以使用它来连接到系统。
+现在，当我启动系统时，我可以预期 ixl0 设备会有一个 IP 地址，我可以用它来连接到系统，无论 SR-IOV 是否启用。
 
-### 告诉 PFs 创建 VFs
+### 指示 PF 创建 VF
 
-FreeBSD 中的 PF 和 VF 管理由 iovctl(8)处理，该程序包含在基础操作系统中。要创建 VF，我们需要在 /etc/iov/ 目录中创建一个文件，其中包含我们希望的一些具体信息。我们将执行一个简单的策略，创建一个 VF 分配给jail，另一个用于 bhyve 虚拟机。iovctl.conf(5)手册页面将为我们提供最重要的参数。
+在 FreeBSD 中，PF 和 VF 的管理是通过 [iovctl(8)](https://man.freebsd.org/cgi/man.cgi?query=iovctl) 完成的，iovctl 是操作系统的基础工具之一。要创建 VF，我们需要在 `/etc/iov/` 目录下创建一个文件，指定我们需要的配置。我们将采用一个简单的策略，创建一个 VF 分配给 jail，另一个 VF 分配给 bhyve 虚拟机。可以参考 [iovctl.conf(5)](https://man.freebsd.org/iovctl.conf) 手册页面，了解最重要的参数。
 
-`OPTIONS     The following parameters are accepted by all PF drivers:     device (string)             This parameter specifies the name of the PF device. This             parameter is required to be specified.     num_vfs (uint16_t)             This parameter specifies the number of VF children to create.             This parameter may not be zero. The maximum value of this             parameter is device-specific.`
+```sh
+OPTIONS
+    以下参数为所有 PF 驱动程序所接受：
+    device (string)
+    该参数指定 PF 设备的名称。此参数是必需的。
+    num_vfs (uint16_t)
+    该参数指定要创建的 VF 子设备的数量。此参数不能为空。该参数的最大值由设备决定。
+```
 
-我喜欢根据需要设置 num_vfs。我们可以将其设置为最大值，但我发现这样做会使得查看 ifconfig 和其他命令输出变得更加困难。
+我喜欢将 `num_vfs` 设置为实际需要的数量。我们本可以将其设置为最大值，但我发现这样会使查看 `ifconfig` 等命令的输出变得更加困难。
 
-另外，由于不同的网卡使用不同的驱动程序，每个驱动程序都有基于硬件能力的选项可供设置。ixl(4)手册页面列出了几个可选参数。
+另外，由于不同的网卡有不同的驱动程序，每个驱动程序都有一些可以根据硬件能力设置的选项。 [ixl(4)](https://man.freebsd.org/ixl) 手册页面列出了多个可选参数。
 
-`IOVCTL OPTIONS     The driver supports additional optional parameters for created VFs     (Virtual Functions) when using iovctl(8):     mac-addr (unicast-mac)             Set the Ethernet MAC address that the VF will use. If             unspecified, the VF will use a randomly generated MAC address.`
+```sh
+IOVCTL OPTIONS
+    驱动程序支持使用 iovctl(8) 创建 VF 时的其他可选参数：
 
-或者，您还可以使用 iovctl 命令来获取 PF 及其 VF 的有效参数的简要摘要，以及它们的默认值。
+    mac-addr (unicast-mac)
+    设置 VF 将使用的以太网 MAC 地址。如果未指定，则 VF 将使用随机生成的 MAC 地址。
+```
 
-`(host) $ sudo iovctl -S -d ixl0The following configuration parameters may be configured on the PF:     num_vfs : uint16_t (required)     device : string (required)The following configuration parameters may be configured on a VF:     passthrough : bool (default = false)     mac-addr : unicast-mac (optional)     mac-anti-spoof : bool (default = true)     allow-set-mac : bool (default = false)     allow-promisc : bool (default = false)     num-queues : uint16_t (default = 4)`
+或者，你也可以使用 `iovctl` 命令，快速查看 PF 及其 VFs 支持的参数，以及它们的默认值。
 
-我们将使用 mac-addr 参数为每个 VF 设置特定的 MAC 地址。在这种情况下，设置 MAC 地址有点随意，但我将演示如何在配置文件中包含 PF 参数、默认 VF 参数以及特定于各个 VF 的参数。
+```sh
+(host) $ sudo iovctl -S -d ixl0
+以下配置参数可以在 PF 上进行配置：
+    num_vfs : uint16_t (必需)
+    device : string (必需)
 
-`PF {       device : “ixl0”       num_vfs : 2}DEFAULT {       allow-set-mac : true;}VF-0 {       mac-addr : “aa:88:44:00:02:00”;}VF-1 {       mac-addr : “aa:88:44:00:02:01”;}`
+以下配置参数可以在 VF 上进行配置：
+    passthrough : bool (默认 = false)
+    mac-addr : unicast-mac (可选)
+    mac-anti-spoof : bool (默认 = true)
+    allow-set-mac : bool (默认 = false)
+    allow-promisc : bool (默认 = false)
+    num-queues : uint16_t (默认 = 4)
+```
 
-这条指令指示 ixl0 创建两个 VF。默认情况下，每个 VF 都可以设置自己的 MAC 地址。每个 VF 都将分配一个初始 MAC 地址（可以用前面的默认设置覆盖）。
+我们将使用 `mac-addr` 参数为每个 VF 设置特定的 MAC 地址。在此示例中，设置 MAC 地址是随意的，但我将演示如何在配置文件中设置 PF 参数、默认的 VF 参数以及特定于单个 VF 的参数。
 
-在我们使其生效之前，让我们先查看一下我们目前的环境。我们会发现两个 ixl PCI 设备和两个 ixl 网络接口。
+```json
+PF {
+       device : “ixl0”
+       num_vfs : 2
+}
 
-`(host) $ ifconfig -lixl0 ixl1 lo0(host) $ pciconf -lv | grep -e ixl -e iavf -A4ixl0@pci0:1:0:0:        class=0x020000 rev=0x01 hdr=0x00 vendor=0x8086device=0x1572 subvendor=0x8086 subdevice=0x0007    vendor     = 'Intel Corporation'    device     = 'Ethernet Controller X710 for 10GbE SFP+'    class      = network    subclass   = ethernetixl1@pci0:1:0:1:        class=0x020000 rev=0x01 hdr=0x00 vendor=0x8086device=0x1572 subvendor=0x8086 subdevice=0x0000    vendor     = 'Intel Corporation    device     = 'Ethernet Controller X710 for 10GbE SFP+'    class      = network    subclass   = ethernet`
+DEFAULT {
+       allow-set-mac : true;
+}
 
-要使我们的/etc/iov/ixl0.conf 配置生效，我们使用 iovctl(8)。
+VF-0 {
+       mac-addr : “aa:88:44:00:02:00”;
+}
 
-`(host) $ sudo iovctl -C -f /etc/iov/ixl0.conf`
+VF-1 {
+       mac-addr : “aa:88:44:00:02:01”;
+}
+```
 
-如果您更改了配置文件，请删除并重新创建 VF。
+这将指示 ixl0 创建两个 VF。默认情况下，每个 VF 都可以设置自己的 MAC 地址。每个 VF 将被分配一个初始的 MAC 地址（该地址可以通过之前的默认设置来覆盖）。
 
-`(host) $ sudo iovctl -D -f /etc/iov/ixl0.conf(host) $ sudo iovctl -C -f /etc/iov/ixl0.conf`
+在使配置生效之前，让我们先查看当前的环境。我们会找到两个 ixl PCI 设备和两个 ixl 网络接口。
 
-检查它是否工作的方法是，运行之前使用的相同 ifconfig 和 pciconf 命令。
+```sh
+(host) $ ifconfig -l
+ixl0 ixl1 lo0
 
-`(host) $ ifconfig -lixl0 ixl1 lo0 iavf0 iavf1(host) $ pciconf -lv | grep -e ixl -e iavf -A4ixl0@pci0:1:0:0:        class=0x020000 rev=0x01 hdr=0x00 vendor=0x8086 device=0x1572 subvendor=0x8086 subdevice=0x0007    vendor     = 'Intel Corporation'    device     = 'Ethernet Controller X710 for 10GbE SFP+'    class      = network    subclass   = ethernetixl1@pci0:1:0:1:        class=0x020000 rev=0x01 hdr=0x00 vendor=0x8086 device=0x1572 subvendor=0x8086 subdevice=0x0000    vendor     = 'Intel Corporation'    device     = 'Ethernet Controller X710 for 10GbE SFP+'    class      = network    subclass   = ethernet--iavf0@pci0:1:0:16:        class=0x020000 rev=0x01 hdr=0x00 vendor=0x8086 device=0x154c subvendor=0x8086 subdevice=0x0000    vendor     = 'Intel Corporation'    device     = 'Ethernet Virtual Function 700 Series'    class      = network    subclass   = ethernetiavf1@pci0:1:0:17:        class=0x020000 rev=0x01 hdr=0x00 vendor=0x8086 device=0x154c subvendor=0x8086 subdevice=0x0000    vendor     = 'Intel Corporation'    device     = 'Ethernet Virtual Function 700 Series'    class      = network    subclass   = ethernet`
+(host) $ pciconf -lv | grep -e ixl -e iavf -A4
+ixl0@pci0:1:0:0:        class=0x020000 rev=0x01 hdr=0x00 vendor=0x8086
+device=0x1572 subvendor=0x8086 subdevice=0x0007
+    vendor     = 'Intel Corporation'
+    device     = 'Ethernet Controller X710 for 10GbE SFP+'
+    class      = network
+    subclass   = ethernet
+ixl1@pci0:1:0:1:        class=0x020000 rev=0x01 hdr=0x00 vendor=0x8086
+device=0x1572 subvendor=0x8086 subdevice=0x0000
+    vendor     = 'Intel Corporation
+    device     = 'Ethernet Controller X710 for 10GbE SFP+'
+    class      = network
+    subclass   = ethernet
+```
 
-瞧！我们闪亮的新 VF 已经到达。在 pciconf 输出中，我们仍然可以看到我们的 ixl 设备，但现在多了两个 iavf 设备。iavf(4) 手册页告诉我们，这是 Intel 自适应虚拟功能的驱动程序。
+要使 `/etc/iov/ixl0.conf` 配置文件生效，我们使用 [iovctl(8)](https://man.freebsd.org/cgi/man.cgi?query=iovctl)。
 
-除了看到新的 PCI 设备外，ifconfig 确认它们确实被识别为网络接口。对于网络设备的大多数常见方面，您可能无法区分 PF 和 VF 之间的差异。如果您想深入了解详细信息和差异，请查阅驱动程序文档以及 pciconf 的 -c 功能标志，例如 pciconf -lc iavf 。
+```sh
+(host) $ sudo iovctl -C -f /etc/iov/ixl0.conf
+```
 
-要使此配置持久跨重启生效，请修改您的 /etc/rc.conf 文件。
+如果你修改了配置文件，记得删除并重新创建 VFs。
 
-`# Configure SR-IOViovctl_files=”/etc/iov/ixl0.conf”`
+```sh
+(host) $ sudo iovctl -D -f /etc/iov/ixl0.conf
+(host) $ sudo iovctl -C -f /etc/iov/ixl0.conf
+```
 
-现在我们有两个准备好使用的虚拟功能(VFs)。让我们把它们投入使用吧！
+要检查是否成功创建了 VF，我们可以再次运行之前的 `ifconfig` 和 `pciconf` 命令。
 
-## 在Jail中使用 SR-IOV 网络 VF。
+```sh
+(host) $ ifconfig -l
+ixl0 ixl1 lo0 iavf0 iavf1
 
-本节假定您对 FreeBSD 有基本的了解Jails。因此，从头开始设置jail超出了范围。有关如何执行此操作的更多信息，请参阅 FreeBSD 手册的Jails和容器章节。
+(host) $ pciconf -lv | grep -e ixl -e iavf -A4
+ixl0@pci0:1:0:0:        class=0x020000 rev=0x01 hdr=0x00 vendor=0x8086 device=0x1572 subvendor=0x8086 subdevice=0x0007
+    vendor     = 'Intel Corporation'
+    device     = 'Ethernet Controller X710 for 10GbE SFP+'
+    class      = network
+    subclass   = ethernet
+ixl1@pci0:1:0:1:        class=0x020000 rev=0x01 hdr=0x00 vendor=0x8086 device=0x1572 subvendor=0x8086 subdevice=0x0000
+    vendor     = 'Intel Corporation'
+    device     = 'Ethernet Controller X710 for 10GbE SFP+'
+    class      = network
+    subclass   = ethernet
+--
+iavf0@pci0:1:0:16:        class=0x020000 rev=0x01 hdr=0x00 vendor=0x8086 device=0x154c subvendor=0x8086 subdevice=0x0000
+    vendor     = 'Intel Corporation'
+    device     = 'Ethernet Virtual Function 700 Series'
+    class      = network
+    subclass   = ethernet
+iavf1@pci0:1:0:17:        class=0x020000 rev=0x01 hdr=0x00 vendor=0x8086 device=0x154c subvendor=0x8086 subdevice=0x0000
+    vendor     = 'Intel Corporation'
+    device     = 'Ethernet Virtual Function 700 Series'
+    class      = network
+    subclass   = ethernet
+```
 
-我不使用任何jail管理ports，依赖于基本操作系统中提供的内容。如果您使用过类似 Bastille 的软件，那么放置配置文件的具体位置/方式可能会有所不同，但概念是相同的。在这个例子中，我们正在处理一个名为“desk”的jail。
+_Voilà!_ 我们的崭新的 VF 设备已经创建。在 `pciconf` 的输出中，我们仍然可以看到原来的 `ixl` 设备，但现在有了两个 [iavf](https://man.freebsd.org/iavf) 设备。`iavf(4)` 手册页面告诉我们，这些是 Intel Adaptive Virtual Functions 驱动程序。
 
-`exec.start += “/bin/sh /etc/rc”;exec.stop = “/bin/sh /etc/rc.shutdown”;exec.clean;mount.devfs;desk {        host.hostname = “desk”;        path = “/mnt/apps/jails/desk”;        vnet;        vnet.interface = “iavf0”;        devfs_ruleset=”5”;        allow.raw_sockets;}`
+除了看到新的 PCI 设备外，`ifconfig` 也确认它们已经被识别为网络接口。对于大多数网络设备的常见功能，你可能无法区分 PF 和 VF。想要了解更详细的区别，可以查看驱动文档或使用 `pciconf` 的 `-c` 功能标志，例如 `pciconf -lc iavf`。
 
-就这些了！jail现在可以访问其专用的 VF 网络设备，通过 vnet(9)进行设置。我将调整jail的/etc/rc.conf 文件以启用它。
+为了确保在重启后配置能够保持有效，修改 `/etc/rc.conf` 文件：
 
-`ifconfig_iavf0=”inet 10.0.1.231 netmask 255.255.255.0”defaultrouter=”10.0.1.1”`
+```sh
+# 配置 SR-IOV
+iovctl_files=”/etc/iov/ixl0.conf”
+```
 
-现在让我们开始jail并检查它是否工作。
+现在我们有了两个准备好的 VF，可以投入使用了！
 
-`(host) $ sudo service jail start deskStarting jails: desk.(host) $ sudo jexec desk ifconfig iavf0iavf0: flags=1008843<up,broadcast,running,simplex,multicast,lower_up><span> </span>metric 0 mtu 1500        options=4e507bb<rxcsum,txcsum,vlan_mtu,vlan_hwtagging,jumbo_mtu,vlan_hwcsum,tso4,< br=""><span> </span>TSO6,LRO,VLAN_HWFILTER,VLAN_HWTSO,RXCSUM_IPV6,TXCSUM_IPV6,HWSTATS,MEXTPG>        ether aa:88:44:00:02:0010.0.1.231 netmask 0xffffff00 broadcast 10.0.1.255        media: Ethernet autoselect (10Gbase-SR<span> </span><full-duplex>)        status: active        nd6 options=29<performnud,ifdisabled,auto_linklocal>(host) $ sudo jexec desk ping 9.9.9.9PING 9.9.9.9 (9.9.9.9): 56 data bytes64 bytes from 9.9.9.9: icmp_seq=0 ttl=58 time=19.375 ms64 bytes from 9.9.9.9: icmp_seq=1 ttl=58 time=19.809 ms64 bytes from 9.9.9.9: icmp_seq=2 ttl=58 time=19.963 ms</performnud,ifdisabled,auto_linklocal></full-duplex></rxcsum,txcsum,vlan_mtu,vlan_hwtagging,jumbo_mtu,vlan_hwcsum,tso4,<></up,broadcast,running,simplex,multicast,lower_up>`
+## 在 Jail 中使用 SR-IOV 网络 VF
 
-正如预期的那样，我们在jail中看到 iavf0 接口，并且它似乎正常工作。但主机操作系统中的那台设备怎么样了？让我们来检查一下。
+本节假设你对 FreeBSD Jail 有基本的了解。因此，从头开始设置 Jail 的过程不在本文范围内。有关如何设置 Jail 的更多信息，请参阅 FreeBSD 手册中的 [Jails and Containers](https://docs.freebsd.org/en/books/handbook/jails/) 章节。
 
-`(host) $ ifconfig -lixl0 ixl1 lo0 iavf1`
+我不使用任何 Jail 管理端口，而是依赖于基础操作系统自带的工具。如果你使用过像 [Bastille](https://bastillebsd.org/) 这样的管理工具，配置文件的位置和方式可能会有所不同，但概念是一样的。在这个例子中，我们使用一个名为 “desk” 的 Jail。
+
+```sh
+exec.start += “/bin/sh /etc/rc”;
+exec.stop = “/bin/sh /etc/rc.shutdown”;
+exec.clean;
+mount.devfs;
+
+desk {
+        host.hostname = “desk”;
+        path = “/mnt/apps/jails/desk”;
+        vnet;
+        vnet.interface = “iavf0”;
+        devfs_ruleset=”5”;
+        allow.raw_sockets;
+}
+```
+
+就这样！该 Jail 现在可以通过 [vnet(9)](https://man.freebsd.org/vnet) 访问自己专用的 VF 网络设备。我将调整该 Jail 的 `/etc/rc.conf` 文件，启用网络配置：
+
+```sh
+ifconfig_iavf0=”inet 10.0.1.231 netmask 255.255.255.0”
+defaultrouter=”10.0.1.1”
+```
+
+现在，让我们启动 Jail 并检查其是否正常工作。
+
+```sh
+(host) $ sudo service jail start desk
+Starting jails: desk.
+
+(host) $ sudo jexec desk ifconfig iavf0
+iavf0: flags=1008843 metric 0 mtu 1500
+        options=4e507bb TSO6,LRO,VLAN_HWFILTER,VLAN_HWTSO,RXCSUM_IPV6,TXCSUM_IPV6,HWSTATS,MEXTPG>
+        ether aa:88:44:00:02:00
+10.0.1.231 netmask 0xffffff00 broadcast 10.0.1.255
+        media: Ethernet autoselect (10Gbase-SR )
+        status: active
+        nd6 options=29
+
+(host) $ sudo jexec desk ping 9.9.9.9
+PING 9.9.9.9 (9.9.9.9): 56 data bytes
+64 bytes from 9.9.9.9: icmp_seq=0 ttl=58 time=19.375 ms
+64 bytes from 9.9.9.9: icmp_seq=1 ttl=58 time=19.809 ms
+64 bytes from 9.9.9.9: icmp_seq=2 ttl=58 time=19.963 ms
+```
+
+正如预期的那样，我们在 Jail 中看到了 `iavf0` 网络接口，并且它似乎正常工作。但是宿主操作系统中的设备呢？它还在吗？让我们检查一下。
+
+```sh
+(host) $ ifconfig -l
+ixl0 ixl1 lo0 iavf1
+```
 
 ## 在 Bhyve 虚拟机中使用 SR-IOV 网络 VF
 
-通过 bhyve(8)虚拟机，您可以实现类似的结果，尽管方法有所不同。使用jails，我们可以在运行时分配/释放 VF。使用 bhyve，则必须在启动时执行此操作，并需要调整我们的 SR-IOV 配置。首先，在更改任何内容之前，让我们再次查看 pciconf。
+通过 [bhyve(8)](https://man.freebsd.org/bhyve) 虚拟机，你也可以实现类似的效果，虽然方法稍有不同。对于 Jail，我们可以在运行时分配和释放 VF。而在 bhyve 中，这必须在启动时完成，并且需要调整 SR-IOV 配置。首先，我们再看一下 `pciconf`，在做任何更改之前。
 
-`(host) $ pciconf -l | grep iavfiavf0@pci0:1:0:16:      class=0x020000 rev=0x01 hdr=0x00 vendor=0x8086 device=0x154csubvendor=0x8086 subdevice=0x0000iavf1@pci0:1:0:17:      class=0x020000 rev=0x01 hdr=0x00 vendor=0x8086 device=0x154csubvendor=0x8086 subdevice=0x0000`
+```sh
+(host) $ pciconf -l | grep iavf
+iavf0@pci0:1:0:16:      class=0x020000 rev=0x01 hdr=0x00 vendor=0x8086 device=0x154c
+subvendor=0x8086 subdevice=0x0000
+iavf1@pci0:1:0:17:      class=0x020000 rev=0x01 hdr=0x00 vendor=0x8086 device=0x154c
+subvendor=0x8086 subdevice=0x0000
+```
 
-查看未使用的 VF，iavf1。第一列可以解读为“有一个使用驱动程序 iavf，ID 为 1 的 PCI0 设备，具有总线 1、插槽 0、功能 17 的 PCI 选择器”。虽然您现在不需要它们，但最后三个数字是我们最终将告诉 bhyve 要使用哪个设备的方式。在我们开始之前，请确保我们在启动时加载 vmm(4)以启用 bhyve，并调整我们的第二个 VF，以便为其进行 bhyve 透传准备。
+看看未使用的 VF，`iavf1`。第一列可以理解为：“有一个使用 iavf 驱动的 PCI0 设备，ID 为 1，PCI 选择符为总线 1，插槽 0，功能 17”。虽然现在你还不需要它们，但这三个数字最终会告诉 bhyve 我们需要使用哪个设备。在此之前，我们需要确保在启动时加载 [vmm(4)](https://man.freebsd.org/vmm) 以启用 bhyve，并调整我们的第二个 VF 以便将其传递给 bhyve。
 
-`## Load the virtual machine monitor, the kernel portion of bhyvevmm_load=”YES”# Another way to passthrough a VF, or any PCI device, is to# specify the device in /boot/loader.conf. I show this for reference.# We’ll use our iovctl config instead as it keeps things in one place.# pptdevs=”1/0/17”`
+```sh
+## 启动虚拟机监控程序（bhyve 的内核部分）
+vmm_load="YES"
 
-要保留 VF 以进行 bhyve 透传，我们使用 iovctl 透传参数。
+# 另一种传递 VF 或任何 PCI 设备的方法是
+# 在 /boot/loader.conf 中指定设备。我在此列出供参考。
+# 我们将使用 iovctl 配置，因为它将所有内容集中在一个地方。
+# pptdevs="1/0/17"
+```
 
-`    passthrough (boolean)              This parameter controls whether the VF is reserved for the use of              the bhyve(8) hypervisor as a PCI passthrough device. If this              parameter is set to true, then the VF will be reserved as a PCI              passthrough device and it will not be accessible from the host              OS. The default value of this parameter is false.`
+要将 VF 保留为 bhyve 的 PCI 直通设备，我们使用 `iovctl` 的 `passthrough` 参数。
 
-`PF {        device : “ixl0”        num_vfs : 2}DEFAULT {        allow-set-mac : true;}VF-0 {        mac-addr : “aa:88:44:00:02:00”;}VF-1 {        mac-addr : “aa:88:44:00:02:01”;        passthrough : true;}`
+```sh
+    passthrough (boolean)
+        该参数控制是否将 VF 保留为 bhyve(8) 超管的 PCI 直通设备。如果设置为 true，VF 将被保留为 PCI 直通设备，并且无法从宿主操作系统访问。此参数的默认值为 false。
+```
 
-当我们下次启动系统时，我们会发现 iavf1 不存在，因为 iavf 驱动程序永远不会分配给我们的第二个 VF。相反，它将被标记为“ppt”以进行“PCI 透传”，只有 bhyve 能够使用它。
+```json
+PF {
+        device : “ixl0”
+        num_vfs : 2
+}
 
-使用这些调整后，重新启动。
+DEFAULT {
+        allow-set-mac : true;
+}
 
-立即您会注意到 dmesg 输出有所不同。这次没有提到 iavf1。还记得我们在 pciconf 中看到的 1:0:17 选择器吗？在这里我们看到它的格式稍有不同。
+VF-0 {
+        mac-addr : “aa:88:44:00:02:00”;
+}
 
-`ppt0 at device 0.17 on pci1`
+VF-1 {
+        mac-addr : “aa:88:44:00:02:01”;
+        passthrough : true;
+}
+```
 
-pciconf 确认设备已保留用于透传。
+当我们下次启动系统时，会发现 `iavf1` 不见了，因为 `iavf` 驱动程序不会被分配给我们的第二个 VF。相反，它会被标记为“ppt”（PCI 直通），并且只有 bhyve 才能使用它。
 
-`(host) $ pciconf -l | grep iavfiavf0@pci0:1:0:16:      class=0x020000 rev=0x01 hdr=0x00 vendor=0x8086 device=0x154c subvendor=0x8086 subdevice=0x0000(host) $ pciconf -l | grep pptppt0@pci0:1:0:17:      class=0x020000 rev=0x01 hdr=0x00 vendor=0x8086 device=0x154c subvendor=0x8086 subdevice=0x0000`
+做了这些调整后，重新启动系统。
 
-剩下的工作我们在 bhyve 中完成。本文假定您知道如何启动并运行 bhyve 虚拟机。我使用 vm-bhyve 工具来轻松管理虚拟机（但如果您不使用 vm-bhyve，请参考本节末尾的原始 bhyve 参数）。我将将 ppt VF 添加到名为 debian-test 的 Debian 虚拟机中。我们只需在配置中定义要透传的设备，并删除任何涉及虚拟网络的行。
+你会立刻注意到，`dmesg` 输出有了变化。这次没有提到 `iavf1`。记得我们在 `pciconf` 中看到的 `1:0:17` 选择符吗？在这里我们以稍微不同的格式看到了它。
 
-`loader=”grub”cpu=1memory=4Gdisk0_type=”virtio-blk”disk0_name=”disk0.img”uuid=”b997a425-80d3-11ee-a522-00074336bc80”# Passthrough a VF for Networkingpassthru0=”1/0/17”# Common defaults that are not needed with a VF available# network0_type=”virtio-net”# network0_switch=”public”# network0_mac=”58:9c:fc:0c:fd:b7”`
+```sh
+ppt0 at device 0.17 on pci1
+```
+
+`pciconf` 确认该设备已被保留用于直通。
+
+```sh
+(host) $ pciconf -l | grep iavf
+iavf0@pci0:1:0:16:      class=0x020000 rev=0x01 hdr=0x00 vendor=0x8086 device=0x154c subvendor=0x8086 subdevice=0x0000
+
+(host) $ pciconf -l | grep ppt
+ppt0@pci0:1:0:17:      class=0x020000 rev=0x01 hdr=0x00 vendor=0x8086 device=0x154c subvendor=0x8086 subdevice=0x0000
+```
+
+接下来，所有操作都在 bhyve 中完成。本文假设你知道如何让 bhyve 虚拟机启动并运行。我使用 [vm-bhyve](https://man.freebsd.org/cgi/man.cgi?query=vm) 工具来方便地管理虚拟机（但如果你不使用 vm-bhyve，请参考本节末尾的原始 bhyve 参数）。我将把直通的 VF 添加到名为 `debian-test` 的 Debian 虚拟机中。我们只需要在配置中定义要直通的设备，并移除与虚拟网络相关的任何配置行。
+
+```sh
+loader="grub"
+cpu=1
+memory=4G
+disk0_type="virtio-blk"
+disk0_name="disk0.img"
+uuid="b997a425-80d3-11ee-a522-00074336bc80"
+
+# 为网络直通 VF
+passthru0="1/0/17"
+
+# 不需要网络配置行，因为有了 VF
+# network0_type="virtio-net"
+# network0_switch="public"
+# network0_mac="58:9c:fc:0c:fd:b7"
+```
 
 现在我们只需启动我们的 bhyve 虚拟机。
 
-`(host) $ sudo vm start debian-testStarting debian-test  * found guest in /mnt/apps/bhyve/debian-test  * booting...(host) $ sudo vm console debian-testConnecteddebian-test login: rootPassword:Linux debian-test 6.1.0-16-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.1.67-1 (2023-12-12) x86_64root@debian-test:~# lspci | grep -i intel00:05.0 Ethernet controller: Intel Corporation Ethernet Virtual Function 700 Series(rev 01)root@debian-test:~# ip addr2: enp0s5: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000    link/ether aa:88:44:00:02:01 brd ff:ff:ff:ff:ff:ff    inet 10.0.1.99/24 brd 10.0.1.255 scope global dynamic enp0s5       valid_lft 7186sec preferred_lft 7186sec    inet6 fdd5:c1fa:4193:245:a888:44ff:fe00:201/64 scope global dynamic mngtmpaddr       valid_lft 1795sec preferred_lft 1795sec    inet6 fe80::a888:44ff:fe00:201/64 scope link       valid_lft forever preferred_lft foreverroot@debian-test:~# ping 9.9.9.9PING 9.9.9.9 (9.9.9.9) 56(84) bytes of data.64 bytes from 9.9.9.9: icmp_seq=1 ttl=58 time=20.6 ms64 bytes from 9.9.9.9: icmp_seq=2 ttl=58 time=19.8 ms`
+```sh
+(host) $ sudo vm start debian-test
+Starting debian-test
+  * found guest in /mnt/apps/bhyve/debian-test
+  * booting...
 
-成功！我们现在在我们的 bhyve VM 中拥有了一个用于网络的 SR-IOV VF 设备。如果你是一个纯粹主义者，并且不想使用 vm-bhyve ，当你使用 vm 命令时，细节将被附加到一个 vm-bhyve.log 文件中。在这个文件中，你将看到传递给 grub-bhyve 和 bhyve 启动 VM 的参数。
+(host) $ sudo vm console debian-test
+Connected
 
-`create file /mnt/apps/bhyve/debian-test/device.map      -> (hd0) /mnt/apps/bhyve/debian-test/disk0.imggrub-bhyve -c /dev/nmdm-debian-test.1A -S \<br/>      -m /mnt/apps/bhyve/debian-test/device.map \<br/>      -M 4G -r hd0,1 debian-testbhyve -c 1 -m 4G -AHP      -U b997a425-80d3-11ee-a522-00074336bc80 -u -S \<br/>      -s 0,hostbridge -s 31,lpc \<br/>      -s 4:0,virtio-blk,/mnt/apps/bhyve/debian-test/disk0.img \<br/>      -s 5:0,passthru,1/0/17`
+debian-test login: root
+Password:
+Linux debian-test 6.1.0-16-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.1.67-1 (2023-12-12) x86_64
 
-### bhyve PCI 透传是一个新兴的功能
+root@debian-test:~# lspci | grep -i intel
+00:05.0 Ethernet controller: Intel Corporation Ethernet Virtual Function 700 Series
+(rev 01)
 
-虽然在 14.0-RELEASE 版本中，对于 jails 使用 VFs 与 vnet 来说非常稳定，但总体而言，bhyve PCI 透传仍处于快速发展阶段。仅使用透传的 bhyve 运行得非常好。然而，我发现如果我同时使用 VFs 和 jails，某些硬件组合和设备数量可能会产生意外行为。每个版本都会带来改进。如果你发现了边缘案例，请务必提交 bug。
+root@debian-test:~# ip addr
+2: enp0s5: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
+    link/ether aa:88:44:00:02:01 brd ff:ff:ff:ff:ff:ff
+    inet 10.0.1.99/24 brd 10.0.1.255 scope global dynamic enp0s5
+       valid_lft 7186sec preferred_lft 7186sec
+    inet6 fdd5:c1fa:4193:245:a888:44ff:fe00:201/64 scope global dynamic mngtmpaddr
+       valid_lft 1795sec preferred_lft 1795sec
+    inet6 fe80::a888:44ff:fe00:201/64 scope link
+       valid_lft forever preferred_lft forever
+
+root@debian-test:~# ping 9.9.9.9
+PING 9.9.9.9 (9.9.9.9) 56(84) bytes of data.
+64 bytes from 9.9.9.9: icmp_seq=1 ttl=58 time=20.6 ms
+64 bytes from 9.9.9.9: icmp_seq=2 ttl=58 time=19.8 ms
+```
+
+**成功！** 现在，我们在 bhyve 虚拟机中为网络配置了一个 SR-IOV VF 设备。如果你是纯粹主义者，不想使用 `vm-bhyve`，可以通过 `vm` 命令查看 `vm-bhyve.log` 文件，其中会列出传递给 `grub-bhyve` 和 `bhyve` 的参数，以启动虚拟机。
+
+```sh
+create file /mnt/apps/bhyve/debian-test/device.map
+      -> (hd0) /mnt/apps/bhyve/debian-test/disk0.img
+grub-bhyve -c /dev/nmdm-debian-test.1A -S \
+      -m /mnt/apps/bhyve/debian-test/device.map \
+      -M 4G -r hd0,1 debian-test
+bhyve -c 1 -m 4G -AHP
+      -U b997a425-80d3-11ee-a522-00074336bc80 -u -S \
+      -s 0,hostbridge -s 31,lpc \
+      -s 4:0,virtio-blk,/mnt/apps/bhyve/debian-test/disk0.img \
+      -s 5:0,passthru,1/0/17
+```
+
+### bhyve PCI 直通是一个正在发展的特性
+
+虽然在 Jail 中使用 VFs 配合 vnet 非常稳定，但在 14.0-RELEASE 版本的 bhyve PCI 直通功能仍在开发中。仅使用 bhyve 配合直通功能表现良好。然而，我发现如果同时在使用 VFs 和 Jail 时，某些硬件组合和设备数量可能会导致意外的行为。随着每次版本发布，都会有改进。如果你遇到极端情况，请务必 [提交 bug](https://bugs.freebsd.org/)。
 
 ### FreeBSD SR-IOV 总结
 
-要在 FreeBSD 中使用 SR-IOV 启用的虚拟 PCIe 设备，我们：
+要在 FreeBSD 中使用启用 SR-IOV 的虚拟 PCIe 设备，我们需要：
 
-* 在支持 SR-IOV 的主板上安装 SR-IOV 兼容的网络卡
-* 确保主板的 SR-IOV 功能已启用
-* 创建 /etc/iov/ixl0.conf 并指定需要多少个 VF
-* 在 /etc/rc.conf 中引用 /etc/iov/ixl0.conf 以在启动时保持配置
+- 安装一张支持 SR-IOV 的网络卡到支持 SR-IOV 的主板上
+- 确保主板的 SR-IOV 功能已启用
+- 创建 `/etc/iov/ixl0.conf` 并指定我们想要多少个 VF
+- 在 `/etc/rc.conf` 中引用 `/etc/iov/ixl0.conf` 以便在重启时保留配置
 
- 这就是它！
+就这么简单！
 
-为了展示它的工作原理，我们使用 vnet 将一个 VF 分配给 jail。我们还在启动时为 bhyve 虚拟机预分配了另一个 VF 进行透传。在这两种情况下，我们所需做的就是在相应的 jail/VM 配置文件中添加几行代码。
+为了演示它的工作原理，我们使用 vnet 将一个 VF 分配给了一个 Jail。我们还在启动时预先为 bhyve 虚拟机分配了另一个 VF。在这两种情况下，我们只需要在各自的 Jail/虚拟机配置文件中添加几行配置。
 
-下面的部分将对比 FreeBSD 方法和你在 Linux 发行版中找到的方法，让你感受一下这两种方法的差异。
+接下来的部分将对比 FreeBSD 和 Linux 中 SR-IOV 的使用方式，让你了解两者的差异。
 
-## Linux 中的 SR-IOV
+## SR-IOV 在 Linux 中的使用
 
-SR-IOV 在 Linux 中运行非常好。一旦你把它设置好了，你可能很难在 FreeBSD 和 Linux 之间找到明显的区别。然而，设置它可能是一段旅程。
+SR-IOV 在 Linux 中工作得非常好。一旦配置完成，你可能找不到 FreeBSD 和 Linux 之间明显的差异。然而，配置过程可能需要一些时间。
 
-最大的区别在于在 Linux 中没有像 FreeBSD 的 iovctl 这样的标准工具来设置 SR-IOV。有几种方法可以实现一个工作的设置，但它们并不那么明显。我将重点介绍我如何使用 udev 来设置 Mellanox 网卡的 PF 和 VF。
+最大的区别在于，Linux 中没有像 FreeBSD 的 `iovctl` 那样的标准工具来配置 SR-IOV。实现一个工作配置有几种方式，但这些方法不太明显。我将重点介绍如何使用 `udev` 配置 Mellanox 卡的 PF 和 VF。
 
-udev 是一个功能强大的工具，可以做很多事情。其中一件事情是在启动时启用 SR-IOV 设备。工具本身非常优秀，但关键在于知道如何准备数据。获取所需的属性可能需要在互联网上进行一些搜索，但一旦拥有了这些属性，生成的 udev 规则就非常简单。
+`udev` 是一个功能强大的工具，能够做很多事情。它可以在启动时启用 SR-IOV 设备。这个工具本身非常出色，但挑战在于如何为它提供正确的数据。获取所需的属性可能需要一些网上搜索，但一旦你找到了这些属性，编写 `udev` 规则就非常简单。
 
-`# DO NOT Probe VFs that will be used for VMsKERNEL==”0000:05:00.0”, SUBSYSTEM==”pci”, ATTRS{vendor}==”0x15b3”, ATTRS{device}==”0x1015”,ATTR{sriov_drivers_autoprobe}=”0”, ATTR{sriov_numvfs}=”4”# DO Probe VFs that will be used for LXDKERNEL==”0000:05:00.1”, SUBSYSTEM==”pci”, ATTRS{vendor}==”0x15b3”, ATTRS{device}==”0x1015”,ATTR{sriov_drivers_autoprobe}=”1”, ATTR{sriov_numvfs}=”16”`
+```sh
+# 不要探测将用于虚拟机的 VF
+KERNEL==”0000:05:00.0”, SUBSYSTEM==”pci”, ATTRS{vendor}==”0x15b3”, ATTRS{device}==”0x1015”,
+ATTR{sriov_drivers_autoprobe}=”0”, ATTR{sriov_numvfs}=”4”
 
-实际上这意味着，“匹配 PCI 设备 0000:05:00.0，其供应商 ID 是 0x15b3，设备 ID 是 0x1015，对于这个设备不尝试自动分配驱动程序，并创建 4 个 VF”（即保留用于直通）。第二条规则类似，但针对另一个 PF，会分配驱动程序，并创建 16 个 VF（即准备用于容器分配）。
+# 探测将用于 LXD 的 VF
+KERNEL==”0000:05:00.1”, SUBSYSTEM==”pci”, ATTRS{vendor}==”0x15b3”, ATTRS{device}==”0x1015”,
+ATTR{sriov_drivers_autoprobe}=”1”, ATTR{sriov_numvfs}=”16”
+```
 
-取决于你使用的卡和具体的 Linux 发行版，这些可能不是你所需要的所有属性。例如，如果你使用的是 Fedora，可能需要添加 ENV{NM_UNMANAGED}="1" 以避免 NetworkManager 在启动时控制你的 VF。
+这段规则的意思是：“匹配 PCI 设备 `0000:05:00.0`，其供应商 ID 为 `0x15b3`，设备 ID 为 `0x1015`，并且对于这个设备不要自动分配驱动程序，并创建 4 个 VF”（即为直通保留）。第二条规则类似，但针对不同的 PF，它会分配驱动程序并创建 16 个 VF（即为容器分配做好准备）。
 
-与 pciconf 类似， lspci 将为我们提供这些规则的大部分所需内容，包括 PCI 地址、供应商和设备 ID。在这个系统中，我们可以看到 Mellanox ConnectX-4 Lx 网卡。
+根据所使用的卡和具体的 Linux 发行版，可能并不是所有的属性都适用。例如，如果你使用的是 Fedora，你可能需要添加 `ENV{NM_UNMANAGED}="1"`，以避免 NetworkManager 在启动时接管 VFs。
 
-`lspci -nn | grep ConnectX05:00.0 Ethernet controller [0200]: Mellanox Technologies MT27710 Family [ConnectX-4 Lx] [15b3:1015]05:00.1 Ethernet controller [0200]: Mellanox Technologies MT27710 Family [ConnectX-4 Lx] [15b3:1015]`
+类似于 `pciconf`，`lspci` 能帮助我们获取匹配规则所需的大部分信息，如 PCI 地址、供应商和设备 ID。在这个系统中，我们看到的是 Mellanox ConnectX-4 Lx 卡。
 
-由 udev 设置的属性在 /sys/bus/pci/devices/0000:05:00.*/ 中可见，还有许多其他内容。列出该目录的内容是查找要告知 udev 的东西的好地方。
+```sh
+lspci -nn | grep ConnectX
+05:00.0 Ethernet controller [0200]: Mellanox Technologies MT27710 Family [ConnectX-4 Lx] [15b3:1015]
+05:00.1 Ethernet controller [0200]: Mellanox Technologies MT27710 Family [ConnectX-4 Lx] [15b3:1015]
+```
 
-`(linux) $ ls -AC /sys/bus/pci/devices/0000:05:00.0/aer_dev_correctable       device            irq               net           resource0                subsystemaer_dev_fatal             dma_mask_bits     link              numa_node     resource0_wc             subsystem_deviceaer_dev_nonfatal          driver            local_cpulist     pools         revision                 subsystem_vendorari_enabled               driver_override   local_cpus        power         rom                      ueventbroken_parity_status      enable            max_link_speed    power_state   sriov_drivers_autoprobe  vendorclass                     firmware_node     max_link_width    ptp           sriov_numvfs             virtfn0config                    hwmon             mlx5_core.eth.0   remove        sriov_offset             virtfn1consistent_dma_mask_bits  infiniband        mlx5_core.rdma.0  rescan        sriov_stride             virtfn2current_link_speed        infiniband_verbs  modalias         reset         sriov_totalvfs           virtfn3current_link_width        iommu             msi_bus           reset_method  sriov_vf_device          vpdd3cold_allowed            iommu_group       msi_irqs          resource      sriov_vf_total_msix`
+通过 `udev` 设置的属性可以在 `/sys/bus/pci/devices/0000:05:00.*/` 目录下查看，此外还有很多其他属性。列出该目录的内容是查找需要传递给 `udev` 的信息的好方法。
 
-在那个列表中，我们看到我们的两个 udev 目标， sriov_drivers_autoprobe 和 sriov_numvfs ，我们希望在启动时设置它们。其他所有内容都是做什么用的？你可能需要你最喜欢的搜索引擎来回答这个问题。
+```sh
+(linux) $ ls -AC /sys/bus/pci/devices/0000:05:00.0/
+aer_dev_correctable       device            irq               net           resource0                subsystem
+aer_dev_fatal             dma_mask_bits     link              numa_node     resource0_wc             subsystem_device
+aer_dev_nonfatal          driver            local_cpulist     pools         revision                 subsystem_vendor
+ari_enabled               driver_override   local_cpus        power         rom                      uevent
+broken_parity_status      enable            max_link_speed    power_state   sriov_drivers_autoprobe  vendor
+class                     firmware_node     max_link_width    ptp           sriov_numvfs             virtfn0
+config                    hwmon             mlx5_core.eth.0   remove        sriov_offset             virtfn1
+consistent_dma_mask_bits  infiniband        mlx5_core.rdma.0  rescan        sriov_stride             virtfn2
+current_link_speed        infiniband_verbs  modalias         reset         sriov_totalvfs           virtfn3
+current_link_width        iommu             msi_bus           reset_method  sriov_vf_device          vpd
+d3cold_allowed            iommu_group       msi_irqs          resource      sriov_vf_total_msix
+```
 
-通过 udev，我们已经完成了两个主要步骤中的第一个。它有效地“打开”了硬件的 SR-IOV 功能。我们仍然需要为网络使用配置它，这是第二个主要步骤。这在很大程度上取决于我们用来管理网络的工具。例如，如果你使用 systemd-networkd，你可以像这样操作。
+在这个列出的目录中，我们看到 `sriov_drivers_autoprobe` 和 `sriov_numvfs`，这是我们在启动时需要设置的属性。其他属性的作用是什么？你可能需要通过搜索引擎来获取答案。
 
-`#/etc/systemd/network/21-wired-sriov-p1.network[Match]Name=enp5s0f1np1[SR-IOV]VirtualFunction=0Trust=true[SR-IOV]VirtualFunction=1Trust=true`
+通过 `udev`，我们已经完成了两大步骤中的第一步。它有效地“开启”了硬件的 SR-IOV 能力。接下来，我们需要为网络使用配置 SR-IOV，这是第二步。根据我们使用的网络管理方式，这个过程有很大的不同。例如，如果你使用的是 `systemd-networkd`，可以像这样进行配置：
 
-幸运的是，对于 systemd-networkd，文档并不那么糟糕，你可以找到大部分你需要的信息。有了这些，我们重新启动服务，虚拟功能就可以使用了。
+```sh
+#/etc/systemd/network/21-wired-sriov-p1.network
+[Match]
+Name=enp5s0f1np1
 
-但并非所有的文档都很好，除了网络软件本身，像 AppArmor 和 selinux 这样的安全覆盖层可能会创建难以检测的阻碍，尽管它们在技术上做了它们应该做的事情，但会让系统感觉不太正常。
+[SR-IOV]
+VirtualFunction=0
+Trust=true
 
-作为挫折的一个具体例子，最近我正在使用 Fedora 39 运行几个 LXD 容器。我发现需要在 udev 中设置 ENV{NM_UNMANAGED}="1" 规则，这样 LXD 就可以管理我的 VFs 了。一切都很正常，直到我重启容器几次后。突然间，LXD 开始抱怨说没有 VFs 了。
+[SR-IOV]
+VirtualFunction=1
+Trust=true
+```
 
-结果发现，尽管 udev 规则阻止了 NetworkManager 在启动时管理 VFs，但在容器重新启动时，NetworkManager 却在运行时拦截它们并接管了它们的管理。我意识到有些奇怪的事情正在发生，因为 VF 设备名称在重新启动容器后发生了变化。例如，最初的 enp5s0f0np0 可能变成了重新启动后的 physZqHm0g 。
+幸运的是，对于 `systemd-networkd`，文档并不难找，你可以找到大部分需要的信息。完成这些配置后，我们重启服务，VFs 就可以使用了。
 
-最终，我找到了一种方法告诉 NetworkManager 不要这样做。我必须创建一个关键的配置文件来阻止 LXD 和 NetworkManager 之间的冲突，以防你感兴趣的话，下面是关键的配置文件。
+但并非所有文档都这么简洁，除了网络软件本身，像 AppArmor 和 SELinux 等安全防护工具可能会在运行时对 SR-IOV 产生阻碍，这些阻碍是“按预期”运行的，但会让系统表现得像是出现了故障。
 
-`[keyfile]unmanaged-devices=interface-name:enp5s0f1*,interface-name:phys*`
+以我最近在 Fedora 39 上运行 LXD 容器为例，我发现需要在 `udev` 中设置 `ENV{NM_UNMANAGED}="1"`，这样可以让 LXD 管理我的 VFs。一切运行正常，直到我重新启动容器。突然间，LXD 开始抱怨没有 VFs。
 
-这只是一个例子。认为一切都运行正常，只能在几天后发现事情实际上正在慢慢自我毁灭，这并不是一个好经历。总的来说，我发现所有的挫折都有相同的根本原因：在 Linux 生态系统中没有现有或新兴的标准配置 SR-IOV 的方法。一旦您克服了一些不那么明显的设置障碍，Linux 中用于网络的 SR-IOV 就可以正常工作。
+原来，尽管 `udev` 规则在启动时阻止了 NetworkManager 管理 VFs，但当容器重启时，NetworkManager 还是会接管它们。我发现 VF 设备的名称在容器重启后发生了变化。例如，原本是 `enp5s0f0np0`，在容器重启后变成了类似 `physZqHm0g` 这样的名字。
+
+最终，我找到了一种方法来阻止 NetworkManager 执行这个操作。以下是停止 LXD 和 NetworkManager 争夺 VFs 的关键配置文件，供参考：
+
+```sh
+[keyfile]
+unmanaged-devices=interface-name:enp5s0f1*,interface-name:phys*
+```
+
+这只是一个例子。以为一切都配置好，结果几天后才发现系统出现问题的情况并不罕见。一般来说，所有的烦恼都有一个根本原因：Linux 生态系统中并没有一个现成或正在兴起的标准配置 SR-IOV 的方式。虽然设置过程不够直观，但一旦你克服了这些难题，Linux 中的 SR-IOV 网络配置就能正常工作。
 
 ## 结论
 
-在 FreeBSD 中，SR-IOV 是一等公民。在本文中提到的所有内容，您都可以在操作系统提供的手册页中找到。从一个简单的 apropos(1)查询开始。
+SR-IOV 在 FreeBSD 中是一等公民。本文中提到的所有内容都可以通过操作系统提供的手册页找到。你可以通过简单的 [apropos(1)](https://man.freebsd.org/apropos) 查询来开始。
 
-`(host) $ apropos “SR-IOV”iovctl(8) - PCI SR-IOV configuration utility`
+```sh
+(host) $ apropos “SR-IOV”
+iovctl(8) - PCI SR-IOV configuration utility
+```
 
-iovctl 手册将帮助您入门，驱动程序页面将为您的硬件提供具体信息。当事物显而易见且易于找到时，系统管理就不会感觉像一项艰巨的任务。
+`iovctl` 手册会帮你入门，驱动程序的手册页会为你提供硬件的详细信息。当事情变得显而易见并且易于查找时，系统管理就不再是负担。
 
-Linux 发行版在能力上同样强大，但在 SR-IOV 的协调性和系统内文档方面却欠缺。虽然我依赖 Linux 做各种事情，但我真心欣赏 FreeBSD 中配置的组织结构。很容易回到一年前未曾接触过的系统，并迅速理解我所做的。我更喜欢这种方式，而不是通过详细记录与某些圣人发布的使某事情起作用的方式的观点网站上的评论。
+Linux 发行版同样可以完成这项工作，但在 SR-IOV 的一致性和系统内文档方面存在不足。虽然我在很多方面依赖 Linux，但我确实很欣赏 FreeBSD 配置的组织性。它让我能够轻松地回到一年未曾触碰的系统，并快速理解我所做的改动。相比之下，我更倾向于这种方式，而不是详细记录并依赖于那些不太明确的 URL 或论坛评论。
 
-与任何事物一样，根据您的需要做出自己的明智选择。
+正如任何事情一样，做出明智的选择，选择最适合自己需求的方式。
 
-MARK MCBRIDE 在西雅图华盛顿州从事 CAR-T 细胞疗法工作，在个性化医疗的全新领域整合供应链、制造和患者运营解决方案。在空闲时间，他喜欢过度设计他的车库家庭实验室，并为所有当地西雅图体育队加油助威。您可以在 Libera IRC 服务器的 #freebsd 频道中与他联系，也可以通过他个人网站 markmcb.com 上列出的其他方式与他联系，用户名为 @markmcb。
+---
+
+**Mark McBride** 在美国华盛顿州西雅图从事 CAR-T 细胞疗法工作，专注于在个性化医疗的新领域中整合供应链、制造和患者运营解决方案。在闲暇时间，他喜欢过度工程化自己的车库实验室，并为西雅图本地的运动队加油。他在 Libera IRC 服务器的 #freebsd 频道中以 @markmcb 的身份活跃，或者通过个人网站 [markmcb.com](https://www.markmcb.com/) 与他联系。
