@@ -15,15 +15,15 @@ Webhook 是一种基于 HTTP 的事件驱动的远程回调协议，几乎可通
 
 目前尚无官方标准，但通常情况下，Webhook 是通过 POST 请求发送，并使用 JSON 对象作为消息体，通常会启用 TLS 加密，并通过签名确保防止篡改、网络伪造和重放攻击。
 
-常见的集成，有聊天服务如 Mattermost、Slack 和 IRC；软件仓库如 Github 和 Gitlab；通用托管服务如 Zapier 或 IFTT；以及许多家居自动化系统如 Home Assistant 等。几乎在所有地方，Webhook 都能发送和接收，因此 Webhook 的应用范围几乎是无限的。
+常见的集成，有聊天服务如 Mattermost、Slack 和 IRC；软件仓库如 Github 和 Gitlab；通用托管服务如 Zapier 或 IFTT；以及许多家居自动化系统如 Home Assistant 等。几乎在所有地方，Webhook 都能收发，因此 Webhook 的应用范围几乎是无限的。
 
-虽然你可以在一个小时内编写一个最简单的 Webhook 客户端或服务器，但如今，几乎每种编程语言中都有不少现成的选择。聊天软件通常提供了内置的 Webhook 触发器，用户可以通过类似 `/command` 的语法来调用。IRC 服务器也未被遗忘，通常由守护进程和插件实现。
+虽然你可以在一个小时内就编写一个最简单的 Webhook 客户端或服务器，但如今，几乎每种编程语言中都有不少现成的选择。聊天软件通常提供了内置的 Webhook 触发器，用户可以通过类似 `/command` 的语法来调用。IRC 服务器也未被遗忘，一般由守护进程和插件实现。
 
-Webhook 另一个不太明显的优势是它能够明确划分安全性和权限。一个低权限用户可以调用远程系统上的 Webhook。远程 Webhook 服务可以以低权限运行，先进行验证和基本语法检查。然后，在验证通过后，再调用高权限任务。也许最终的任务有权限访问某个特权令牌，来重启服务、部署新代码，或者让孩子们再享受一个小时的电子娱乐时间。
+Webhook 另一个不太明显的优势是它能够明确划分安全性和权限。一个低权限用户可以调用远程系统上的 Webhook。可以以低权限运行远程 Webhook 服务，先进行验证和基本语法检查。然后，在验证通过后，再调用高权限任务。也许最终的任务有权限访问某个特权令牌，来重启服务、部署新代码，或者让孩子们再享受一个小时的电子娱乐时间。
 
 像 GitHub、GitLab 和自托管选项等常见的软件仓库也提供这类功能，触发时可以包括分支名、提交记录以及做出更改的用户。
 
-这使得构建可以更新网站、重启系统或根据需要触发更复杂工具链的工具变得相对简单。
+这使得构建可以更新网站、重启系统和根据需要触发更复杂工具链的工具变得相对简单。
 
 ## 架构
 
@@ -43,7 +43,7 @@ Webhook 另一个不太明显的优势是它能够明确划分安全性和权限
 
 ## 安全性
 
-HTTP 请求的主体可以使用共享的密钥进行签名，生成的签名作为消息头部提供。这既提供了身份验证的手段，又证明了请求在传输过程中未被篡改。它依赖于共享密钥，使两端可以独立验证消息签名，通过附加的 HTTP 头部和消信息体来完成验证。
+可以使用共享的密钥对 HTTP 请求的主体进行签名，生成的签名作为消息头部提供。这既提供了身份验证的手段，又证明了请求在传输过程中未被篡改。它依赖于共享密钥，使两端可以独立验证消息签名，通过附加的 HTTP 头部和消信息体来完成验证。
 
 最常见的签名方法是 HMAC-SHA256。这是两种加密算法的组合——我们熟悉的 SHA256 哈希算法可以对较大信息进行安全摘要，在这里是指 HTTP 的主体，另外 HMAC 方法使用一个密钥与信息结合生成一个唯一的代码，也即数字签名。
 
@@ -53,7 +53,7 @@ HTTP 请求的主体可以使用共享的密钥进行签名，生成的签名作
 
 一般做法是，在 Webhook 的主体中包含时间戳，且由于 HMAC 签名的保护，可以有效抵御时间攻击和重放攻击。
 
-请注意，未经时间戳的主体总是会有相同的签名。这在某些情况下是有用的。例如，这允许预先计算 HMAC 签名，并使用一个不变的 HTTP 请求来触发远程操作，而无需在发起 Webhook 请求的系统上公开 HMAC 密钥。
+请注意，未经时间戳的主体总是会有相同的签名。这在某些情况下是有用的。例如，可以预先计算 HMAC 签名，并使用一个不变的 HTTP 请求来触发远程操作，而无需在发起 Webhook 请求的系统上公开 HMAC 密钥。
 
 ## 整合实现
 
@@ -65,7 +65,7 @@ $ sudo pkg install -r FreeBSD www/webhook ftp/curl www/gurl
 
 让我们启动服务器，运行个简单的例子，将其保存为 `webhooks.yaml`。
 
-它将使用 `logger(1)` 命令，在 `/var/log/messages` 中写入一个短条目，记录成功调用 Webhook 的 HTTP User-Agent 头。
+它将使用命令 `logger(1)`，在 `/var/log/messages` 中写入一个短条目，记录成功调用 Webhook 的 HTTP User-Agent 头。
 
 注意，这里有一个 `trigger-rule` 键，请确保 HTTP 查询参数 `secret` 的值与字符串 `squirrel` 匹配。
 
@@ -96,7 +96,7 @@ $ sudo pkg install -r FreeBSD www/webhook ftp/curl www/gurl
        name: secret
 ```
 
-然后在终端运行 `webhook -debug -hotreload -hooks webhook.yaml`。上述参数是浅显易懂的。
+然后在终端运行 `webhook -debug -hotreload -hooks webhook.yaml`。上述参数浅显易懂。
 
 在其他终端里，运行 `tail -qF /var/log/messages | grep webhook`，这样我们就可以实时查看结果。
 
@@ -255,7 +255,7 @@ X-Hmac-Sig: sha256=f634363faff03deed8fbcef8b10952592d43c8abbb6b4a540ef16af0acaff
 
 如上所示，签名会为我们生成，并且添加 JSON 键=值对时无需引用和转义。
 
-返回的响应也为我们进行了漂亮的格式化：HMAC 已被服务器验证，两个键的值已提取并作为参数传递给我们的 `echo` 命令，结果被捕获并返回在 HTTP 响应体中。
+返回的响应也为我们进行了美化的格式化：HMAC 已被服务器验证，两个键的值已提取并作为参数传递给我们的 `echo` 命令，结果被捕获并返回在 HTTP 响应体中。
 
 ```sh
 HTTP/1.1 200 OK
@@ -266,7 +266,7 @@ Content-Type : text/plain; charset=utf-8
 freebsd otutahi
 ```
 
-更复杂的示例可以在 Port 的 [sample webhook.yaml](https://cgit.freebsd.org/ports/tree/www/webhook/files/webhook.yaml) 和 [详细文档](https://github.com/adnanh/webhook/tree/master/docs) 中找到。
+可以在 Port 的 [sample webhook.yaml](https://cgit.freebsd.org/ports/tree/www/webhook/files/webhook.yaml) 和[详细文档](https://github.com/adnanh/webhook/tree/master/docs)中找到更复杂的示例。
 
 ## 保护 Webhook 内容
 
