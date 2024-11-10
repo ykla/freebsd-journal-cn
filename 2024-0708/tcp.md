@@ -3,7 +3,7 @@
 - 原文链接：[Introduction to TCP Large Receive Offload](https://freebsdfoundation.org/our-work/journal/browser-based-edition/storage-and-filesystems/introduction-to-tcp-large-receive-offload/)
 - 作者： Randall Stewart、Michael Tüxen
 
-TCP 大型接收卸载（TCP LRO）是一种协议特定的方法，用于减少接收 TCP 段时所需的 CPU 资源。它也是实现特定的，本篇文章描述了它在 FreeBSD 内核中的实现。在任何给定时刻，TCP 通常用于单向通信，尽管 TCP 提供了双向通道。例如，当使用 TCP 作为传输协议的应用协议是请求/响应类型（如 HTTP）时，就是这种情况。
+TCP 大型接收卸载（TCP LRO）是一种协议特定的方法，用于减少接收 TCP 段时所需的 CPU 资源。它也是实现特定的，本篇文章介绍了它在 FreeBSD 内核中的实现。在任何给定时刻，TCP 通常用于单向通信，尽管 TCP 提供了双向通道。例如，当使用 TCP 作为传输协议的应用协议是请求/响应类型（如 HTTP）时，就是这种情况。
 
 TCP LRO 可以通过多种方式减少所需的 CPU 资源，包括：
 
@@ -15,12 +15,12 @@ TCP LRO 可以通过多种方式减少所需的 CPU 资源，包括：
 
 ## TCP LRO 的发展
 
-TCP LRO 的初步实现由 Andrew Gallatin 于 2006 年实现，特定于 mxge(4) 驱动程序。然后，在 2008 年，Jack Vogel 将其泛化为所有驱动程序。它有两个主要目标：
+TCP LRO 的初步实现由 Andrew Gallatin 于 2006 年实现，特定于 mxge(4) 驱动程序。然后，在 2008 年，Jack Vogel 将其扩展到所有驱动程序。它有两个主要目标：
 
-1. 收集和合并小的传入数据段，向 TCP 提供一个更大的单一传入数据段，或者，
+1. 收集和合并小的传入数据段，向 TCP 提供一个更大的单一传入数据段，或者
 2. 收集多个确认，并向 TCP 栈呈现一个更大的单一确认。
 
-这两种方法的实现目的是减少 TCP 接收路径被调用的次数，从而节省 CPU 资源。它的实现非常小心，只处理连续的段和没有 TCP 选项的段（唯一允许的 TCP 选项是时间戳选项）。该初步实现几乎未受到修改地在 FreeBSD 中保留了近十年，唯一的变化是 Bjoern A. Zeeb 于 2012 年增加了对 IPv6 的支持。
+这两种方法的实现目的是减少 TCP 接收路径被调用的次数，从而节省 CPU 资源。它的实现非常小心，只处理连续的段和没有 TCP 选项的段（唯一允许的 TCP 参数是时间戳选项）。该初步实现几乎未受到修改地在 FreeBSD 中保留了近十年，唯一的变化是 2012 年 Bjoern A. Zeeb 增加了对 IPv6 的支持。
 
 ### 排序的加入
 
