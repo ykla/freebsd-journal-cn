@@ -1,137 +1,337 @@
 # 配置自己的 VPN——内置 FreeBSD、Wireguard、IPv6 和广告拦截（基于 FreeBSD）
 
-由 STEFANO MARINELLI
+- 原文链接：[Make Your Own VPN —FreeBSD, Wireguard, IPv6 and Ad-blocking Included](https://freebsdfoundation.org/our-work/journal/browser-based-edition/networking-10th-anniversary/make-your-own-vpn-freebsd-wireguard-ipv6-and-ad-blocking-included/)
+- 作者：Stefano Marinelli
 
-注意：本文假定基于 FreeBSD 设置。如果您更喜欢基于 OpenBSD 的版本，可以在这里找到。
+注意：本文假设基于 FreeBSD 的设置。如果你更喜欢基于 OpenBSD 的版本，可以点击[这里](https://it-notes.dragas.net/2023/04/03/make-your-own-vpn-wireguard-ipv6-and-ad-blocking-included/)查看。
 
-VPN 是一种安全连接到自己的服务器和设备的基本工具。许多人出于各种原因使用商业 VPN，从不信任其提供者（特别是在连接到公共热点时）到希望使用不同 IP 地址“出网”，也许是来自另一个国家的。在这里，我想强调一些已经纳入基本堆栈的新功能，其中许多功能已默认启用，有些可能需要特别激活。每个功能将被描述，并提供可能有助于改善网络体验的详细信息。
+VPN 是一种基础工具，用于安全地连接到自己的服务器和设备。许多人出于各种原因使用商业 VPN，从不信任自己的服务提供商（尤其是在公共热点连接时），到希望通过不同的 IP 地址“上网”，可能是来自另一个国家。在这里，我想突出一些已被引入基础堆栈的新特性——其中许多是默认启用的，有些可能需要特别激活。每个功能都会描述一些细节，帮助改善网络体验。
 
-无论原因是什么，解决方案都不会缺少。我始终设置管理 VPN，以允许服务器和/或客户端使用安全通道相互通信。最近，我在所有设备上（包括桌面/服务器和移动设备）激活了 IPv6 连接，并且需要快速创建一个节点，集中一些网络并允许它们在 IPv6 上出网。我使用的工具将进行描述：
+无论出于何种原因，解决方案从未匮乏。我一直在设置管理 VPN，以便服务器和/或客户端使用安全通道相互通信。最近，我[已在所有设备上启用 IPv6 连接](https://my-notes.dragas.net/posts/2023/the-urgency-of-transitioning-to-ipv6/)（包括桌面/服务器和移动设备），并且我需要快速创建一个节点，将一些网络聚合在一起，并允许它们通过 IPv6 连接到外部网络。我使用并将要描述的工具是：
 
-* VPS - 在这种情况下，我使用了一个基本的 Hetzner Cloud VPS，但是任何提供 IPv6 连接的提供商都可以 - 如果你想要 IPv6 的话。
-* FreeBSD - 一种多功能、稳定和安全的操作系统。
-* Wireguard - 轻量级、安全，同时又不会很“啰嗦”，因此它对移动设备的电池也很友好。在没有流量时，它就简单地不发送/接收任何数据。受到所有主要桌面和服务器操作系统以及 Android 和 iOS 设备的良好支持。
-* Unbound – 可直接向根服务器进行 DNS 查询，而不通过转发器。它还允许您插入阻止列表，从而实现类似 Pi-Hole 的结果（即广告拦截）。
-* SpamHaus 列表 – 立即停止与用户黑名单上的连接。
+* **VPS** – 在这个例子中，我使用了基本的 Hetzner Cloud VPS，但任何提供 IPv6 连接的服务商都可以——如果你需要 IPv6，当然。
+* **[FreeBSD](https://www.freebsd.org/)** – 一个多功能、稳定和安全的操作系统。
+* **[WireGuard](https://www.wireguard.com/)** – 轻量级、安全，并且不会占用太多带宽，所以在移动设备上也比较省电。当没有流量时，它根本不会传输/接收任何数据。得到了所有主要桌面和服务器操作系统以及 Android 和 iOS 设备的良好支持。
+* **[Unbound](https://nlnetlabs.nl/projects/unbound/about/)** – 可以直接向根 DNS 服务器发起查询，而不是通过转发器。它还允许插入拦截列表，产生类似 Pi-Hole 的效果（即广告拦截）。
+* **[SpamHaus](https://www.spamhaus.org/)** 列表 – 立即阻止与黑名单用户的连接。
 
-第一步是激活 VPS 并安装 FreeBSD。在 Hetzner Cloud 控制台上，可能没有预构建的 FreeBSD 镜像，而只有一些 Linux 发行版可供选择。不用担心，只需选择其中任何一个并创建 VPS。完成后，在“ISO 镜像”中将可用 FreeBSD ISO 镜像。只需插入虚拟 CD，重新启动 VPS，FreeBSD 安装将显示在控制台中。
+### 步骤 1：激活 VPS 并安装 FreeBSD
 
-我不会详细说明，操作简单明了。唯一的注意事项（对于 Hetzner Cloud VPS 的情况）是使用 IPv4 的“DHCP”，但目前不要配置 IPv6。稍后会进行配置。
+首先，激活一个 VPS 并安装 FreeBSD。在 Hetzner Cloud 控制台中，可能没有预构建的 FreeBSD 镜像，只有 Linux 发行版的选项。别担心，选择任何一个 Linux 发行版创建 VPS。创建完成后，FreeBSD ISO 镜像将出现在“ISO 镜像”中。只需插入虚拟光驱，重启 VPS，FreeBSD 安装程序就会出现在控制台中。
 
-安装所有 FreeBSD 更新（使用 freebsd-update fetch install 命令），然后重新启动。
+我不会详细说明，操作非常简单。唯一需要注意的一点（在 Hetzner Cloud VPS 中）是，IPv4 使用“DHCP”进行配置，但暂时不要配置 IPv6。IPv6 将稍后配置。
 
-在 FreeBSD 上，Wireguard 现在作为内核模块可用，并且用户空间可以通过 pkg install wireguard-tools 软件包管理器安装。这意味着您可以轻松地将其与系统上的其他软件一起更新。
+安装所有 FreeBSD 更新（使用 `freebsd-update fetch install` 命令）并重启。
 
-第一步是在 VPS 上配置 IPv6。在 Hetzner 的情况下，遗憾的是，他们只提供/64，因此需要对分配的网络进行分段。在本例中，它将被分成/72 子网 - 要找到有效的子类，可以使用计算器来查找。
+### 步骤 2：安装 WireGuard
 
-/etc/rc.conf 文件应该有类似的条目：
+在 FreeBSD 上，WireGuard 现在作为内核模块提供，用户空间工具可以通过 `pkg install wireguard-tools` 包管理器安装。这意味着你可以轻松地将它与系统上的其他软件一起更新。
 
-`ifconfig_vtnet0=”DHCP”ifconfig_vtnet0_ipv6=”inet6 2a01:4f8:cafe:cafe::1 prefixlen 72”ipv6_defaultrouter=”fe80::1%vtnet0”`
+### 步骤 3：配置 VPS 上的 IPv6
 
-简而言之，保留 Hetzner 分配的基础地址，但将前缀长度更改为 72 - 从而使其他网络可用。现在需要为 IPv4 和 IPv6 启用转发。将这些行添加到 /etc/sysctl.conf 文件中。
+首先配置 VPS 上的 IPv6。对于 Hetzner，遗憾的是，他们只提供了一个 /64 地址，因此需要对分配的网络进行细分。在这个示例中，它将被细分为 /72 子网——可以使用 [子网计算器](https://subnettingpractice.com/ipv6-subnet-calculator.html) 来找到有效的子类。
 
-`net.inet.ip.forwarding=1net.inet6.ip6.forwarding=1`
+在 `/etc/rc.conf` 文件中添加类似以下的条目：
 
-重启后，进行测试：
+```sh
+ifconfig_vtnet0=”DHCP”
+ifconfig_vtnet0_ipv6=”inet6 2a01:4f8:cafe:cafe::1 prefixlen 72”
+ipv6_defaultrouter=”fe80::1%vtnet0”
+```
 
-`ping6 google.com`
+简而言之，保留 Hetzner 分配的基础地址，但将前缀长度更改为 72——这样就可以拥有其他可用网络。现在，需要启用 IPv4 和 IPv6 的转发功能。将以下行添加到 `/etc/sysctl.conf` 文件中：
 
-如果一切配置正确，将执行 ping 操作，google.com 会做出回复。
+```sh
+net.inet.ip.forwarding=1
+net.inet6.ip6.forwarding=1
+```
 
-要配置 Wireguard，将需要一些步骤。首先，需要创建私钥：
+重启后，测试是否配置成功：
 
-`wg genkey | tee /dev/stderr | wg pubkey | grep --label PUBLIC -H .`
+```sh
+ping6 google.com
+```
 
-你将获得一个私钥和一个公钥。注意公钥 — 配置客户端所需。
+如果一切配置正确，ping 命令将执行并且 google.com 会回复。
 
-现在创建一个名为 /usr/local/etc/wireguard/wg0.conf: 的新文件
+### 步骤 4：配置 WireGuard
 
-`[Interface]Address = 172.14.0.1/24,2a01:4f8:cafe:cafe:100::1/72ListenPort = 51820PrivateKey = YUkS6cNTyPbXmtVf/23ppVW3gX2hZIBzlHtXNFRp80w=`
+接下来，需要进行一些步骤来配置 WireGuard。首先，生成私钥：
 
-正在创建一个名为 wg0 的新 Wireguard 接口。启动 Wireguard 接口
+```sh
+wg genkey | tee /dev/stderr | wg pubkey | grep --label PUBLIC -H .
+```
 
-`service wireguard enablesysrc wireguard_interfaces=”wg0”service wireguard start`
+这将生成私钥和公钥。记下公钥——它将在配置客户端时用到。
 
-如果一切输入正确，界面应该会启动。检查其状态：
+接着创建一个新的配置文件 `/usr/local/etc/wireguard/wg0.conf`：
 
-`wg`
+```sh
+[Interface]
+Address = 172.14.0.1/24,2a01:4f8:cafe:cafe:100::1/72
+ListenPort = 51820
+PrivateKey = YUkS6cNTyPbXmtVf/23ppVW3gX2hZIBzlHtXNFRp80w=
+```
 
-至于防火墙，FreeBSD 并不带有 pf 配置。在我的设置中，我倾向于阻止不必要的内容，并允许可能有用的内容。然而，我喜欢把“坏人”挡在门外，所以我使用黑名单。pf 允许在运行时向表中插入和删除元素，因此防火墙可以相应地进行配置。
+这将创建一个新的 WireGuard 接口 `wg0`。启动 WireGuard 接口：
 
-要下载并应用 Spamhaus 列表，我使用了在互联网上找到的一个简单但有效的脚本，不过是针对 OpenBSD 的。
+```sh
+service wireguard enable
+sysrc wireguard_interfaces=”wg0”
+service wireguard start
+```
 
-针对 Spamhaus 列表，继续进行 FreeBSD 脚本创建。
+如果所有信息输入正确，接口应已启动。可以检查其状态：
 
-在 /usr/local/sbin/spamhaus.sh: 中创建脚本。
+```sh
+wg
+```
 
-`#!/bin/sh##this is normally run once per day via cron.#echo updating Spamhaus DROP lists:(  { fetch -o - https://www.spamhaus.org/drop/drop.txt && \<br/>    fetch -o - https://www.spamhaus.org/drop/edrop.txt && \<br/>    fetch -o - https://www.spamhaus.org/drop/dropv6.txt ; \<br/>  } 2>/dev/null | sed “s/;/#/” > /var/db/drop.txt)pfctl -t spamhaus -T replace -f /var/db/drop.txt`
+至于防火墙，FreeBSD 默认没有配置 `pf`。在我的设置中，我倾向于阻止不需要的流量，而对可能有用的流量保持宽松。然而，我喜欢把“坏家伙”挡在外面，因此我使用黑名单。`pf` 允许在运行时将元素插入和移出表格，所以防火墙可以根据需要进行配置。
 
-将其设为可执行并运行。由于 Pf 未启用，您将收到一个错误消息 —— 但这将创建 /var/db/drop.txt 文件：
+为了下载并应用 Spamhaus 列表，我使用了一个简单但有效的脚本，它在互联网上可以找到，但原本是为 OpenBSD 设计的。
 
-`chmod a+rx /usr/local/sbin/spamhaus.sh/usr/local/sbin/spamhaus.sh`
+对于 Spamhaus 列表，继续创建 FreeBSD 脚本。
 
-在 FreeBSD 上有许多配置 pf 的可能性。一个相当简单的例子可能是这样的：
+### 创建脚本 `/usr/local/sbin/spamhaus.sh`：
 
-`ext_if="vtnet0"wg0_if="wg0"wg0_networks="172.14.0.0/24"set skip on lonat on $ext_if from { $wg0_networks } to any -> ($ext_if)# Spamhaus DROP list:table <spamhaus> persist file "/var/db/drop.txt"block drop log quick from <spamhaus># Pass ICMP on ipv6pass quick proto ipv6-icmp# Block from ipv6 to wg0 networkblock in quick on $ext_if inet6 to { 2a01:4f8:cafe:cafe:100::/72 }# Pass Wireguard traffic - in and outpass quick on $wg0_if# default denyblock inblock outpass in on $ext_if proto tcp to port sshpass in on $ext_if proto udp to port 51820pass out on $ext_if`
+```sh
+#!/bin/sh
+# 这个脚本通常通过 cron 每天运行一次。
+#
+echo updating Spamhaus DROP lists:
+(
+  { fetch -o - https://www.spamhaus.org/drop/drop.txt && \
+    fetch -o - https://www.spamhaus.org/drop/edrop.txt && \
+    fetch -o - https://www.spamhaus.org/drop/dropv6.txt ; \
+  } 2>/dev/null | sed “s/;/#/” > /var/db/drop.txt
+)
+pfctl -t spamhaus -T replace -f /var/db/drop.txt
+```
 
-这是一个非常简单的配置：它阻止从 Spamhaus 下载的列表中存在的所有内容，允许来自 Wireguard 网络到公共接口的 NAT，允许 IPv6 中的 ICMP 流量（对网络正常运行至关重要），同时阻止来自 Wireguard IPv6 LAN 的传入流量（请记住，IP 将是公共的并且可以直接访问，所以我们不希望默认情况下暴露我们的设备）。 Wireguard 接口上的所有流量都将被允许通过。 然后将阻止所有内容，并指定例外情况，即允许 SSH 和 Wireguard 连接（当然）。 还将授权允许从公共网络接口退出流量。
+使脚本可执行并运行。由于 `pf` 尚未启用，可能会报错——但是这会创建 `/var/db/drop.txt` 文件：
 
-保存这个配置到/etc/pf.conf。
+```sh
+chmod a+rx /usr/local/sbin/spamhaus.sh
+/usr/local/sbin/spamhaus.sh
+```
 
-启用并启动 pf：
+### 配置 `pf` 防火墙
 
-`service pf enableservice pf start`
+FreeBSD 上有很多种方式可以配置 `pf`。以下是一个相对简单的示例：
 
-您可能会被系统踢出。不用担心，只需重新连接。pf 正在执行其工作。
+```sh
+ext_if="vtnet0"
+wg0_if="wg0"
+wg0_networks="172.14.0.0/24"
 
-如果一切正常，防火墙应该已加载新的规则。
+set skip on lo
 
-要获取 DNS 查询的缓存和相关的广告拦截功能，现在是配置 Unbound 的时候了。让我们使用以下命令安装它：
+nat on $ext_if from { $wg0_networks } to any -> ($ext_if)
 
-`pkg install unbound`
+# Spamhaus 删除列表：
+table <spamhaus> persist file "/var/db/drop.txt"
 
-前段时间，我找到了一个脚本，稍作调整后使用。我不记得从哪里获取的了，所以我会在这里粘贴它而不引用原始创建者。
+block drop log quick from <spamhaus>
 
-在 /usr/local/sbin/unbound-adhosts.sh 中创建一个脚本来更新 unbound 广告拦截：
+# ipv6 通过 ICMP 
+pass quick proto ipv6-icmp
+# Block from ipv6 to wg0 network
+block in quick on $ext_if inet6 to { 2a01:4f8:cafe:cafe:100::/72 }
+# Pass Wireguard traffic - in and out
+pass quick on $wg0_if
 
-`#!/bin/sh## Using blacklist from pi-hole project https://github.com/pi-hole/# to enable AD blocking in unbound(8)#PATH=”/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin”# Available blocklists - comment line to disable blocklist_disconad=”https://s3.amazonaws.com/lists.disconnect.me/simple_ad.txt”_discontrack=”https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt”_stevenblack=”https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts”# Global variables_tmpfile=”$(mktemp)” && echo '' > $_tmpfile_unboundconf=”/usr/local/etc/unbound/unbound-adhosts.conf”# Remove comments from blocklistsimpleParse() {fetch -o - $1 | \<br/>sed -e ‘s/#.*$//’ -e ‘/^[[:space:]]*$/d’ >> $2}# Parse DisconTrack[ -n “${_discontrack}” ] && simpleParse $_discontrack $_tmpfile# Parse DisconAD[ -n “${_disconad}” ] && simpleParse $_disconad $_tmpfile# Parse StevenBlack[ -n “${_stevenblack}” ] && \<br/>  fetch -o - $_stevenblack | \<br/>  sed -n '/Start/,$p' | \<br/>  sed -e 's/#.*$//' -e '/^[[:space:]]*$/d' | \<br/>  awk '/^0.0.0.0/ { print $2 }' >> $_tmpfile# Create unbound(8) local zone filesort -fu $_tmpfile | grep -v “^[[:space:]]*$” | \<br/>awk '{  print “local-zone: \”” $1 “\” redirect”  print “local-data: \”” $1 “ A 0.0.0.0\””}' > $_unboundconf && rm -f $_tmpfileservice unbound reload 1>/dev/nullexit 0`
+# 默认拒绝
+block in
+block out
 
-保存脚本后，将其设置为可执行并运行：
+pass in on $ext_if proto tcp to port ssh
+pass in on $ext_if proto udp to port 51820
 
-`chmod a+rx /usr/local/sbin/unbound-adhosts.sh/usr/local/sbin/unbound-adhosts.sh`
+pass out on $ext_if
+```
 
-现在，可以修改 /usr/local/etc/unbound/unbound.conf 中的 Unbound 配置文件如下：
+这是一个非常简单的配置：它阻止了从 Spamhaus 下载的列表中列出的所有流量，允许 WireGuard 网络通过 NAT 访问公共接口，允许 IPv6 的 ICMP 流量（这是网络正常运行所必需的），同时阻止进入 WireGuard IPv6 网络的流量（记住，IP 地址将是公开的并且可以直接访问，所以我们默认不想暴露我们的设备）。所有通过 WireGuard 接口的流量都会被允许通过。然后，所有其他流量都将被阻止，并且会指定一些例外规则，比如允许 SSH 和 WireGuard 连接（当然）。还会允许流量从公共网络接口外发。
 
-`server:        verbosity: 1        log-queries: no        num-threads: 4        num-queries-per-thread: 1024        interface: 127.0.0.1        interface: 172.14.0.1        interface: 2a01:4f8:cafe:cafe:100::1        interface: ::1        outgoing-range: 64        chroot: “”        access-control: 0.0.0.0/0 refuse        access-control: 127.0.0.0/8 allow        access-control: ::0/0 refuse        access-control: ::1 allow        access-control: 172.14.0.0/24 allow        access-control: 2a01:4f8:cafe:cafe:100::/72 allow        hide-identity: yes        hide-version: yes        auto-trust-anchor-file: "/usr/local/etc/unbound/root.key"        val-log-level: 2        aggressive-nsec: yes        prefetch: yes        username: “unbound”        directory: "/usr/local/etc/unbound"        logfile: "/var/log/unbound.log"        use-syslog: no        pidfile: "/var/run/unbound.pid"        include: /usr/local/etc/unbound/unbound-adhosts.confremote-control:        control-enable: yes        control-interface: /var/run/unbound.sock`
+将此配置保存到 `/etc/pf.conf` 文件中。
 
-现在，启用并启动 Unbound：
+启用并启动 `pf`：
 
-`service unbound enableservice unbound start`
+```sh
+service pf enable
+service pf start
+```
+
+你可能会被系统踢出。别担心，只需重新连接即可。`pf` 正在执行其工作。
+
+如果一切顺利，防火墙应该已经加载了新规则。
+
+### 配置 DNS 缓存和广告拦截
+
+现在是配置 `Unbound` 以缓存 DNS 查询并启用广告拦截的时间了。首先，我们需要安装 `Unbound`：
+
+```sh
+pkg install unbound
+```
+
+不久前，我找到一个脚本并稍作修改。虽然我不记得从哪里得到的，但我会把它放在这里，而不引用原作者。
+
+### 创建更新 Unbound 广告拦截的脚本 `/usr/local/sbin/unbound-adhosts.sh`：
+
+```sh
+#!/bin/sh
+#
+# 使用来自 Pi-Hole 项目的黑名单 https://github.com/pi-hole/ 
+# 来启用 Unbound(8) 中的广告拦截
+#
+PATH=”/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin”
+
+# 可用的黑名单 - 注释掉行以禁用
+_disconad=”https://s3.amazonaws.com/lists.disconnect.me/simple_ad.txt”
+_discontrack=”https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt”
+_stevenblack=”https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts”
+
+# 全局变量
+_tmpfile=”$(mktemp)” && echo '' > $_tmpfile
+_unboundconf=”/usr/local/etc/unbound/unbound-adhosts.conf”
+
+# 从黑名单中移除注释
+simpleParse() {
+fetch -o - $1 | \
+sed -e ‘s/#.*$//’ -e ‘/^[[:space:]]*$/d’ >> $2
+}
 
-如果一切设置正确，unbound 将能够响应在 172.14.0.1 和 2a01:4f8:cafe:cafe:100::1 上进行的 DNS 请求。现在可以配置 Wireguard 客户端。通过将“172.14.0.2/32, 2a01:4f8:cafe:cafe:100::2/128”（稍后将在服务器的对等配置中输入）插入本地 IP 地址来创建新配置。将 DNS 服务器地址设置为“172.14.0.1”及其相应的 IPv6 地址（在示例中， 2a01:4f8:cafe:cafe:100::1 – 您的将不同）。在对等方案节中，插入服务器的数据，包括其公钥，IP 地址：port（在示例中，port为 51820），以及允许地址（设置“ 0.0.0.0/0, ::0/0 ”意味着“所有连接将通过 Wireguard 发送” — 所有流量将通过 VPN 传递，无论是 IPv4 还是 IPv6）。每种实现都有自己的流程（Android、iOS、MikroTik、Linux 等），但主要是在服务器和客户端上创建正确的配置就足够了。
+# 解析 DisconTrack
+[ -n “${_discontrack}” ] && simpleParse $_discontrack $_tmpfile
 
-重新打开 Wireguard 配置文件 /usr/local/etc/wireguard/wg0.conf 并添加：
+# 解析 DisconAD
+[ -n “${_disconad}” ] && simpleParse $_disconad $_tmpfile
 
-`[Interface]Address = 172.14.0.1/24,2a01:4f8:cafe:cafe:100::1/72ListenPort = 51820PrivateKey = YUkS6cNTyPbXmtVf/23ppVW3gX2hZIBzlHtXNFRp80w=[Peer]PublicKey = *client's public key*AllowedIPs = 172.14.0.2/32, 2a01:4f8:cafe:cafe:100::2/128`
+# 解析 StevenBlack
+[ -n “${_stevenblack}” ] && \
+  fetch -o - $_stevenblack | \
+  sed -n '/Start/,$p' | \
+  sed -e 's/#.*$//' -e '/^[[:space:]]*$/d' | \
+  awk '/^0.0.0.0/ { print $2 }' >> $_tmpfile
 
-客户端的公钥将由客户端本身显示。重新加载 Wireguard 配置：
+# 创建 unbound(8) 本地区域文件
+sort -fu $_tmpfile | grep -v “^[[:space:]]*$” | \
+awk '{
+  print “local-zone: \”” $1 “\” redirect”
+  print “local-data: \”” $1 “ A 0.0.0.0\””
+}' > $_unboundconf && rm -f $_tmpfile
 
-`service wireguard restart`
+service unbound reload 1>/dev/null
 
-只需通过 VPN 路由 DNS 流量，即可将 VPN 仅用作广告拦截器。要实现这一目标，请配置客户端，仅允许的地址是刚刚配置的 unbound 的地址（例如，在本示例中，172.14.0.1 和/或 2a01:4f8:cafe:cafe:100::1） — DNS 解析将通过 VPN 进行，但浏览将继续通过主供应商进行。
+exit 0
+```
 
-要自动更新 spamhaus 和广告拦截列表，我们将使用 cron。首先，创建一个脚本，例如，/usr/local/sbin/update-blocklists.sh：
+保存脚本后，使其可执行并运行：
 
-`#!/bin/sh/usr/local/sbin/unbound-adhosts.sh/usr/local/sbin/spamhaus.sh`
+```sh
+chmod a+rx /usr/local/sbin/unbound-adhosts.sh
+/usr/local/sbin/unbound-adhosts.sh
+```
 
- 使其可执行：
+现在，可以按以下方式修改 `/usr/local/etc/unbound/unbound.conf` 配置文件：
 
-`chmod +x /usr/local/sbin/update-blocklists.sh`
+```sh
+server:
+        verbosity: 1
+        log-queries: no
+        num-threads: 4
+        num-queries-per-thread: 1024
+        interface: 127.0.0.1
+        interface: 172.14.0.1
+        interface: 2a01:4f8:cafe:cafe:100::1
+        interface: ::1
+        outgoing-range: 64
+        chroot: “”
 
-然后，将其添加到 crontab 中以每天运行：
+        access-control: 0.0.0.0/0 refuse
+        access-control: 127.0.0.0/8 allow
+        access-control: ::0/0 refuse
+        access-control: ::1 allow
+        access-control: 172.14.0.0/24 allow
+        access-control: 2a01:4f8:cafe:cafe:100::/72 allow
 
-`echo “@daily /usr/local/sbin/update-blocklists.sh” >> /etc/crontab`
+        hide-identity: yes
+        hide-version: yes
+        auto-trust-anchor-file: "/usr/local/etc/unbound/root.key"
+        val-log-level: 2
+        aggressive-nsec: yes
+        prefetch: yes
+        username: “unbound”
+        directory: "/usr/local/etc/unbound"
+        logfile: "/var/log/unbound.log"
+        use-syslog: no
+        pidfile: "/var/run/unbound.pid"
+        include: /usr/local/etc/unbound/unbound-adhosts.conf
 
-从更新管理和安全性的角度来看，这种方法都有利。
+remote-control:
+        control-enable: yes
+        control-interface: /var/run/unbound.sock
+```
 
-STEFANO MARINELLI 是一位 IT 顾问，拥有超过二十年的 IT 咨询、培训、研究和出版经验。他的专业涵盖操作系统，特别是 *BSD 系统 — FreeBSD、NetBSD、OpenBSD、DragonFlyBSD — 和 Linux。Stefano 还是 BSD Cafe 的咖啡师，这是 *BSD 爱好者的一个活跃社区中心，并在博洛尼亚大学领导 FreeOsZoo 项目，为虚拟机提供开源操作系统镜像。
+然后启用并启动 `unbound`：
+
+```sh
+service unbound enable
+service unbound start
+```
+
+如果一切设置正确，`unbound` 将能够响应发送到 `172.14.0.1` 和 `2a01:4f8:cafe:cafe:100::1` 的 DNS 请求。接下来，配置 WireGuard 客户端。创建一个新的配置文件，插入 "172.14.0.2/32, 2a01:4f8:cafe:cafe:100::2/128"（这些地址稍后将在服务器的对等配置中使用）。将 DNS 服务器地址设置为 "172.14.0.1" 和/或其相应的 IPv6 地址（在此示例中为 `2a01:4f8:cafe:cafe:100::1` —— 你的地址将不同）。在对等配置中插入服务器的相关信息，包括其公钥、IP 地址和端口（在此示例中，端口为 51820）以及允许的地址（设置 "`0.0.0.0/0, ::0/0`" 意味着 "所有连接将通过 WireGuard" —— 所有流量将通过 VPN，无论是 IPv4 还是 IPv6）。
+
+每种设备的配置程序有所不同（Android、iOS、MikroTik、Linux 等），但基本上只需在服务器和客户端都创建正确的配置即可。
+
+重新打开 WireGuard 配置文件 `/usr/local/etc/wireguard/wg0.conf`，并添加：
+
+```sh
+[Interface]
+Address = 172.14.0.1/24,2a01:4f8:cafe:cafe:100::1/72
+ListenPort = 51820
+PrivateKey = YUkS6cNTyPbXmtVf/23ppVW3gX2hZIBzlHtXNFRp80w=
+
+[Peer]
+PublicKey = *客户端的公钥*
+AllowedIPs = 172.14.0.2/32, 2a01:4f8:cafe:cafe:100::2/128
+```
+
+客户端的公钥将由客户端显示。
+
+重新加载 WireGuard 配置：
+
+```sh
+service wireguard restart
+```
+
+如果希望仅使用 VPN 作为广告拦截器，可以仅通过 VPN 路由 DNS 流量。为此，请在客户端配置中仅允许已配置的 Unbound 地址（在此示例中为 `172.14.0.1` 和/或 `2a01:4f8:cafe:cafe:100::1`）——DNS 解析将通过 VPN 进行，但浏览将继续通过主要提供商进行。
+
+### 自动更新 Spamhaus 和广告拦截列表
+
+我们将使用 cron 来自动更新列表。首先，创建一个脚本，例如 `/usr/local/sbin/update-blocklists.sh`：
+
+```sh
+#!/bin/sh
+
+/usr/local/sbin/unbound-adhosts.sh
+/usr/local/sbin/spamhaus.sh
+```
+
+使脚本可执行：
+
+```sh
+chmod +x /usr/local/sbin/update-blocklists.sh
+```
+
+然后，将其添加到 `crontab` 中，以便每天运行：
+
+```sh
+echo “@daily /usr/local/sbin/update-blocklists.sh” >> /etc/crontab
+```
+
+这种方法从更新管理和安全性的角度都带来了好处。
+
+---
+
+**Stefano Marinelli** 是一位 IT 顾问，拥有超过二十年的 IT 咨询、培训、研究和出版经验。他的专业领域涵盖了多种操作系统，尤其专注于 *BSD 系统（如 FreeBSD、NetBSD、OpenBSD、DragonFlyBSD）和 Linux 系统。Stefano 还是 BSD Cafe 的咖啡师，这是一个活跃的 *BSD 爱好者社区中心。他还领导了博洛尼亚大学的 FreeOsZoo 项目，为虚拟机提供开放源代码操作系统镜像。
