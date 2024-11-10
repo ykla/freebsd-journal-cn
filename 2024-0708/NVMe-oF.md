@@ -11,7 +11,7 @@ NVMe 最初是为了通过 PCI-Express 访问非易失性内存设备而定义�
 
 **NVMe over Fabrics，NVMe-oF** 扩展了原始规范，使其能够通过网络传输访问 NVM 子系统，而非 PCI-Express，这类似于使用 iSCSI 访问远程块存储设备作为 SCSI LUN。NVMe-oF 支持多种传输层，包括 FibreChannel、RDMA（通过 iWARP 和 ROCE）以及 TCP。为了处理这些不同的传输，Fabrics 包括了对基本 NVMe 规范的传输无关扩展，以及传输特定的绑定。
 
-Fabrics 定义了一种新的胶囊抽象，用于支持 NVMe 命令和完成。每个胶囊包含一个 NVMe 命令或完成。此外，胶囊可能与数据缓冲区相关联。为了支持数据传输，NVMe 命令中现有的 PRP 条目被单个 NVMe SGL 条目替代。Fabrics 还将用于 PCI-Express 控制器的共享内存队列替换为逻辑完成和提交队列。与 PCI-Express I/O 队列不同，Fabrics 队列总是显式地与每个提交队列配对，后者与一个专用的完成队列相连。胶囊和数据缓冲区如何在队列对上传输和接收是传输特定的，但从抽象的角度来看，命令胶囊在提交队列上传输，完成则在完成队列上传输。
+Fabrics 定义了一种新的 capsule 抽象，用于支持 NVMe 命令和完成。每个 capsule 包含一个 NVMe 命令或完成。此外，capsule 可能与数据缓冲区相关联。为了支持数据传输，NVMe 命令中现有的 PRP 条目被单个 NVMe SGL 条目替代。Fabrics 还将用于 PCI-Express 控制器的共享内存队列替换为逻辑完成和提交队列。与 PCI-Express I/O 队列不同，Fabrics 队列总是显式地与每个提交队列配对，后者与一个专用的完成队列相连。capsule 和数据缓冲区如何在队列对上传输和接收是传输特定的，但从抽象的角度来看，命令 capsule 在提交队列上传输，完成则在完成队列上传输。
 
 Fabrics 主机创建一个管理员队列对和一个或多个 I/O 队列对，连接到控制器。完整的队列对集称为关联。单个关联可以包含多个传输特定的连接。例如，TCP 传输为每个队列对使用专用连接，因此一个活动的 TCP 关联至少需要两个 TCP 连接。
 
