@@ -132,20 +132,20 @@ TCP RACK 栈提供了许多其他功能，这些功能通过各种套接字选�
 
 ## Netflix 如何演进 TCP RACK 栈
 
-目前，Netflix 仅使用 TCP RACK 栈，FreeBSD 默认栈虽然存在，但并未启用。Netflix 使用 TCP RACK 栈的方式有些新颖，值得注意。Netflix 实际上保持了多个版本的 TCP RACK 栈，并按版本号命名。Netflix 始终保持“最新”的 TCP RACK 栈，该版本包含所有由传输团队正在开发的前沿功能。
+目前，Netflix 仅使用 TCP RACK 栈，FreeBSD 默认栈虽然存在，但并未启用。Netflix 使用 TCP RACK 栈的方式有些新颖，值得注意。实际上，Netflix 保持了多个版本的 TCP RACK 栈，并按版本号命名。Netflix 始终保持“最新”的 TCP RACK 栈，该版本包含所有由传输团队正在开发的前沿功能。
 
 每当发布新版本时，Netflix 会复制正在开发的最新 TCP RACK 栈，并根据版本号进行支持。然后，Netflix 会根据用户体验质量（QoE）和 CPU 性能对该栈进行评估，并与先前发布的默认 TCP 栈进行比较。当最新版本的 TCP RACK 栈的表现至少与旧版本相当时，默认栈会在下一个版本中切换为新的 TCP RACK 栈。旧的 TCP RACK 栈会在多个版本中继续维护，最后被移除。
 
-TCP RACK 栈的新特性也通过这种方式进行测试，以确定某个功能是否真的带来了价值。减少网络影响，并且不降低 Netflix 用户的 QoE 是 Netflix 传输团队的主要目标，这样 Netflix 不仅能更好地利用网络资源，同时还能为用户提供良好的 QoE。
+TCP RACK 栈的新特性也通过这种方式进行测试，以确定某个功能是否真的带来了价值。减少网络影响，并且不降低 Netflix 用户的体验质量是 Netflix 传输团队的主要目标，这样 Netflix 不仅能更好地利用网络资源，同时还能为用户提供良好的体验质量。
 
 ## 总结与展望
 
-TCP RACK 栈提供了 FreeBSD 默认栈的强大替代方案。它增加了更多的功能和选项，给应用开发者提供了更丰富的选择，以便更好地定制 TCP 体验，满足用户需求。
+TCP RACK 栈是 FreeBSD 默认栈的强大替代方案。它增加了更多的功能和参数，给应用开发者提供了更丰富的选择，以便更好地定制 TCP 体验，满足用户需求。
 
-TCP RACK 栈已经在 Netflix 的设置和工作负载中进行了广泛测试。但同样重要的是，还需要在其他设置和工作负载下进行测试。因此，如果用户能够在自己的硬件上、使用自己的设置和工作负载测试 TCP RACK 栈，那将非常有价值。请在测试中遇到任何问题时报告给[net@freebsd.org](mailto:net@freebsd.org)或本文作者。根据反馈和进一步的测试，TCP RACK 栈可能会成为未来 FreeBSD 的默认栈。
+TCP RACK 栈已经在 Netflix 的设置和工作负载中进行了海量测试。但同样重要的是，还需要在其他设置和工作负载下进行测试。因此，如果用户能够在自己的硬件上、使用自己的设置和工作负载测试 TCP RACK 栈，那将极有价值。请将在测试中遇到的所有问题报告给[net@freebsd.org](mailto:net@freebsd.org)和本文作者。根据反馈和进一步的测试，TCP RACK 栈可能会成为未来 FreeBSD 的默认栈。
 
 ---
 
-**Randall Stewart**（[rrs@freebsd.org](mailto:rrs@freebsd.org)）在操作系统开发领域已有 40 年以上的经验，并且是 FreeBSD 的开发者，专注于 TCP 和 SCTP 等传输协议。他目前在 Netflix 的传输团队工作，支持 TCP 栈，同时不断创新，以提高用户的 QoE。
+**Randall Stewart**（[rrs@freebsd.org](mailto:rrs@freebsd.org)）在操作系统开发领域已有 40 余年的经验，并且是 FreeBSD 的开发者，专注于 TCP 和 SCTP 等传输协议。他目前在 Netflix 的传输团队工作，支持 TCP 栈，同时不断创新，以提高用户的体验质量。
 
-**Michael Tüxen**（[tuexen@freebsd.org](mailto:tuexen@freebsd.org)）是明斯特应用科技大学的教授，同时也是 Netflix 的兼职合同开发者，并且自 2009 年起就是 FreeBSD 源代码提交者。他的工作重点是 SCTP 和 TCP 等传输协议，及其在 IETF 中的标准化和在 FreeBSD 中的实现。
+**Michael Tüxen**（[tuexen@freebsd.org](mailto:tuexen@freebsd.org)）是明斯特应用科技大学的教授，同时也是 Netflix 的兼职雇佣开发者，并且自 2009 年起就是 FreeBSD 源代码提交者。他的工作重点是 SCTP 和 TCP 等传输协议，及其在 IETF 中的标准化和在 FreeBSD 中的实现。
