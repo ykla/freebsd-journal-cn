@@ -10,7 +10,7 @@
 * [使用 ZFS 原生加密保护数据](2024-0708/zfs.md)
 * [嵌入式 FreeBSD：打造自己的镜像](2024-0708/freebsd.md)
 * [TCP LRO 简介](2024-0708/tcp.md)
-* [基于 Samba 的 Time Machine 备份](2024-0708/samba.md)
+* [基于 Samba 的时间机器备份](2024-0708/samba.md)
 
 ## 2024-0506
 
