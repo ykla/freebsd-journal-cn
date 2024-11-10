@@ -3,13 +3,13 @@
 - 原文链接：[RACK and Alternate TCP Stacks for FreeBSD](https://freebsdfoundation.org/our-work/journal/browser-based-edition/networking-10th-anniversary/rack-and-alternate-tcp-stacks-for-freebsd/)
 - 作者：Randall Stewart、Michael TÜxen
 
-在 2017 年，FreeBSD 对 TCP 栈进行了修改，允许多个 TCP 栈共存。通过这种方式，现有的 TCP 栈可以保持不变，从而允许在有限的函数调用数量下进行创新。某些功能仍然是所有 TCP 栈共享的：例如，SYN 缓存的实现，包括 SYN Cookies 的处理，以及处理传入 TCP 段的初步步骤，比如校验和验证和根据端口号与 IP 地址查找 TCP 端点。在任何时刻，一个 TCP 连接只由一个 TCP 栈处理，但在 TCP 连接的生命周期内，这个 TCP 栈是可以更换的。
+在 2017 年，FreeBSD 对 TCP 栈进行了修改，多个 TCP 栈可共存。以这种方式，现有的 TCP 栈可保持不变，从而能在有限的函数调用数量下进行创新。某些功能仍然是所有 TCP 栈共享的：例如，SYN 缓存的实现，包括 SYN Cookies 的处理，以及处理传入 TCP 段的初步步骤，比如校验和验证和根据端口号与 IP 地址查找 TCP 端点。在任何时刻，一个 TCP 连接只由一个 TCP 栈处理，但在 TCP 连接的生命周期内，这个 TCP 栈是可以更换的。
 
-这就是 TCP RACK 栈的起源，它从调用`tcp_do_segment()`函数及许多其他模块化子函数开始，完全重写了原始 TCP 栈。最初的目标是支持一种名为“Recent Acknowledgement”（RACK）的丢包检测方法。RACK 最初在一份互联网草案中描述，并在 2021 年成为了 RFC 8985。这也是这个 TCP 栈名称——RACK——的由来。然而，TCP RACK 栈的功能已经远远超出了对 RFC 8985 的支持。重写的一部分包括完全不同的方式来处理选择确认（SACK）信息。在 TCP RACK 栈中，维护了所有发送的用户数据的完整映射，这使得用户数据的重传得到了改进的处理，并且实现了 RFC 8985 中描述的 RACK 丢包检测。许多额外的特性也是从这个重写中衍生出来的，本文将详细描述这些特性。
+这就是 TCP RACK 栈的起源，它从调用函数 `tcp_do_segment()` 及许多其他模块化子函数开始，完全重写了原始 TCP 栈。最初的目标是支持一种名为“Recent Acknowledgement”（RACK）的丢包检测方法。RACK 最初在一份互联网草案中描述，并在 2021 年成为了 RFC 8985。这也是这个 TCP 栈名称——RACK——的由来。然而，TCP RACK 栈的功能已经远远超出了对 RFC 8985 的支持。重写的一部分包括完全不同的方式来处理选择确认（SACK）信息。在 TCP RACK 栈中，维护了所有发送的用户数据的完整映射，这使得用户数据的重传得到了改进的处理，并且实现了 RFC 8985 中描述的 RACK 丢包检测。许多额外的特性也是从这个重写中衍生出来的，本文将详细描述这些特性。
 
 ## 如何使用 TCP RACK 栈
 
-TCP RACK 栈在 FreeBSD CURRENT 和 FreeBSD 14.0 中均可用。如何启用它取决于使用的 FreeBSD 版本。
+在 FreeBSD CURRENT 和 FreeBSD 14.0 中，TCP RACK 栈均可用。如何启用取决于使用的 FreeBSD 版本。
 
 对于 FreeBSD 14.0，需要在内核配置文件中添加以下两行：
 
@@ -18,13 +18,13 @@ option TCPHPTS
 makeoptions WITH_EXTRA_TCP_STACKS=1
 ```
 
-然后重新编译内核。第一行会将 TCP 高精度定时器系统（HPTS）编译进内核。第二行会生成一个 TCP RACK 栈的内核可加载模块（tcp_rack.ko）。要使用 TCP RACK 栈，必须加载内核模块。可以通过在`/boot/loader.conf`文件中添加以下行，使其在每次重启时自动加载：
+然后重新编译内核。第一行会将 TCP 高精度定时器系统（HPTS）编译进内核。第二行会生成一个 TCP RACK 栈的内核可加载模块（tcp_rack.ko）。要使用 TCP RACK 栈，必须加载内核模块。可以通过在 `/boot/loader.conf` 文件中添加以下行，使其在每次重启时自动加载：
 
 ```sh
 tcp_rack_load=”YES”
 ```
 
-在 FreeBSD CURRENT 中，TCP RACK 和 HPTS 默认都是作为内核模块构建的。由于`tcphpts.ko`是`tcp_rack.ko`的依赖项，因此只需要加载后者即可。要在每次重启时加载 TCP RACK 栈，需要在`/boot/loader.conf`文件中添加以下两行：
+在 FreeBSD CURRENT 中，TCP RACK 和 HPTS 默认都是作为内核模块构建的。由于 `tcphpts.ko` 是 `tcp_rack.ko` 的依赖项，因此只需要加载后者即可。要在每次重启时加载 TCP RACK 栈，需要在 `/boot/loader.conf` 文件中添加以下两行：
 
 ```sh
 tcphpts_load=”YES”
@@ -40,9 +40,9 @@ option TCP_RACK
 
 然后重新编译内核。
 
-需要注意的是，TCP 黑盒日志（`TCP_BLACKBOX`选项）现在在 FreeBSD 14.0 及更高版本和 FreeBSD CURRENT 的所有 64 位平台中默认构建，因为它是 TCP 传输开发人员用来对各种 TCP 栈进行测试和调试的标准方式。
+需要注意的是，TCP 黑盒日志（参数 `TCP_BLACKBOX`）现在在 FreeBSD 14.0 及更高版本和 FreeBSD CURRENT 的所有 64 位平台中默认构建，因为它是 TCP 传输开发人员用来对各种 TCP 栈进行测试和调试的标准方式。
 
-上述内容描述了如何在 FreeBSD 系统上启用 TCP RACK 栈。可以通过在 shell 中运行以下命令来查看所有可用的 TCP 栈列表：
+上述内容介绍了如何在 FreeBSD 系统上启用 TCP RACK 栈。可以通过在 shell 中运行以下命令来查看所有可用的 TCP 栈列表：
 
 ```sh
 sysctl net.inet.tcp.functions_available
@@ -52,23 +52,23 @@ sysctl net.inet.tcp.functions_available
 
 实际使用 TCP RACK 栈的方式有很多种，一些方式需要修改应用程序的源代码，而一些方式只需要进行配置更改。
 
-`sysctl`变量`net.inet.tcp.functions_default`用于指定新创建的 TCP 端点（通过`socket(2)`系统调用创建）默认使用的 TCP 栈。执行以下命令：
+`sysctl` 变量 `net.inet.tcp.functions_default` 用于指定新创建的 TCP 端点（通过`socket(2)`系统调用创建）默认使用的 TCP 栈。执行以下命令：
 
 ```sh
 sysctl net.inet.tcp.functions_default=rack
 ```
 
-会将默认栈设置为 TCP RACK 栈。通过在`/etc/sysctl.conf`文件中添加以下行，TCP RACK 栈将在重启后成为默认的 TCP 栈：
+会将默认栈设置为 TCP RACK 栈。在 `/etc/sysctl.conf` 文件中添加以下行，TCP RACK 栈将在重启后成为默认的 TCP 栈：
 
 ```sh
 net.inet.tcp.functions_default=rack
 ```
 
-当通过监听器创建 TCP 端点时，TCP 栈要么继承自监听器，要么基于默认的 TCP 栈，这取决于`net.inet.tcp.functions_inherit_listen_socket_stack`的值为非零或零。该变量的默认值为 1。
+当通过监听器创建 TCP 端点时，TCP 栈要么继承自监听器，要么基于默认的 TCP 栈，这取决于 `net.inet.tcp.functions_inherit_listen_socket_stack` 的值为非零/`0`。该变量的默认值为 `1`。
 
-也可以使用`tcpsso(8)`命令行工具来改变单个 TCP 连接的 TCP 栈，如该工具的手册页所述。
+也可以使用命令行工具 `tcpsso(8)` 来改变单个 TCP 连接的 TCP 栈，如该工具的手册页所述。
 
-如果可以修改源代码，则可以使用名为`TCP_FUNCTION_BLK`的`IPPROTO_TCP`级别的套接字选项，将用于该套接字的 TCP 栈切换到 TCP RACK 栈。选项值的类型为`struct tcp_function_set`。例如，以下代码执行此操作：
+如果可以修改源代码，则可以使用名为 `TCP_FUNCTION_BLK` 的 `IPPROTO_TCP` 级别的套接字选项，将用于该套接字的 TCP 栈切换到 TCP RACK 栈。选项值的类型为 `struct tcp_function_set`。例如，以下代码执行此操作：
 
 ```c
 struct tcp_function_set tfs;
@@ -78,7 +78,7 @@ tfs.pcbcnt = 0;
 setsockopt(fd, IPPROTO_TCP, TCP_FUNCTION_BLK, &tfs, sizeof(tfs));
 ```
 
-使用 TCP RACK 栈可以启用许多默认 TCP 栈目前不支持的功能。许多这些功能可以通过`IPPROTO_TCP`级别的套接字选项或`net.inet.tcp.rack`下的`sysctl`变量进行控制。
+使用 TCP RACK 栈可以启用许多默认 TCP 栈目前不支持的功能。许多这些功能可以通过 `IPPROTO_TCP` 级别的套接字选项或 `sysctl` 变量 `net.inet.tcp.rack` 进行控制。
 
 ## TCP RACK 栈的功能
 
