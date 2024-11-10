@@ -3,19 +3,19 @@
 - 原文链接：[Practical Ports: Monitor Your Hosts with Zabbix](https://freebsdfoundation.org/our-work/journal/browser-based-edition/networking-10th-anniversary/practical-ports-monitor-your-hosts-with-zabbix/)
 - 作者：Benedict Reuschling
 
-我想了解发生了什么，特别是我负责的服务器和机器。监控这些系统已经成为我的一种良好习惯。每天检查的机器实在太多了，而且大多数时候，什么特别的事情都不会发生。但当出现问题时，我希望能知道，甚至是在我睡觉时或者不在终端旁边的时候。监控也让我对我的机器群体有个整体的了解。我有时会发现某个主机已经完成了它的任务，但还没有被回收。甚至有时候，我会发现可以把新服务迁移到一台未充分利用的机器上，而不是启动一台新的主机或监狱（jail）。
+我想了解发生了什么，特别是我负责的服务器和机器发生了什么。监控这些系统已经成为我的一种良好习惯。每天需要检查的机器实在太多了，而且在大多数时候，什么特别的事情都不会发生。但当出现问题时，我也希望能知道，甚至是在我睡觉时或者不在终端旁边的时候。监控也能让我对我的机器群有个整体的了解。我有时会发现某个主机已经完成了它的任务，但还没有被回收。甚至有时候，我发现可以把新服务迁移到一台未充分利用的机器上，而不是启动一台新的主机和 jail。
 
-图表在显示机器在一段时间内的活动方面对我非常有帮助。上周的系统负载是否异常？还是大学的实验小组开始活动了？那块硬盘慢慢满了，最好处理一下。像这样的问题会时不时地出现，而通过图表展示的机器指标可以帮助我回答这些问题。
+图表在显示机器在一段时间内的活动方面对我非常有帮助。上周的系统负载是否异常？还是大学的实验小组开始活动了？那块硬盘逐渐满了，最好处理一下。像这样的问题会时不时地出现，而通过图表展示的机器指标可以帮助我回答这些问题。
 
-任何一个好的系统管理员都会因为知道他们的系统在运行而睡得更好。监控软件可以告诉你它们正在运行，你甚至可以为管理层提供每台机器的正常运行时间报告，用来填充 PowerPoint 幻灯片。
+任何一个好的系统管理员都会因为知道他们的系统在运行而睡得更香。监控软件可以告诉你它们正在运行，你甚至可以为管理层提供每台机器的正常运行时间报告，用来制作 PowerPoint 幻灯片。
 
-一个能够做这些事情的监控系统叫做 Zabbix。它是一个开源的 IT 基础设施监控解决方案，由一家公司开发，必要时还可以提供专业支持。我使用的完整功能版本运行在长期支持周期中，我发现其安装过程有很好的文档支持。一个中央服务器会从运行代理的系统中收集数据。服务器提供一个 Web UI，里面有仪表板、图表、某些事件的警报等功能。对我来说，另一个好处是 FreeBSD 并不是一个陌生的操作系统，Zabbix 提供了机器模板来监控重要的指标，比如 CPU、内存，甚至是 ZFS。
+一款能够做这些事情的监控系统叫做 Zabbix。它是一个开源的 IT 基础设施监控解决方案，由一家公司开发，必要时还可以提供专业支持。我使用的完整功能版本运行在长期支持周期中，我发现其安装过程有很好的文档支持。一台中央服务器会从运行代理的系统中收集数据。服务器提供了 Web UI，里面有仪表板、图表、某些事件的警报等功能。对我来说，另一个好处是 FreeBSD 并不是一个陌生的操作系统，Zabbix 提供了机器模板来监控重要的指标，比如 CPU、内存，甚至是 ZFS。
 
-我在一个 jail 中运行 Zabbix，并没有遇到任何大问题。这个基于 PHP 的解决方案需要一个数据库来存储指标。可以使用 Postgres、MySQL/MariaDB、SQLite，甚至 IBM 和 Oracle 的商业 DB2 数据库服务器。监控本身通过 SNMP/IPMI、SSH 或简单的 ping 来检查可用性。对于主动监控（收集实时机器指标），需要在主机上安装代理。Zabbix 还提供了功能来监控整个子网，检测新主机并在它们出现时自动将其添加到监控中。还可以为特定的主机和特定情况（例如磁盘已满）设置触发器，这些触发器可以通过 Web 界面进行配置。关于这些事件的警报可以通过电子邮件、Jabber、SMS 或自定义脚本操作发送。
+我在 jail 中运行 Zabbix，并未遇到任何大问题。这个基于 PHP 的解决方案需要一款数据库来存储指标。可以使用 Postgres、MySQL/MariaDB、SQLite，甚至 IBM 和 Oracle 的商业 DB2 数据库服务器。监控本身通过 SNMP/IPMI、SSH 和简单的 ping 来检查可用性。对于主动监控（收集实时机器指标），需要在主机上安装代理。Zabbix 还提供了功能来监控整个子网，检测新主机并在它们出现时自动将其添加到监控中。还可以为特定的主机和特定情况（例如磁盘已满）设置触发器，这些触发器可以通过 Web 界面进行配置。关于这些事件的警报可以通过电子邮件、Jabber、SMS 和自定义脚本操作发送。
 
-## Zabbix 安装设置
+## 安装设置 Zabbix 
 
-接下来，让我们看看如何安装这个监控解决方案。我从一个新的 FreeBSD 14.0 jail 开始，这个 jail 连接到我正在监控的网络，并且从 Web 或单独的 Poudriere 服务器下载所需的包。请注意，我将端口的默认 MySQL 配置为 PostgreSQL，可以通过在 `net/mgmt/zabbix64-server` 目录下运行 “make config” 来进行更改。
+接下来，让我们看看如何安装这个监控解决方案。我从一个新的 FreeBSD 14.0 jail 开始，这个 jail 连接到我正在监控的网络，并且从 Web 或单独的 Poudriere 服务器下载所需的包。请注意，我将 Port 默认的 MySQL 配置改为 PostgreSQL，可以通过在 `net/mgmt/zabbix64-server` 目录下运行 “make config” 来进行更改。
 
 我们需要安装以下包：
 
@@ -23,7 +23,7 @@
 # pkg install zabbix64-server zabbix64-frontend-php82 postgresql15-server nginx
 ```
 
-在之前的尝试中，我使用的是 `zabbix6-server` 和前端，因为我以为 6.4 版本最终会变成 6.5 版本。但 Zabbix 的发布周期有所不同。长期支持版本是主要版本（此处为 6 版），而小版本发布（如 6.4）有较短的支持周期。我转向使用长期支持版本，因为我不想总是处于监控软件的前沿，而更倾向于使用当前功能集一段时间。稳定性是我的首要目标。你不希望每次新版本发布时都去修复监控软件，尤其是当你依赖它来监控关键系统时。
+在之前的尝试中，我使用的是 `zabbix6-server` 和前端，因为我以为 6.4 版本最终会变成 6.5 版本。但 Zabbix 的发布周期有所不同。长期支持版本是主要版本（此处为 6 版），而小版本发布（如 6.4）的支持周期较短。我转而使用长期支持版本，因为我不想总是处于监控软件的最新版，而更倾向于使用当前功能集一段时间。稳定性是我的首要目标。你不会希望每次新版本发布时都去修复监控软件，尤其是当你依赖它来监控关键设备时。
 
 使用 `sysrc` 启动时启用相关服务：
 
@@ -37,7 +37,7 @@
 
 在我的设置中，我没有使用 SNMP（以后可能会改），但是 `pkg-message` 里有关于如何启用 SNMP 守护进程的详细信息。如果你需要的话，可以参考。
 
-安装包之后，我们的第一个任务是设置 Zabbix 数据库。我喜欢使用 Postgres，所以在这个设置中我使用了它。正如前面提到的，其他数据库也被支持，你可以根据自己的喜好选择数据存储解决方案。
+在安装包之后，我们的第一个任务是设置 Zabbix 数据库。我喜欢使用 Postgres，所以在这个设置中我使用了它。正如前面提到的，也支持别的数据库，你可以根据自己的喜好选择数据存储解决方案。
 
 ### 数据库设置
 
@@ -55,7 +55,7 @@ $ initdb data
 $ pg_ctl -D ./data start
 ```
 
-数据库启动后，我切换到以下目录：
+在数据库启动后，我切换到以下目录：
 
 ```sh
 $ cd /usr/local/share/zabbix64/server/database/postgresql/
@@ -85,9 +85,9 @@ psql> exit
 
 至此，数据库设置完成。接下来，我们进行 Zabbix 配置。
 
-### Zabbix 配置
+### 配置 Zabbix 
 
-Zabbix 需要知道使用哪个数据库来存储监控指标、监控哪些机器以及其他大量的配置信息。Zabbix 的主要配置文件位于 `/usr/local/etc/zabbix64/zabbix_server.conf`，它是一个简单的键=值格式文件。文件中的注释描述了各个配置项的作用，大多数配置项是被注释掉的。完成必要的修改后，我的配置文件如下所示：
+Zabbix 需要知道用哪个数据库来存储监控指标、监控哪些机器以及其他大量的配置信息。Zabbix 的主要配置文件位于 `/usr/local/etc/zabbix64/zabbix_server.conf`，它是一个简单的 `键=值` 格式文件。文件中的注释描述了各个配置项的作用，大多数配置项是被注释掉的。完成必要的修改后，我的配置文件如下所示：
 
 ```sh
 SourceIP=IP.address.of.monitoring-host
@@ -108,7 +108,8 @@ StatsAllowedIP=127.0.0.1
 `DBName`、`DBUser` 和 `DBPassword`（明文密码）是我们在数据库设置中创建的内容。这些配置项将 Zabbix 连接到数据库实例，以便在监控过程中存储和检索数据。`Timeout` 和 `LogSlowQueries` 是我保持的默认值。到目前为止我没有调整它们，但我可以理解，如果遇到资源限制，调整这些值会是一个好选择。Zabbix 本身还会收集一些内部统计信息，`StatsAllowedIP` 参数定义了可以接受这些统计信息的 IP 地址。对于我的使用场景，localhost 就完全足够。如果你有多个 Zabbix 实例并且希望它们互相监控，那么你可以在此处定义多个 IP 地址。
 
 这就是 Zabbix 服务器配置文件的基本设置。我使用的是代理监控方式来监控客户端和服务器本身。如果你使用 SNMP，可能还需要其他配置项。详细信息可以查阅 Zabbix 的文档。
-### Zabbix Agent 配置
+
+### 配置 Zabbix Agent 
 
 代理程序名为 Zabbix Agentd（经典的 Unix 守护进程），它应该在服务器 jail 启动时运行。可以通过 `sysrc` 命令在 `/etc/rc.conf` 中添加启动项，如下所示：
 
@@ -126,11 +127,11 @@ ServerActive=127.0.0.1
 Hostname=Zabbix server
 ```
 
-我们可以在此文件中找到一些熟悉的配置项。`LogFile` 应该设置为一个不同的文件，以便区分来自服务器和客户端的消息，尤其是服务器端的消息。被监控的机器通常不会运行服务器部分，因此它们不会与服务器日志混淆。目录应该已经存在，但如果没有，可以通过 `touch` 命令手动创建该文件。`SourceIP` 与监控主机的发送指标相同。对于其他客户端，可以将其设置为目标主机的 IP 地址或 DNS 地址。`ServerIP` 在所有系统中保持一致，因为我们使用的是集中式系统来收集监控数据。`ServerActive` 前面已经讨论过，而 `Hostname` 是 Zabbix 内部使用的标识符，用于区分不同的系统。
+我们可以在此文件中找到一些熟悉的配置项。`LogFile` 应该被设置为一个不同的文件，以便区分来自服务器和客户端的消息，尤其是服务器端的消息。被监控的机器通常不会运行服务器部分，因此它们不会与服务器日志混淆。目录应该已经存在，但若没有，可以通过 `touch` 命令手动创建该文件。`SourceIP` 与监控主机的发送指标相同。对于其他客户端，可以将其设置为目标主机的 IP 地址或者 DNS 地址。`ServerIP` 在所有系统中保持一致，因为我们使用的是集中式系统来收集监控数据。`ServerActive` 前面已经讨论过，而 `Hostname` 是 Zabbix 内部使用的标识符，用于区分不同的系统。
 
 ### Zabbix 前端
 
-Zabbix 前端需要一个启用 PHP 的运行中的 Web 服务器，并且需要一个自己的配置文件。前端需要知道如何从后台获取指标和其他数据，这也是另一个配置文件需要数据库凭证的原因。该文件位于 `/usr/local/www/zabbix64/conf/zabbix.conf.php`，正好与其余的 Zabbix 网站文件放在一起。文件中有几个注释，指引你填入适当的值。我的配置如下所示：
+Zabbix 前端需要一台启用 PHP 的运行中的 Web 服务器，并且需要一个自己的配置文件。前端需要知道如何从后台获取指标和其他数据，这也是另一个配置文件需要数据库凭证的原因。该文件位于 `/usr/local/www/zabbix64/conf/zabbix.conf.php`，正好与其余的 Zabbix 网站文件放在一起。文件中有几个注释，指引你填入适当的值。我的配置如下所示：
 
 ```php
 <?php
@@ -207,7 +208,7 @@ max_execution_time = 300
 max_input_time = 300
 ```
 
-保存这些文件后，执行 `sysrc nginx_enable=yes` 命令，并启动所有 Zabbix 相关服务：
+保存这些文件后，执行命令 `sysrc nginx_enable=yes`，再启动所有 Zabbix 相关服务：
 
 ```sh
 service postgresql restart
@@ -221,7 +222,7 @@ zabbix_agentd start
 
 这一切顺利完成，我在 Zabbix 的日志文件中看到了几行新的记录（服务器和代理端都有）。我兴奋地打开浏览器，输入 Zabbix 的 URL，结果什么也没有发生。页面上只有一片空白。于是我重启了服务，检查了日志文件，重新核对了配置文件，依然是同样的空白页面。我换了一个浏览器，排除浏览器问题，但结果还是一样的白屏。
 
-每次在 BSD 大会上遇到我时（这应该是很有可能的事情），你会注意到我的头发已经很少了。我可以归咎于基因或环境因素，但从事 IT 工作无疑是导致我在这种情况下抓狂的一个大原因。按照文档，这应该是能正常工作的，那为什么网页上什么都没有显示呢？
+每次在 BSD 大会上遇到我时（这应该是很有可能的发生事情），你会注意到我的头发已经很少了。我可以归咎于基因和环境因素，但从事 IT 工作无疑是导致我在这种情况下抓狂的一个大原因。按照文档，这应该是能正常工作的，那为什么网页上什么都没有显示呢？
 
 如果不是幸运让我找到了正确的方向，这篇文章就会在这里以一个不令人满意的结尾告终。我打开了 Zabbix 的常见问题解答，正巧看到这一段：
 
@@ -229,12 +230,12 @@ zabbix_agentd start
 If “opcache” is enabled in the PHP 7.3 configuration, Zabbix frontend may show a blank screen when loaded for the first time. This is a registered PHP bug. To work around this, please set the “opcache.optimization_level” parameter to 0x7FFFBFDF in the PHP configuration (/usr/local/etc/php.ini file). https://www.zabbix.com/documentation/current/en/manual/installation/known_issues
 ```
 ```ini
-如果在 PHP 7.3 配置中启用了 “opcache”，Zabbix 前端可能在首次加载时显示空白页面。这是一个已知的 PHP 错误。为了解决这个问题，请将 “opcache.optimization_level” 参数设置为 0x7FFFBFDF，并将其添加到 PHP 配置中（`/usr/local/etc/php.ini` 文件）。 https://www.zabbix.com/documentation/current/en/manual/installation/known_issues
+如果在 PHP 7.3 配置中启用了 “opcache”，Zabbix 前端可能在首次加载时显示空白页面。这是一个已知的 PHP 错误。为了解决这个问题，请将参数 “opcache.optimization_level” 设置为 0x7FFFBFDF，并将其添加到 PHP 配置中（`/usr/local/etc/php.ini` 文件）。 https://www.zabbix.com/documentation/current/en/manual/installation/known_issues
 ```
 
 ### 解决方案
 
-好的，我回到 `/usr/local/etc/php.ini` 文件，并将 `opcache.optimization_level` 设置为：
+好的，我打开文件 `/usr/local/etc/php.ini`，并将 `opcache.optimization_level` 设置为：
 
 ```ini
 opcache.optimization_level=0x7FFFBFDF
@@ -250,5 +251,5 @@ opcache.optimization_level=0x7FFFBFDF
 
 ---
 
-**BENEDICT REUSCHLING** 是 FreeBSD 项目的文档提交者，也是文档工程团队的成员。过去，他曾担任 FreeBSD 核心团队成员两届。他在德国达姆施塔特应用科技大学管理一个大数据集群，并为本科生教授“Unix for Developers”课程。Benedict 还是每周播客 bsdnow.tv 的主持人之一。
+**BENEDICT REUSCHLING** 是 FreeBSD 项目的文档提交者，也是文档工程团队的成员。过去，他曾担任了两届 FreeBSD 核心团队成员。他在德国达姆施塔特应用技术大学管理着一个大数据集群，并为本科生教授“Unix 开发者”课程。Benedict 还是每周播客 bsdnow.tv 的主持人之一。
 
