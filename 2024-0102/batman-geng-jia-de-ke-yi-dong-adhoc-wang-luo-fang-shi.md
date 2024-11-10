@@ -35,7 +35,7 @@
 
 ## 进一步阅读
 
-这是我的 GSoC 项目 Wiki 页面，包含了所有的具体内容、代码和一个小的演示视频：[https://wiki.freebsd.org/SummerOfCode2023Projects/CallingTheBatmanFreeNetworksOnFreeBSD](https://wiki.freebsd.org/SummerOfCode2023Projects/CallingTheBatmanFreeNetworksOnFreeBSD)
+这是我的谷歌编程之夏项目 Wiki 页面，包含了所有的具体内容、代码和一个小的演示视频：[https://wiki.freebsd.org/SummerOfCode2023Projects/CallingTheBatmanFreeNetworksOnFreeBSD](https://wiki.freebsd.org/SummerOfCode2023Projects/CallingTheBatmanFreeNetworksOnFreeBSD)
 
 此外，你可能会对这个链接感兴趣，它详细介绍了 BATMAN 在 Linux 上的实现（因此也包括在 FreeBSD 上的实现）：[https://www.open-mesh.org/projects/batman-adv/wiki/Wiki](https://www.open-mesh.org/projects/batman-adv/wiki/Wiki)
 
