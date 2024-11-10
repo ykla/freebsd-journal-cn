@@ -1,150 +1,205 @@
 # TCP/IP 历险记：TCP BBLog
 
-作者：RANDALL STEWART、MICHAEL TÜXEN
+
+- 原文链接：[Adventures in TCP/IP: TCP Black Box Logging](https://freebsdfoundation.org/adventures-in-tcp-ip-tcp-black-box-logging/)
+- 作者：RANDALL STEWART、MICHAEL TÜXEN
 
 ## FreeBSD 中 TCP 日志记录的演变
 
-4.2 BSD 发布于 1983 年，并包括了 BSD 中的第一个 TCP 实现。该版本还增加了对调试 TCP 实现的支持设施。内核部分由内核选项 TCP_DEBUG （默认禁用）控制，提供了一个全局环形缓冲区，有 TCP_NDEBUG （默认为 100）个元素，并提供了将 TCP 段发送或接收时，TCP 定时器过期时，或处理 TCP 相关协议用户请求时，向环形缓冲区添加条目的例程。这些事件仅添加到启用了 SOL_SOCKET 级套接字选项 SO_DEBUG 的套接字中。4.2 BSD 还提供了命令行实用程序 trpt （音译协议跟踪），可以从活动系统或核心文件中读取环形缓冲区并打印出来。它不仅打印发送和接收的 TCP 段的 TCP 头，还在发送或接收 TCP 段、TCP 定时器到期或处理 TCP 相关协议用户请求时，打印 TCP 端点的最重要参数。需要注意的是，在发生恐慌的情况下，环形缓冲区的内容可能提供足够的信息来弄清楚系统为何陷入糟糕状态。然而，由于这个设施不再符合今天对 TCP 的使用方式，它在 FreeBSD 14 中被移除。在早期版本的 FreeBSD 中，构建一个具有非默认配置的内核是必需的。
+4.2 BSD 于 1983 年发布，并包含了 BSD 中第一个 TCP 实现。此版本还添加了调试 TCP 实现的功能。内核部分由 `TCP_DEBUG` 内核选项（默认禁用）控制，提供了一个包含 `TCP_NDEBUG`（默认 100）个元素的全局环形缓冲区，并在发送或接收 TCP 段、TCP 计时器到期或处理与 TCP 协议相关的用户请求时，将条目添加到环形缓冲区。仅当启用 `SOL_SOCKET` 级别套接字选项 `SO_DEBUG` 时，才会为套接字添加这些事件。4.2 BSD 还提供了命令行工具 `trpt`（transliterate protocol trace），可以从活动系统或核心文件中读取环形缓冲区并将其打印出来。它不仅打印发送和接收的 TCP 段的 TCP 头部，还在发送或接收 TCP 段、TCP 计时器到期或处理 TCP 协议相关的用户请求时打印 TCP 端点的最重要参数。值得注意的是，在系统崩溃的情况下，环形缓冲区的内容可能提供足够的信息来分析系统进入错误状态的原因。然而，由于此功能不再符合当前 TCP 的使用需求，它在 FreeBSD 14 中被移除。在早期版本的 FreeBSD 中，构建非默认配置的内核是必需的。
 
-在 2010 年， siftr （用于 TCP 研究的统计信息）内核模块被添加到 FreeBSD 中。不需要更改 FreeBSD 内核，只需加载模块即可使用。 siftr 仅通过 sysctl -变量进行控制。启用后，由 sysctl -变量 net.inet.siftr.enabled 控制， siftr 将其输出写入文件，由 sysctl 变量 net.inet.siftr.logfile 控制（默认 /var/log/siftr.log ）。条目，除了第一个和最后一个，对应于发送或接收的 TCP 段，并提供有关方向、IP 地址和 TCPport号码以及内部 TCP 状态的信息。由于它设计用于与像 tcpdump 这样的数据包捕获工具结合使用，因此不存储有关 TCP 段（例如 TCP 标头）的其他信息。每个第 n 个 TCP 段将被记录每个 TCP 连接的发送和接收方向。n 由 sysctl -变量 net.inet.siftr.ppl 控制。可以通过 sysctl-variable net.inet.siftr.port_filter 控制的 TCPport过滤器应用于专注于特定的 TCP 连接。所有信息都以 ASCII 格式存储，因此不需要额外的用户空间工具来访问信息。在默认配置中，仅支持 TCP/IPv4。添加对 TCP/IPv6 的支持需要重新编译 siftr 内核模块。
+2010 年，`siftr`（TCP 统计信息收集模块）内核模块被添加到 FreeBSD 中。无需对 FreeBSD 内核进行更改，只需加载该模块即可使用它。`siftr` 仅通过 `sysctl` 变量控制。启用时（由 `sysctl` 变量 `net.inet.siftr.enabled` 控制），`siftr` 将输出写入一个文件，文件路径由 `sysctl` 变量 `net.inet.siftr.logfile` 控制（默认 `/var/log/siftr.log`）。除第一个和最后一个条目外，所有条目对应于发送或接收的 TCP 段，并提供方向、IP 地址、TCP 端口号和内部 TCP 状态的信息。由于设想它与类似 `tcpdump` 的数据包捕获工具配合使用，因此不会存储有关 TCP 段的额外信息（例如 TCP 头部）。每个 TCP 连接的每 n 个 TCP 段将分别记录在发送和接收方向中，n 由 `sysctl` 变量 `net.inet.siftr.ppl` 控制。可以通过 `sysctl` 变量 `net.inet.siftr.port_filter` 的 TCP 端口过滤器来关注特定的 TCP 连接。所有信息均以 ASCII 格式存储，因此无需额外的用户态工具即可访问这些信息。在默认配置中，仅支持 TCP/IPv4。添加对 TCP/IPv6 的支持需要重新编译 `siftr` 内核模块。
 
-在 2015 年，内核添加了一个设施，由内核选项 TCP_PCAP 控制（默认情况下禁用）。如果在非默认内核上启用，每个 TCP 端点都包含两个环形缓冲区：一个用于发送的 TCP 段，一个用于接收的 TCP 段。值得注意的是，没有存储任何附加信息，甚至没有存储 TCP 段发送或接收的时间。每个环形缓冲区中的 TCP 段的最大数量由 IPPROTO_TCP 级套接字选项 TCP_PCAP_OUT 和 TCP_PCAP_IN 控制。默认值由 sysctl 变量 net.inet.tcp.tcp_pcap_packets 控制。由于没有用户空间实用程序来提取环形缓冲区的内容，因此此功能的使用仅限于分析核心文件。还应注意，也记录了 TCP 有效负载，这可能会因隐私方面的原因使得包含此类信息的核心文件难以共享。计划在即将发布的 FreeBSD 15 版本中删除对此设施的支持。
+2015 年，内核中添加了由内核选项 `TCP_PCAP`（默认禁用）控制的功能。若在非默认内核上启用，每个 TCP 端点将包含两个环形缓冲区：一个用于发送的 TCP 段，一个用于接收的 TCP 段。需注意的是，不会存储任何附加信息，甚至不会记录发送或接收 TCP 段的时间。每个环形缓冲区中 TCP 段的最大数量由 `IPPROTO_TCP` 级别的套接字选项 `TCP_PCAP_OUT` 和 `TCP_PCAP_IN` 控制。默认值由 `sysctl` 变量 `net.inet.tcp.tcp_pcap_packets` 控制。由于没有用户态工具来提取环形缓冲区的内容，此功能的使用仅限于分析核心文件。还需注意，TCP 负载也会被记录，因此共享包含此类信息的核心文件可能存在隐私问题。此功能计划在即将发布的 FreeBSD 15 中移除。
 
-最新的 TCP 日志记录设施，TCP BBLog（TCP 黑匣子日志记录）于 2018 年添加。最初称为 TCP BBR（黑匣子记录器），但为了避免与 TCP 拥塞控制称为 BBR（瓶颈带宽和往返传播时间）的混淆，现在称为 BBLog。BBLog 在所有 64 位平台的所有生产版 FreeBSD 上均已启用。它结合了 TCP_DEBUG 和 TCP_PCAP 的优点，却不具备它们的缺点。因此，它旨在取代它们两者。BBLog 可以通过后续列中描述的 sysctl 接口和套接字 API 进行控制。
+最新的 TCP 日志记录功能，即 TCP BBLog（黑匣子日志记录）于 2018 年添加。最初它被称为 TCP BBR（黑匣子记录器），但为避免与 TCP 拥塞控制（BBR，即瓶颈带宽和往返传播时间）混淆，现在称为 BBLog。BBLog 在所有 64 位平台的 FreeBSD 生产版本中均已启用。它结合了 `TCP_DEBUG` 和 `TCP_PCAP` 的优点而没有其缺点。因此，它旨在取代二者。BBLog 可以通过 `sysctl` 接口和套接字 API 控制，具体见本文后续部分。
 
-## BBLog 介绍
+## BBLog 简介
 
-BBLog 由内核选项 TCP_BLACKBOX （在所有 64 位平台上默认启用）控制，内核源代码位于 sys/netinet/tcp_log_buf.c 及其对应的头文件 sys/netinet/tcp_log_buf.h 中。在启用 BBLog 的内核上，有一个设备（ /dev/tcp_log ）用于向用户态工具提供 BBLog 信息，每个 TCP 端点包含 BBLog 事件列表。
+BBLog 由内核选项 `TCP_BLACKBOX`（在所有 64 位平台上默认启用）控制，源代码位于 `sys/netinet/tcp_log_buf.c`，对应的头文件为 `sys/netinet/tcp_log_buf.h`。在启用了 BBLog 的内核上，有一个设备（`/dev/tcp_log`），用于向用户态工具提供 BBLog 信息，每个 TCP 端点包含一个 BBLog 事件列表。
 
-每个事件包含一组标准的重要 TCP 状态信息，以及（可选地）一块特定事件数据。这些事件被收集到一定限制，当达到限制时，这些事件可能会被发送到一个 /dev/tcp_log ，如果打开，则将信息中继给用于记录的读取进程(s)。请注意，如果没有进程打开设备，则数据将被丢弃。
+每个事件包含一组标准的 TCP 状态信息以及（可选的）事件特定数据块。这些事件收集到设定的限制，当达到限制时，这些事件可以发送到 `/dev/tcp_log`，若该设备被打开，则将信息转发给读取进程进行记录。请注意，如果没有进程打开该设备，则数据会被丢弃。
 
-tcplog_dumper ，来自 FreeBSDports集合，可用于从/ dev/tcp_log 中读取，如下所述。
+可以通过 FreeBSD ports 集合中的 `tcplog_dumper` 从 `/dev/tcp_log` 读取信息，具体操作如本文所述。
 
-所有 FreeBSD TCP 堆栈都已经配置，至少包含以下事件类型：
+所有 FreeBSD TCP 栈都最少支持以下事件类型：
 
-* TCP_LOG_IN — 当 TCP 段到达时生成。
-* TCP_LOG_OUT — 当 TCP 段发送时生成。
-* TCP_RTO — 定时器过期时生成。
-* TCP_LOG_PRU — 当 PRU 事件被调用到堆栈中时生成。
+* `TCP_LOG_IN` — 在收到 TCP 段时生成。
+* `TCP_LOG_OUT` — 在发送 TCP 段时生成。
+* `TCP_RTO` — 在计时器到期时生成。
+* `TCP_LOG_PRU` — 当 PRU 事件调用到栈时生成。
 
-TCP RACK 和 BBR 栈生成许多其他日志；当前定义了 72 种事件类型。这些日志记录了各种条件，TCP BBR 和 RACK 栈甚至在调试堆栈时有详细模式。这些详细选项通过特定于堆栈的变量 sysctl 和 net.inet.tcp.rack.misc.verbose 进行设置。
+TCP RACK 和 BBR 栈生成许多其他日志；`netinet/tcp_log_buf.h` 中目前定义了 72 种事件类型。这些日志记录了多种条件，且 TCP BBR 和 RACK 栈在调试时还支持详细模式。这些详细选项可通过特定栈的 `sysctl` 变量 `net.inet.tcp.rack.misc.verbose` 和 `net.inet.tcp.bbr.bb_verbose` 进行设置。
 
 每个 TCP 端点可以处于以下 BBLog 状态之一：
 
-* TCP_LOG_STATE_OFF (0) — BBLog 已禁用。
-* TCP_LOG_STATE_TAIL (1) — 仅记录连接上的最后事件。每个连接被分配了有限数量（默认 5000）的日志条目。当达到最后一条条目时，重新使用第一条条目并覆盖它。
-* TCP_LOG_STATE_HEAD (2) — 仅记录在连接上处理的前几个事件，直到达到限制为止。
-* TCP_LOG_STATE_HEAD_AUTO (3) — 记录连接上处理的前几个事件，并且当达到限制时，将数据转存到日志转存系统以便收集。
-* TCP_LOG_STATE_CONTINUAL (4) — 记录所有事件，当达到最大收集事件数时，将数据发送到日志转存系统，并开始分配新事件。
-* TCP_LOG_STATE_TAIL_AUTO (5) — 在连接尾部记录所有事件，当达到限制时将数据发送到日志转储系统。
+* `TCP_LOG_STATE_OFF (0)` — BBLog 已禁用。
+* `TCP_LOG_STATE_TAIL (1)` — 仅记录连接上的最后一些事件。每个连接分配有限数量（默认 5000 个）日志条目。当到达最后一个条目时，将重新使用第一个条目并覆盖其内容。
+* `TCP_LOG_STATE_HEAD (2)` — 仅记录连接上处理的最初一些事件，直到达到上限。
+* `TCP_LOG_STATE_HEAD_AUTO (3)` — 记录连接上处理的最初事件，当达到上限时，将数据输出到日志转储系统以供收集。
+* `TCP_LOG_STATE_CONTINUAL (4)` — 记录所有事件，当达到最大收集事件数时，将数据发送到日志转储系统并开始分配新事件。
+* `TCP_LOG_STATE_TAIL_AUTO (5)` — 记录连接尾部的所有事件，当达到上限时，将数据发送到日志转储系统。
 
-通常用于一般调试的 BBLog 状态 TCP_LOG_STATE_CONTINUAL  注意。然而，在某些特定情况下（调试崩溃时），最好使用 BBLog 状态 TCP_LOG_STATE_TAIL ，以便在崩溃转储中记录最后的 BBLog 事件。
+注意，对于一般调试，通常使用 BBLog 状态 `TCP_LOG_STATE_CONTINUAL`。但在某些特定情况下（如调试系统崩溃），优先使用 BBLog 状态 `TCP_LOG_STATE_TAIL`，以便在崩溃转储中记录最后的 BBLog 事件。
 
-BBLog 状态可以在建立 TCP 连接时或通过套接字 API 设置。除此之外，当 TCP 连接满足特定条件时也可以设置 BBLog 状态。这称为跟踪点，针对特定的 TCP 堆栈指定，通过数字进行标识。一个跟踪点的示例是当 TCP 堆栈调用 IP 输出例程时获取 ENOBUF 。
+BBLog 状态可以在 TCP 连接建立时设置，也可以通过套接字 API 设置。此外，还可以在 TCP 连接满足特定条件时设置状态。这称为跟踪点，指定给特定的 TCP 栈并通过编号标识。一个跟踪点的示例是，当 TCP 栈调用 IP 输出例程时遇到 `ENOBUF` 错误。
 
-每个事件的内容由三个部分组成：
+每个事件的内容包括三部分：
 
-1. 一个包含 TCP 连接的 IP 地址和 TCP port 号码、事件时间、标识符、原因和标签的 BBLog 标头。
-2. 包括 TCP 连接状态和各种序列号变量在内的 TCP 连接的一组强制状态变量。
-3. 一组可选数据，如发送和接收缓冲区占用情况、TCP 头信息和进一步的事件特定信息。
+1. BBLog 头部，包含 TCP 连接的 IP 地址和 TCP 端口号、事件时间、标识符、原因和标签。
+2. 一组 TCP 连接的强制性状态变量，包括 TCP 连接状态和各种序列号变量。
+3. 一组可选数据，如发送和接收缓冲区占用情况、TCP 头信息以及其他事件特定信息。
 
-请注意，任何 BBLog 事件中不包含 TCP 负载信息，但每个 BBLog 事件中都包含关于 IP 地址和 TCP port编号的信息。
+注意，BBLog 事件中不包含 TCP 负载信息，但每个 BBLog 事件中均包含 IP 地址和 TCP 端口号信息。
 
-## BBLog 配置
+## 配置 BBLog
 
-通常有两种配置 BBLog 的方式。一般配置通过 sysctl -界面完成，TCP 连接特定配置通过套接字 API 完成。
+配置 BBLog 主要有两种方式：通用配置通过 `sysctl` 接口进行，针对特定 TCP 连接的配置通过套接字 API 进行。
 
-### 通过 sysctl-界面进行通用配置
+### 通过 `sysctl` 接口的通用配置
 
-这是 BBog 相关的变量列表，这些变量都在 net.inet.tcp.bb 下：
+以下是与 BBLog 相关的 `sysctl` 变量列表，均位于 `net.inet.tcp.bb` 下：
 
-`[rrs]$ sysctl net.inet.tcp.bbnet.inet.tcp.bb.pcb_ids_tot: 0net.inet.tcp.bb.pcb_ids_cur: 0net.inet.tcp.bb.log_auto_all: 1net.inet.tcp.bb.log_auto_mode: 4net.inet.tcp.bb.log_auto_ratio: 1net.inet.tcp.bb.disable_all: 0net.inet.tcp.bb.log_version: 9net.inet.tcp.bb.log_id_tcpcb_entries: 0net.inet.tcp.bb.log_id_tcpcb_limit: 0net.inet.tcp.bb.log_id_entries: 0net.inet.tcp.bb.log_id_limit: 0net.inet.tcp.bb.log_global_entries: 5016net.inet.tcp.bb.log_global_limit: 5000000net.inet.tcp.bb.log_session_limit: 5000net.inet.tcp.bb.log_verbose: 0net.inet.tcp.bb.tp.count: 0net.inet.tcp.bb.tp.bbmode: 4net.inet.tcp.bb.tp.number: 0`
+```sh
+[rrs]$ sysctl net.inet.tcp.bb
+net.inet.tcp.bb.pcb_ids_tot: 0
+net.inet.tcp.bb.pcb_ids_cur: 0
+net.inet.tcp.bb.log_auto_all: 1
+net.inet.tcp.bb.log_auto_mode: 4
+net.inet.tcp.bb.log_auto_ratio: 1
+net.inet.tcp.bb.disable_all: 0
+net.inet.tcp.bb.log_version: 9
+net.inet.tcp.bb.log_id_tcpcb_entries: 0
+net.inet.tcp.bb.log_id_tcpcb_limit: 0
+net.inet.tcp.bb.log_id_entries: 0
+net.inet.tcp.bb.log_id_limit: 0
+net.inet.tcp.bb.log_global_entries: 5016
+net.inet.tcp.bb.log_global_limit: 5000000
+net.inet.tcp.bb.log_session_limit: 5000
+net.inet.tcp.bb.log_verbose: 0
+net.inet.tcp.bb.tp.count: 0
+net.inet.tcp.bb.tp.bbmode: 4
+net.inet.tcp.bb.tp.number: 0
+```
 
-使用 sysctl -界面，可以为 TCP 连接启用 BBLog。这个的关键 sysctl -变量是 net.inet.tcp.bb.log_auto_all ， net.inet.tcp.bb.log_auto_mode 和 net.inet.tcp.bb.log_auto_ratio 。
+通过 `sysctl` 接口，可以为 TCP 连接启用 BBLog。关键的 `sysctl` 变量是 `net.inet.tcp.bb.log_auto_all`、`net.inet.tcp.bb.log_auto_mode` 和 `net.inet.tcp.bb.log_auto_ratio`。
 
-要考虑的第一个 sysctl -变量是 net.inet.tcp.bb.log_auto_all 。如果此变量设置为 1，则所有连接都将被视为 BBLog 比率。如果该值设置为零，则只有已设置 TCP_LOGID 的连接才会被应用 BBLog 比率。 在大多数情况下，使用 sysctl -方法启用 BBLog 时，应用程序可能并未设置 TCP_LOGID ，因此将 net.inet.tcp.bb.log_auto_all 设置为 1 可以确保每个连接都会被考虑。
+第一个需要考虑的 `sysctl` 变量是 `net.inet.tcp.bb.log_auto_all`。如果将此变量设置为 1，则所有连接将纳入 BBLog 比例范围内。如果设置为 0，则只有具有 `TCP_LOGID`（见下文）的连接才会应用 BBLog 比例。在大多数情况下，当使用 `sysctl` 方法启用 BBLog 时，应用程序可能没有设置 `TCP_LOGID`，因此将 `net.inet.tcp.bb.log_auto_all` 设置为 1 可确保所有连接都将被纳入考虑范围。
 
-要设置的下一个 sysctl -变量是 net.inet.tcp.bb.log_auto_ratio 。该值决定每 n 个连接（n 是通过设置 net.inet.tcp.bb.log_auto_ratio 提供的值）将应用 BBLog 启用。因此，例如，如果 net.inet.tcp.bb.log_auto_ratio 设置为 100，则每 100 个连接中就会有一个连接启用 BBLog。 如果需要为每个连接启用 BBLog，则 net.inet.tcp.bb.log_auto_ratio 需要设置为 1。
+接下来要设置的 `sysctl` 变量是 `net.inet.tcp.bb.log_auto_ratio`。此值确定 n 分之一（n 由 `net.inet.tcp.bb.log_auto_ratio` 设置的值决定）的连接将启用 BBLog。例如，如果将 `net.inet.tcp.bb.log_auto_ratio` 设置为 100，则每 100 个连接中就会有 1 个启用 BBLog。如果需要为每个连接启用 BBLog，应将 `net.inet.tcp.bb.log_auto_ratio` 设置为 1。
 
-要考虑的最后一个 sysctl -变量是 net.inet.tcp.bb.log_auto_mode 。对于 TCP 开发，默认值可以设置为 4，以便 TCP_LOG_STATE_CONTINUAL 记录由任何连接生成的每个事件，用于调试目的。
+最后需要考虑的 `sysctl` 变量是 `net.inet.tcp.bb.log_auto_mode`。此值是 BBLog 状态的数值常量。对于 TCP 开发，默认值可以设置为 4，即 `TCP_LOG_STATE_CONTINUAL`，用于记录任何连接生成的每个事件，以便进行调试。
 
-sysctl -变量中的其他一些项目也可能很有用， net.inet.tcp.bb.log_session_limit 控制连接在必须处理数据之前可以收集多少个 BBLog 事件，即将其发送到收集系统或回收（覆盖）事件。 net.inet.tcp.bb.log_global_limit 强制执行全局系统限制，限制操作系统允许分配的总 BBLog 事件数。
+`sysctl` 变量中的其他一些项目也可能有用。例如，`net.inet.tcp.bb.log_session_limit` 控制一个连接可以收集的 BBLog 事件数量上限，达到此上限后需要对数据进行处理（例如，发送到收集系统或覆盖事件）。`net.inet.tcp.bb.log_global_limit` 则在全局范围内限制系统允许分配的 BBLog 事件总数。
 
-最后三个 sysctl -变量与跟踪点相关。 net.inet.tcp.bb.tp.bbmode 指定在触发跟踪点时要使用的 BBLog 状态。 net.inet.tcp.bb.tp.count 是允许触发指定跟踪点的连接数。例如，如果设置为 4，则 4 个连接可以触发该跟踪点，之后不会触发该特定点（这是为了限制生成的 BBLog 事件数量）。 net.inet.tcp.bb.tp.number 指定要启用的跟踪点。
+最后三个 `sysctl` 变量与跟踪点相关。`net.inet.tcp.bb.tp.bbmode` 指定了触发跟踪点时要使用的 BBLog 状态。`net.inet.tcp.bb.tp.count` 限制了允许触发指定跟踪点的连接数量。例如，如果设置为 4，则允许 4 个连接触发跟踪点，之后不再触发该特定点（用于限制生成的 BBLog 事件数量）。`net.inet.tcp.bb.tp.number` 指定要启用的跟踪点编号。
 
-### 通过 Socket API 实现 TCP 连接特定配置
 
-可用于控制单个连接上的 BBLog 的以下 IPPROTO_TCP -级别套接字选项：
+### 通过套接字 API 的 TCP 连接特定配置
 
-* TCP_LOG — 此选项在连接上设置 BBLog 状态。对此套接字选项的任何使用将覆盖以前的设置。
-* TCP_LOGID — 此选项接收一个字符串，设置生成的 tcplog_dumper 文件名时使用的名称。它将字符串关联为与连接关联的“ID”。请注意，多个连接可以使用相同的“ID”字符串。这是因为 tcplog_dumper 还将 IP 地址和ports包含在生成的文件名中。
-* TCP_LOGBUF — 此套接字选项可用于从当前连接的日志缓冲区中读取数据。通常不使用此选项，而是由诸如 /dev/tcp_log （读取和存储 BBLogs 的通用工具）的工具读取。但是，这作为一种替代方案，允许用户进程收集多个日志。
-* TCP_LOGDUMP — 此套接字选项指示 BBLog 系统将连接队列中的任何记录转储到 /dev/tcp_log 。如果未给出转储原因或 ID，则在转储文件内部使用正在进行的日志类型的系统默认值作为任何“原因”字段。
-* TCP_LOGDUMPID — 此套接字选项，像 TCP_LOGDUMP, directs the BBLog system to dump out any records to<span> </span><code>/dev/tcp_log</code>, but in addition it specifies a specific user given “reason” for the output which will be included in the BBlog “reason” field. <li><p><code>TCP_LOG_TAG</code><span> </span>— This option associates an additional “tag” in the form of a string with all BBLog records for this connection.</p></li>
+以下是用于控制单个连接上的 BBLog 的 `IPPROTO_TCP` 级别套接字选项：
 
-例如，如果可以访问使用 TCP 连接的程序的源代码，则可以使用 TCP_LOG 套接字选项将连接的 BBLog 状态设置为 TCP_LOG_STATE_CONTINUAL ：
+* `TCP_LOG` — 此选项设置连接上的 BBLog 状态。任何对此套接字选项的使用都会覆盖之前的设置。
+* `TCP_LOGID` — 此选项传递一个字符串，用于命名由 `tcplog_dumper` 生成的文件。该字符串作为与连接关联的“ID”。注意，多个连接可以使用相同的“ID”字符串，这是可能的，因为 `tcplog_dumper` 在生成的文件名中也包含 IP 地址和端口信息。
+* `TCP_LOGBUF` — 此套接字选项可用于从当前连接的日志缓冲区读取数据。通常不使用该选项，而是通过 `/dev/tcp_log` 使用通用工具（如 `tcplog_dumper`）读取和存储 BBLog。不过，它提供了一种替代方案，使用户进程能够收集多个日志。
+* `TCP_LOGDUMP` — 此套接字选项指示 BBLog 系统将连接队列中的任何记录转储到 `/dev/tcp_log`。如果未提供转储原因或 ID，则日志文件中的“原因”字段将使用当前日志类型的系统默认值。
+* `TCP_LOGDUMPID` — 此套接字选项类似于 `TCP_LOGDUMP`，指示 BBLog 系统将所有记录转储到 `/dev/tcp_log`，但额外指定了用户给定的“原因”，该原因会包含在 BBLog 的“原因”字段中。
+* `TCP_LOG_TAG` — 此选项将一个额外的“标签”以字符串形式与该连接的所有 BBLog 记录关联。
 
-`#include <netinet tcp_log_buf.h=""></netinet>`
+例如，如果可以访问使用 TCP 连接的程序的源代码，则可以使用 `TCP_LOG` 套接字选项将连接的 BBLog 状态设置为 `TCP_LOG_STATE_CONTINUAL`：
 
-`int err;int log_state = TCP_LOG_STATE_CONTINUAL;err = setsockopt(sd, IPPROTO_TCP, TCP_LOG, &log_state, sizeof(int));`
+```c
+#include <netinet/tcp_log_buf.h>
 
-此代码也可用于以前提到的任何其他 BBLog 状态。
+int err;
+int log_state = TCP_LOG_STATE_CONTINUAL;
+err = setsockopt(sd, IPPROTO_TCP, TCP_LOG, &log_state, sizeof(int));
+```
 
-如果没有访问源代码的权限，可以使用 root 权限
+此代码也可用于前面提到的任何其他 BBLog 状态。
 
-`tcpsso -i id TCP_LOG 4`
+如果无法访问源代码，可以使用 root 权限进行设置。、
 
-其中 id 是 inp_gencnt ，可以通过运行 sockstat -iPtcp. 4 确定为 TCP_LOG_STATE_CONTINUAL 的数值。
+```c
+tcpsso -i id TCP_LOG 4
+```
+
+其中 `id` 是 `inp_gencnt`，可以通过运行 `sockstat -iPtcp` 确定，而 `4` 是 `TCP_LOG_STATE_CONTINUAL` 的数值。
 
 ## 生成 BBLog 文件
 
-在将 BBLog 在特定 TCP 连接上启用之前，首先需确保 BBLogs 的收集正在进行。FreeBSD 有一个专为此目的设计的工具，称为 tcplog_dumper  ，可在ports树中获取（ net/tcplog_dumper ）。可以通过以 root 权限运行以下命令来安装：
+在为特定的 TCP 连接启用 BBLog 之前，首先需要确保 BBLog 的收集正在进行。FreeBSD 提供了一个名为 `tcplog_dumper` 的工具来完成此任务，该工具可以在 ports 树中找到（路径为 `net/tcplog_dumper`）。可以通过具有 root 权限运行以下命令来安装：
 
-`pkg install tcplog_dumper`
+```sh
+pkg install tcplog_dumper
+```
 
- 加入
+添加：
 
-`tcplog_dumper_enable=”YES”`
+```sh
+tcplog_dumper_enable=”YES”
+```
 
-将 /etc/rc.conf 添加到文件中会使守护进程在下次重启后自动启动。也可以通过以 root 权限手动运行以下命令来启动守护进程：
+将该行添加到文件 `/etc/rc.conf` 后，在下次重启时会自动启动守护进程。也可以通过以 root 权限手动运行以下命令来启动守护进程：
 
-`tcplog_dumper -d`
+```sh
+tcplog_dumper -d
+```
 
-默认情况下， tcplog_dumper 将在目录 /var/log/tcplog_dumps 收集 BBLog 的日志。还支持几种其他选项，包括：
+默认情况下，`tcplog_dumper` 会将 BBLog 收集到目录 `/var/log/tcplog_dumps` 中。它还支持其他几个选项，包括：
 
-* -J  — 此选项将导致 tcplog_dumper 输出带有 xz 的压缩文件。
-* -D directory path — 将收集的文件存储在指定的目录路径中，而非默认位置。这也可以通过 rc.conf 变量 tcplog_dumper_basedir 来控制。
+* `-J` — 此选项会使 `tcplog_dumper` 输出 `xz` 压缩的文件。
+* `-D directory path` — 将收集的文件存储在指定的目录路径中，而不是默认目录。此路径也可以通过 `rc.conf` 变量 `tcplog_dumper_basedir` 控制。
 
-tcplog_dumper 将输出 pcapng（pcap 下一代）文件。 pcapng 支持存储元信息以及数据包信息。 对于 TCP_LOG_IN 和 TCP_LOG_OUT 事件， tcplog_dumper 从事件生成 IP 头部（因此除了源 IP 地址和目的 IP 地址之外，IP 头部中的字段可能与原始数据包中的字段不同），使用事件中的 TCP 头部（这意味着段与原始数据包中的段相同），并添加正确长度的虚拟负载。 对于每个 TCP 连接， tcplog_dumper 创建一系列文件，并且将大约 5000 个 BBLog 事件放入每个文件中，文件按顺序编号为 0、1、2 等等。 以下是为单个 TCP 连接创建的一系列 7 个文件的示例::
+`tcplog_dumper` 会输出 pcapng（pcap next generation）文件格式。pcapng 支持存储元信息以及数据包信息。对于 `TCP_LOG_IN` 和 `TCP_LOG_OUT` 事件，`tcplog_dumper` 从事件中生成一个 IP 头（因此，除了源和目标 IP 地址外，IP 头中的其他字段可能与实际传输的不同），使用事件中的 TCP 头（即与网络上传输的段相同），并添加一个具有正确长度的虚拟负载。对于每个 TCP 连接，`tcplog_dumper` 会创建一系列文件，每个文件大约包含 5000 个 BBLog 事件，按序号命名为 .0、.1、.2 等。以下是单个 TCP 连接的一系列 7 个文件的示例：
 
-`[rrs]$ ls /var/log/tcplog_dumps/UNKNOWN_18262_10.1.1.1_9999.0.pcapng UNKNOWN_18262_10.1.1.1_9999.4.pcapngUNKNOWN_18262_10.1.1.1_9999.1.pcapng UNKNOWN_18262_10.1.1.1_9999.5.pcapngUNKNOWN_18262_10.1.1.1_9999.2.pcapng UNKNOWN_18262_10.1.1.1_9999.6.pcapngUNKNOWN_18262_10.1.1.1_9999.3.pcapng records`
 
-因此该连接未设置 TCP_LOGID ，其中一个 TCP ports 为 18262，另一个 TCP port 为 9999，远程 IPv4 地址为 10.1.1.1。
+```sh
+[rrs]$ ls /var/log/tcplog_dumps/
+UNKNOWN_18262_10.1.1.1_9999.0.pcapng UNKNOWN_18262_10.1.1.1_9999.4.pcapng
+UNKNOWN_18262_10.1.1.1_9999.1.pcapng UNKNOWN_18262_10.1.1.1_9999.5.pcapng
+UNKNOWN_18262_10.1.1.1_9999.2.pcapng UNKNOWN_18262_10.1.1.1_9999.6.pcapng
+UNKNOWN_18262_10.1.1.1_9999.3.pcapng records
+```
 
-从核心转储生成 BBLog 文件目前正在进行中。 调试器将用于提取信息并将其提供给 cplog_dumper 以实际编写 BBLog 文件。
+因此，`TCP_LOGID` 并未在该连接上设置，其中一个 TCP 端口为 18262，另一个 TCP 端口为 9999，远程 IPv4 地址为 10.1.1.1。
 
-## 阅读 BBLog 文件
+目前正在开发从核心转储中生成 BBLog 文件的功能。该功能将使用调试器提取信息并将其提供给 `tcplog_dumper`，以实际写入 BBLog 文件。
 
-有两个易于访问的工具可以读取 BBLog 文件。这些是 read_bbrlog 和 wireshark ，都可以作为ports或软件包使用。
+## 读取 BBLog 文件
 
-### read_bbrlog
+有两个可以轻松读取 BBLog 文件的工具：`read_bbrlog` 和 `wireshark`，两者都可以通过 ports 或软件包获得。
 
-read_bbrlog 是一个小程序，用于读取一系列 BBLog 文件并以文本形式显示每个日志条目。它需要输入 BBLog 文件的前缀作为输入源，并查找所有与该 TCP 连接关联的文件，并将每个事件以文本形式打印到 stdout 。请注意，还有一个选项可以将输出重定向到文件（强烈建议，因为会显示大量数据）。以下是运行 read_bbrlog 的示例：
+### read\_bbrlog
 
-`[rrs]$ read_bbrlog -i UNKNOWN_18262_10.1.1.1_9999 -omy_output_file.txt -e Files:7 Processed 30964 records Saw30964 records from stackid:3 total_missed:0 dups:0`
+`read_bbrlog` 是一个小型程序，可以读取一系列 BBLog 文件，并以文本形式显示每条日志记录。它需要指定 BBLog 文件的前缀作为输入源，并找到与该 TCP 连接关联的所有文件，将每个事件以文本形式输出到 `stdout`。需要注意的是，也可以选择将输出重定向到文件（强烈建议这样做，因为会显示大量数据）。以下是运行 `read_bbrlog` 的示例：
 
-在这种情况下，使用了三个选项： -i input ，其中输入参数是基本连接 ID，即 ls 减去 .X.pcapng 的显示文本。使用 -o outfile 将输出重定向到输出文件 my_output_file.txt ，最后使用 -e 选项通常用于输出更详细的“扩展”输出。
+```sh
+[rrs]$ read_bbrlog -i UNKNOWN_18262_10.1.1.1_9999 -o
+my_output_file.txt -e Files:7 Processed 30964 records Saw
+30964 records from stackid:3 total_missed:0 dups:0
+```
 
-这里是文件 my_output_file.txt 的一个小片段，以展示数据的 flavor。由于行长度较长，一些显示数据已被截断：
+在这种情况下，使用了三个选项：`-i input`，其中输入参数是基本连接 ID，即 `ls` 命令显示的文本，去除 `.X.pcapng` 后缀；`-o outfile` 用于将输出重定向到输出文件 `my_output_file.txt`；最后是 `-e` 选项，通常用于输出“扩展”信息，显示更详细的内容。
 
-`106565924 0 rack [50] PKT_OUT    Sent(0) 763046978:5  (PUS|ACK fas:0 bas:1) bw:208.00 bps(26)                       avail:5 cw:14480 scw:14480 rw:65535 flt:0 (spo:64 ip:0)106565979 0 rack [55] TCP_HYSTART  -- New round begins round:1 ends:763046983 cwnd:14480 106565982 0 rack [3] BBR_PACING_CALC Old rack burst mitigation len:5 slot:0 trperms:369 106565985 0 rack [3] TIMERSTAR type:TLP(timer:4) srtt:39001 (rttvar:17063 * 4) rttmin:30000 106565986 0 rack [1] USERSEND   avail:5 pending:5 snd_una:763046978 snd_max:763046983 out:5 106565986 0 rack [0] TCP_LOG_PRU pru_method:SEND (9) err:0106607480 0 rack [2] IN         Ack:Normal 5 (PUS|ACK) off:32 out:5 lenin:5 avail:5 cw:14480                                 rw:4000512 una:763046978 ack:763046983`
+以下是文件 `my_output_file.txt` 中的一小段数据，展示了数据的格式。请注意，由于行长度较长，部分数据显示已被截断：
 
-这显示在时间标记 106565924 发送了一个 5 字节的数据包，并且序列号为 763046978。当时的拥塞窗口大小为 14480 字节，飞行大小（flt）为 0。没有启用任何调节。大约在 41 毫秒（41,494 即 106604046 - 106607480）时接收到了对这些字节的确认。
+```sh
+106565924 0 rack [50] PKT_OUT    Sent(0) 763046978:5  (PUS|ACK fas:0 bas:1) bw:208.00 bps(26)
+                       avail:5 cw:14480 scw:14480 rw:65535 flt:0 (spo:64 ip:0)
+106565979 0 rack [55] TCP_HYSTART  -- New round begins round:1 ends:763046983 cwnd:14480 106565982 0 rack [3] BBR_PACING_CALC Old rack burst mitigation len:5 slot:0 trperms:369 106565985 0 rack [3] TIMERSTAR type:TLP(timer:4) srtt:39001 (rttvar:17063 * 4) rttmin:30000 106565986 0 rack [1] USERSEND   avail:5 pending:5 snd_una:763046978 snd_max:763046983 out:5 106565986 0 rack [0] TCP_LOG_PRU pru_method:SEND (9) err:0
+106607480 0 rack [2] IN         Ack:Normal 5 (PUS|ACK) off:32 out:5 lenin:5 avail:5 cw:14480
+                                 rw:4000512 una:763046978 ack:763046983
+```
+这表明，在时间标记 106565924 时发送了一个 5 字节的包，序列号为 763046978。当时的拥塞窗口大小为 14480 字节，飞行大小（flt）为 0。没有启用节奏控制。大约 41 毫秒后（41,494，即 106604046 - 106607480），收到了对这些字节的确认。
 
 ## Wireshark
 
-wireshark 和 tshark 也可以用来显示 BBLog 文件。它们只在单个文件上操作，而不是像 read_bbrlog 那样对文件系列进行操作。当前不会显示特定事件信息。对于 TCP_LOG_IN 和 TCP_LOG_OUT 事件，BBLog 信息显示在帧信息中。对于所有其他事件，BBLog 信息直接显示。
+`wireshark` 和 `tshark` 也可以用来显示 BBLog 文件。它们只能操作单个文件，而不像 `read_bbrlog` 那样操作文件系列。目前，不会显示事件特定的详细信息。对于 `TCP_LOG_IN` 和 `TCP_LOG_OUT` 事件，BBLog 信息会显示在帧信息中。对于所有其他事件，BBLog 信息会直接显示。
 
-兰德尔·斯图尔特（rrs@freebsd.org）是一位拥有 40 多年操作系统开发经验的自由 BSD 开发者，自 2006 年以来一直致力于 FreeBSD 开发。他擅长于传输，包括 TCP 和 SCTP，但也涉足操作系统的其他领域。他目前是一名独立顾问。
+---
 
-迈克尔·蒂克森（tuexen@freebsd.org）是明斯特应用科学大学的教授，Netflix 的兼职承包商，自 2009 年以来一直是 FreeBSD 源代码贡献者。他专注于传输协议，比如 SCTP 和 TCP，在 IETF 的标准化以及在 FreeBSD 中的实现。
+**RANDALL STEWART**（[rrs@freebsd.org](mailto:rrs@freebsd.org)）是一位操作系统开发人员，已有超过 40 年的经验，并自 2006 年以来一直是 FreeBSD 开发者。他专注于传输协议，包括 TCP 和 SCTP，但也曾涉猎操作系统的其他领域。目前，他是一名独立顾问。
+
+**MICHAEL TÜXEN**（[tuexen@freebsd.org](mailto:tuexen@freebsd.org)）是明斯特应用技术大学的教授，同时为 Netflix 做兼职承包商，自 2009 年以来一直是 FreeBSD 源代码提交者。他的研究重点是传输协议，如 SCTP 和 TCP，它们在 IETF 的标准化及其在 FreeBSD 中的实现。
+
