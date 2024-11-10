@@ -5,17 +5,15 @@
 
 ### 如何在 FreeBSD 中使用支持 SR-IOV 的设备设置硬件驱动虚拟化
 
-作者：Mark McBride
-
-我最喜欢的硬件功能之一是称为 [单根输入/输出虚拟化（SR-IOV）](https://en.wikipedia.org/wiki/Single-root_input/output_virtualization) 的技术。它使单一物理设备在操作系统中看起来像多个相似的设备。FreeBSD 在暴露 SR-IOV 功能方面的做法，是我 [更倾向于在服务器上使用 FreeBSD 的几个原因之一](https://markmcb.com/freebsd/vs_linux/)。
+我最喜欢的硬件功能之一是被称为[单根输入/输出虚拟化（SR-IOV）](https://en.wikipedia.org/wiki/Single-root_input/output_virtualization) 的技术。它使单一物理设备在操作系统中看起来像多个类似的设备。FreeBSD 在暴露 SR-IOV 功能方面的做法，是我[更倾向于在服务器上使用 FreeBSD 的几个原因之一](https://markmcb.com/freebsd/vs_linux/)。
 
 ## SR-IOV 网络概述
 
-虚拟化是当你的网络设备需求超过服务器上物理网络端口数量时的一个理想解决方案。虽然有很多软件方式可以实现这一点，但基于硬件的替代方案是 SR-IOV，它允许单个物理 PCIe 设备向操作系统呈现多个设备。
+虚拟化是当你的网络设备需求超过服务器上物理网络端口数量时的一个理想解决方案。虽然有很多软件方式可以实现这一点，但基于硬件的替代方案是 SR-IOV，它允许单个物理 PCIe 设备向操作系统呈现为多个设备。
 
-使用 SR-IOV 有几个优势。与其他虚拟化方式相比，它提供了最佳的性能。如果你对安全性非常讲究，SR-IOV 更好地隔离了内存和它创建的虚拟化 PCI 设备。它还带来了非常整洁的设置，因为一切都作为 PCI 设备存在，也就是说，不需要虚拟桥接、交换机等。
+使用 SR-IOV 有几个优势。与其他虚拟化方式相比，它提供了最佳的性能。如果你对安全性非常讲究，SR-IOV 更好地隔离了内存和它创建的虚拟化 PCI 设备。它还带来了非常整洁的设置，因为一切都作为 PCI 设备存在，也就是说，无需虚拟桥接、交换机等。
 
-要使用 SR-IOV 网络，你需要一块支持 SR-IOV 的网络适配器和一块支持 SR-IOV 的主板。我多年来使用了几块支持 SR-IOV 的网卡，例如 [Intel i350-T4V2 Ethernet Adapter](https://ark.intel.com/content/www/us/en/ark/products/84805/intel-ethernet-server-adapter-i350-t4v2.html)、[Mellanox ConnectX-4 Lx](https://www.nvidia.com/en-us/networking/ethernet/connectx-4-lx/) 和 [Chelsio T520-SO-CR Fiber Network Adapter](https://www.chelsio.com/nic/unified-wire-adapters/t520-so-cr/)。在本文中，我将使用 [Intel X710-DA2 Fiber Network Adapter](https://ark.intel.com/content/www/us/en/ark/products/83964/intel-ethernet-converged-network-adapter-x710da2.html) ([产品简介](https://www.intel.com/content/dam/www/public/us/en/documents/product-briefs/ethernet-x710-brief.pdf))，它被安装在 [FreeBSD 14.0-RELEASE 服务器](https://www.freebsd.org/releases/14.0R/announce/) 上。这是一个不错的选择，因为它不需要特别的固件配置，并且 FreeBSD 内核默认内置了驱动支持。而且，它使用的功率比许多替代方案少，最多仅为 3.7 瓦。
+要使用 SR-IOV 网络，你需要一块支持 SR-IOV 的网络适配器和一块支持 SR-IOV 的主板。多年来，我使用了几块支持 SR-IOV 的网卡，例如 [Intel i350-T4V2 Ethernet Adapter](https://ark.intel.com/content/www/us/en/ark/products/84805/intel-ethernet-server-adapter-i350-t4v2.html)、[Mellanox ConnectX-4 Lx](https://www.nvidia.com/en-us/networking/ethernet/connectx-4-lx/) 和 [Chelsio T520-SO-CR Fiber Network Adapter](https://www.chelsio.com/nic/unified-wire-adapters/t520-so-cr/)。在本文中，我将使用 [Intel X710-DA2 Fiber Network Adapter](https://ark.intel.com/content/www/us/en/ark/products/83964/intel-ethernet-converged-network-adapter-x710da2.html) ([产品简介](https://www.intel.com/content/dam/www/public/us/en/documents/product-briefs/ethernet-x710-brief.pdf))，它被安装在 [FreeBSD 14.0-RELEASE 服务器](https://www.freebsd.org/releases/14.0R/announce/) 上。这是个不错的选择，因为它不需要特别的固件配置，并且 FreeBSD 内核默认内置了驱动支持。而且，它使用的功率比许多替代方案少，最多仅为 3.7 w。
 
 ![](https://freebsdfoundation.org/wp-content/uploads/2024/02/mcbride_fig1.jpg)
 
