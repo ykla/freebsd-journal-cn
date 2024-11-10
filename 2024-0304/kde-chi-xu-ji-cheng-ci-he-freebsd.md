@@ -1,11 +1,11 @@
-# KDE 持续集成（CI）和 FreeBSD、
+# KDE 持续集成（CI）和 FreeBSD
 
 - 原文链接：[KDE CI and FreeBSD](https://freebsdfoundation.org/our-work/journal/browser-based-edition/development-workflow-and-ci/kde-ci-and-freebsd/)
 - 作者：Ben Cooksley
 
 ### 持续集成（CI）
 
-KDE 从 2011 年 8 月起就开始实施 CI 系统，并不断改进。自此，系统已经大幅发展，增加了对多个 Qt 版本（大多数 KDE 软件所使用的工具包）以及多个平台的支持。
+从 2011 年 8 月起，KDE 就开始实施 CI 系统，并不断改进。自此，系统已经大幅发展，增加了对多个 Qt 版本（大多数 KDE 软件所使用的工具包）以及多个平台的支持。
 
 在多个操作系统上可靠地运行所有这些构建得益于容器的普及。为了理解容器解决了哪些问题以及 CI 系统可扩展性中的挑战，我们需要回顾 KDE CI 的起点。
 
@@ -15,11 +15,11 @@ KDE 从 2011 年 8 月起就开始实施 CI 系统，并不断改进。自此，
 
 由于构建应用程序所需的全部依赖项链时间较长，因此无法每次重建所有内容，这就需要共享构建产物。经过快速评估后，选择了 rsync，这使系统运作良好。
 
-### FreeBSD 的引入
+### 引入 FreeBSD 
 
 到 2017 年，CI 系统需要支持新的平台，于是 FreeBSD 加入了系统。初期的 FreeBSD 支持较简单，采用虚拟机运行在 Linux CI 工作节点上。每个虚拟机单独配置，包含构建 KDE 软件所需的所有依赖项。
 
-虽然这种方法确保了 KDE 软件在 FreeBSD 上的可靠构建，但系统扩展性较差，因为需要逐台更新构建器。这一方法成功地保证了 KDE 软件在 FreeBSD 上的构建可靠性，也改善了 KDE on FreeBSD 团队的开发体验。
+虽然这种方法确保了 KDE 软件在 FreeBSD 上的可靠构建，但系统扩展性较差，因为需要逐台更新构建器。这一方法成功地保证了 KDE 软件在 FreeBSD 上的构建可靠性，也改善了 FreeBSD 上 KDE 团队的开发体验。
 
 在为 FreeBSD 添加支持的同时，我们还在 Linux 构建中引入了 Docker。首次能够创建一个可在所有构建器中分发的主配置，方便了 CI 系统的变更发布，标志着基于容器的构建时代的开始。唯一的缺点是 Docker 仅适用于 Linux，如何在其他平台上复制这一流程成为一个问题。
 
@@ -31,17 +31,17 @@ KDE 从 2011 年 8 月起就开始实施 CI 系统，并不断改进。自此，
 
 但手动维护机器的问题仍然存在。迁移到 Gitlab 和 Gitlab CI 后，构建节点由于累积的代码检出和构建产物迅速耗尽磁盘空间，测试留下的进程也会占用 CPU。Linux 上的 Docker 构建不存在这些问题。
 
-我们探讨了多种解决方案，如改进 Gitlab Runner 的“shell”执行器、清理构建产物的 cron 作业，以及基于 FreeBSD Jails 的解决方案，但均无法复现 Linux 上 Docker 的体验。
+我们探讨了多种解决方案，如改进 Gitlab Runner 的“shell”执行器、清理构建产物的 cron 作业，以及基于 FreeBSD Jail 的解决方案，但均无法复现 Linux 上 Docker 的体验。
 
 ## 发现 Podman
 
-某天早上我们在研究 FreeBSD 的容器化选项时偶然发现了 Podman 及其搭档 ocijail 支持。这正是我们在基于 Docker 的 Linux 设置中习惯的功能，但现在可以在 FreeBSD 上实现了。
+某天早上我们在研究 FreeBSD 的容器化选择时偶然发现了 Podman 及其搭档 ocijail 支持。这正是我们在基于 Docker 的 Linux 设置中习惯的功能，但现在能在 FreeBSD 上实现了。
 
 这意味着之前遇到的残留进程和需要手动清理的构建产物问题都能得到解决。此外，我们还可以利用标准的 Open Container Initiative 注册表（例如 Gitlab 内置的容器注册表）来将 FreeBSD 镜像分发到所有构建器上，从而解决了单独维护每台机器的问题。
 
-首先的挑战是构建一个可用的镜像。对于 Linux 系统，Docker 和 Podman 非常成熟，有详细的文档说明基础镜像和其包含内容。但在找到适合的 FreeBSD 基础镜像后，我们以为只需添加 FreeBSD 包仓库并安装所需软件包即可。
+首要困难是构建一个可用的镜像。对于 Linux 系统，Docker 和 Podman 非常成熟，有详细的文档说明基础镜像和其包含内容。但在找到适合的 FreeBSD 基础镜像后，我们以为只需添加 FreeBSD 包仓库并安装所需软件包即可。
 
-然而，首次在容器中构建时，CMake 报告无法找到编译器。我们认为这很奇怪，因为通常 FreeBSD 系统默认安装了编译器。经过调查，我们发现 FreeBSD 容器与正常的 FreeBSD 系统的主要区别：容器经过极大精简，默认不包含编译器。
+然而，首次在容器中构建时，CMake 报告无法找到编译器。我们认为这很奇怪，因为通常 FreeBSD 系统默认安装了编译器。经过调查，我们发现 FreeBSD 容器与正常的 FreeBSD 系统的主要区别：容器经过极大精简，默认未包含编译器。
 
 经过几次迭代，我们添加了编译器和 C 库开发头文件，从而成功在 FreeBSD 容器中构建了第一个 KDE 软件。虽然我们认为一切顺利，但后续构建依然失败，因为需要额外的开发包。经过多次迭代和安装更多 FreeBSD 软件包后，我们终于完成了多个关键 KDE 软件包的构建。
 
@@ -51,9 +51,9 @@ KDE 从 2011 年 8 月起就开始实施 CI 系统，并不断改进。自此，
 
 冒险之旅的乐趣部分开始了：深入 Gitlab Runner 和 Podman 的内部工作。首次将 Gitlab Runner 连接到 Podman 时，构建遇到“unsupported os type: freebsd”的错误。
 
-在 Gitlab Runner 代码库中发现，Docker 需要检查远程 Docker（或在我们的例子中是 Podman）主机的操作系统类型。我们对 Gitlab Runner 进行了补丁和重建，解决了此错误，但紧接着又出现了类似的错误：“unsupported OSType: freebsd”。进一步修补后，又遇到一个更严重的错误，尤其是 Gitlab Runner 使用 Go 语言编写时：
+在 Gitlab Runner 代码库中发现，Docker 需要检查远程 Docker（或在我们的例子中是 Podman）主机的操作系统类型。我们对 Gitlab Runner 进行了补丁和重建，解决了此错误，但紧接着又出现了类似的错误：“unsupported OSType: freebsd”。进一步修补后，又遇到一个更严重的错误，尤其是使用 Go 语言编写 Gitlab Runner 时：
 
-```sh
+```go
 ERROR: Job failed (system failure): prepare environment:
 Error response from daemon: runtime error: invalid memory address or nil pointer
 dereference(docker.go:624:0s.
@@ -75,7 +75,7 @@ inspect, err := e.client.ContainerInspect(e.Context, resp.ID)
 
 你可能以为此时我们可以为所有 KDE 项目推行基于 FreeBSD 的容器化构建了。然而，最终测试发现 FreeBSD 容器的网络速度远低于预期，与 FreeBSD 主机相比明显较慢。
 
-幸运的是，这个问题不是新问题。我们预计会遇到此问题，原因是大型接收卸载（LRO）。快速更改配置后，我们达到了预期的性能，最终可以投入生产。
+幸运的是，这个问题不是新问题。我们预计会遇到此问题，原因是大型接收卸载（LRO）。快速更改配置后，最终我们达到了预期的性能，可以投入生产。
 
 今天，KDE 使用 Podman 和基于 ocijail 的容器来运行 FreeBSD CI 构建，有 5 台 FreeBSD 主机处理构建请求。构建中使用了两个不同的 CI 镜像——分别适用于 Qt 5 和 Qt 6 的版本，确保 KDE 软件可以从零开始构建，并可选地通过所有单元测试。
 
