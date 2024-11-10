@@ -6,17 +6,17 @@
 
 ## FreeBSD 中 TCP 日志记录的演变
 
-4.2 BSD 于 1983 年发布，并包含了 BSD 中第一个 TCP 实现。此版本还添加了调试 TCP 实现的功能。内核部分由 `TCP_DEBUG` 内核选项（默认禁用）控制，提供了一个包含 `TCP_NDEBUG`（默认 100）个元素的全局环形缓冲区，并在发送或接收 TCP 段、TCP 计时器到期或处理与 TCP 协议相关的用户请求时，将条目添加到环形缓冲区。仅当启用 `SOL_SOCKET` 级别套接字选项 `SO_DEBUG` 时，才会为套接字添加这些事件。4.2 BSD 还提供了命令行工具 `trpt`（transliterate protocol trace），可以从活动系统或核心文件中读取环形缓冲区并将其打印出来。它不仅打印发送和接收的 TCP 段的 TCP 头部，还在发送或接收 TCP 段、TCP 计时器到期或处理 TCP 协议相关的用户请求时打印 TCP 端点的最重要参数。值得注意的是，在系统崩溃的情况下，环形缓冲区的内容可能提供足够的信息来分析系统进入错误状态的原因。然而，由于此功能不再符合当前 TCP 的使用需求，它在 FreeBSD 14 中被移除。在早期版本的 FreeBSD 中，构建非默认配置的内核是必需的。
+4.2 BSD 于 1983 年发布，包含了 BSD 中第一个 TCP 实现。4.2 BSD 还添加了调试 TCP 实现的功能。内核部分由内核参数 `TCP_DEBUG`（默认禁用）控制，提供了一个包含 `TCP_NDEBUG`（默认 100）个元素的全局环形缓冲区，并在发送或接收 TCP 段、TCP 计时器到期或处理与 TCP 协议相关的用户请求时，将条目添加到环形缓冲区。仅当启用 `SOL_SOCKET` 级别套接字参数 `SO_DEBUG` 时，才会为套接字添加这些事件。4.2 BSD 还提供了命令行工具 `trpt`（transliterate protocol trace），可以从活动系统和核心文件中读取环形缓冲区并将其打印出来。它不仅打印发送和接收的 TCP 段的 TCP 头部，还在发送或接收 TCP 段、TCP 计时器到期或处理 TCP 协议相关的用户请求时打印 TCP 端点的最重要参数。值得注意的是，在系统崩溃的情况下，环形缓冲区的内容可能提供足够的信息来分析系统进入错误状态的原因。然而，由于此功能不再符合当前 TCP 的使用需求，它在 FreeBSD 14 中被移除。在早期版本的 FreeBSD 中，构建非默认配置的内核是必需的。
 
-2010 年，`siftr`（TCP 统计信息收集模块）内核模块被添加到 FreeBSD 中。无需对 FreeBSD 内核进行更改，只需加载该模块即可使用它。`siftr` 仅通过 `sysctl` 变量控制。启用时（由 `sysctl` 变量 `net.inet.siftr.enabled` 控制），`siftr` 将输出写入一个文件，文件路径由 `sysctl` 变量 `net.inet.siftr.logfile` 控制（默认 `/var/log/siftr.log`）。除第一个和最后一个条目外，所有条目对应于发送或接收的 TCP 段，并提供方向、IP 地址、TCP 端口号和内部 TCP 状态的信息。由于设想它与类似 `tcpdump` 的数据包捕获工具配合使用，因此不会存储有关 TCP 段的额外信息（例如 TCP 头部）。每个 TCP 连接的每 n 个 TCP 段将分别记录在发送和接收方向中，n 由 `sysctl` 变量 `net.inet.siftr.ppl` 控制。可以通过 `sysctl` 变量 `net.inet.siftr.port_filter` 的 TCP 端口过滤器来关注特定的 TCP 连接。所有信息均以 ASCII 格式存储，因此无需额外的用户态工具即可访问这些信息。在默认配置中，仅支持 TCP/IPv4。添加对 TCP/IPv6 的支持需要重新编译 `siftr` 内核模块。
+2010 年，`siftr`（TCP 统计信息收集模块）内核模块被添加到 FreeBSD 中。无需对 FreeBSD 内核进行更改，只需加载该模块即可使用它。仅通过 `sysctl` 变量控制 `siftr`。启用时（由 `sysctl` 变量 `net.inet.siftr.enabled` 控制），`siftr` 将输出写入一个文件，文件路径由 `sysctl` 变量 `net.inet.siftr.logfile` 控制（默认 `/var/log/siftr.log`）。除第一个和最后一个条目外，所有条目对应于发送或接收的 TCP 段，并提供方向、IP 地址、TCP 端口号和内部 TCP 状态的信息。由于设想它与类似 `tcpdump` 的数据包捕获工具配合使用，因此不会存储有关 TCP 段的额外信息（例如 TCP 头部）。每个 TCP 连接的每 n 个 TCP 段将分别记录在发送和接收方向中，n 由 `sysctl` 变量 `net.inet.siftr.ppl` 控制。可以通过 `sysctl` 变量 `net.inet.siftr.port_filter` 的 TCP 端口过滤器来关注特定的 TCP 连接。所有信息均以 ASCII 格式存储，因此无需额外的用户态工具即可访问这些信息。在默认配置中，仅支持 TCP/IPv4。添加对 TCP/IPv6 的支持需要重新编译 `siftr` 内核模块。
 
-2015 年，内核中添加了由内核选项 `TCP_PCAP`（默认禁用）控制的功能。若在非默认内核上启用，每个 TCP 端点将包含两个环形缓冲区：一个用于发送的 TCP 段，一个用于接收的 TCP 段。需注意的是，不会存储任何附加信息，甚至不会记录发送或接收 TCP 段的时间。每个环形缓冲区中 TCP 段的最大数量由 `IPPROTO_TCP` 级别的套接字选项 `TCP_PCAP_OUT` 和 `TCP_PCAP_IN` 控制。默认值由 `sysctl` 变量 `net.inet.tcp.tcp_pcap_packets` 控制。由于没有用户态工具来提取环形缓冲区的内容，此功能的使用仅限于分析核心文件。还需注意，TCP 负载也会被记录，因此共享包含此类信息的核心文件可能存在隐私问题。此功能计划在即将发布的 FreeBSD 15 中移除。
+2015 年，内核中添加了由内核参数 `TCP_PCAP`（默认禁用）控制的功能。若在非默认内核上启用，每个 TCP 端点将包含两个环形缓冲区：一个用于发送的 TCP 段，一个用于接收的 TCP 段。需注意的是，不会存储任何附加信息，甚至不会记录发送或接收 TCP 段的时间。每个环形缓冲区中 TCP 段的最大数量由 `IPPROTO_TCP` 级别的套接字选项 `TCP_PCAP_OUT` 和 `TCP_PCAP_IN` 控制。默认值由 `sysctl` 变量 `net.inet.tcp.tcp_pcap_packets` 控制。由于没有用户态工具来提取环形缓冲区的内容，此功能的使用仅限于分析核心文件。还需注意，TCP 负载也会被记录，因此共享包含此类信息的核心文件可能存在隐私问题。此功能计划在即将发布的 FreeBSD 15 中移除。
 
-最新的 TCP 日志记录功能，即 TCP BBLog（黑匣子日志记录）于 2018 年添加。最初它被称为 TCP BBR（黑匣子记录器），但为避免与 TCP 拥塞控制（BBR，即瓶颈带宽和往返传播时间）混淆，现在称为 BBLog。BBLog 在所有 64 位平台的 FreeBSD 生产版本中均已启用。它结合了 `TCP_DEBUG` 和 `TCP_PCAP` 的优点而没有其缺点。因此，它旨在取代二者。BBLog 可以通过 `sysctl` 接口和套接字 API 控制，具体见本文后续部分。
+最新的 TCP 日志记录功能，即 TCP BBLog（黑匣子日志记录）于 2018 年添加。最初它被称为 TCP BBR（黑匣子记录器），但为避免与 TCP 拥塞控制（BBR，即瓶颈带宽和往返传播时间）混淆，现在称为 BBLog。BBLog 在所有 64 位平台的 FreeBSD 生产版本中均已启用。它结合了 `TCP_DEBUG` 和 `TCP_PCAP` 的优点却没有其缺点。因此，它旨在取代二者。BBLog 可以通过 `sysctl` 接口和套接字 API 控制，具体见本文后续部分。
 
 ## BBLog 简介
 
-BBLog 由内核选项 `TCP_BLACKBOX`（在所有 64 位平台上默认启用）控制，源代码位于 `sys/netinet/tcp_log_buf.c`，对应的头文件为 `sys/netinet/tcp_log_buf.h`。在启用了 BBLog 的内核上，有一个设备（`/dev/tcp_log`），用于向用户态工具提供 BBLog 信息，每个 TCP 端点包含一个 BBLog 事件列表。
+BBLog 由内核参数 `TCP_BLACKBOX`（在所有 64 位平台上默认启用）控制，源代码位于 `sys/netinet/tcp_log_buf.c`，对应的头文件为 `sys/netinet/tcp_log_buf.h`。在启用了 BBLog 的内核上，有一个设备（`/dev/tcp_log`），用于向用户态工具提供 BBLog 信息，每个 TCP 端点包含一个 BBLog 事件列表。
 
 每个事件包含一组标准的 TCP 状态信息以及（可选的）事件特定数据块。这些事件收集到设定的限制，当达到限制时，这些事件可以发送到 `/dev/tcp_log`，若该设备被打开，则将信息转发给读取进程进行记录。请注意，如果没有进程打开该设备，则数据会被丢弃。
 
@@ -199,7 +199,7 @@ my_output_file.txt -e Files:7 Processed 30964 records Saw
 
 ---
 
-**RANDALL STEWART**（[rrs@freebsd.org](mailto:rrs@freebsd.org)）是一位操作系统开发人员，已有超过 40 年的经验，并自 2006 年以来一直是 FreeBSD 开发者。他专注于传输协议，包括 TCP 和 SCTP，但也曾涉猎操作系统的其他领域。目前，他是一名独立顾问。
+**RANDALL STEWART**（[rrs@freebsd.org](mailto:rrs@freebsd.org)）是一位操作系统开发人员，已有 40 余年的经验，自 2006 年以来一直是 FreeBSD 开发者。他专注于传输协议，包括 TCP 和 SCTP，但也曾涉猎操作系统的其他领域。目前，他是一名独立顾问。
 
 **MICHAEL TÜXEN**（[tuexen@freebsd.org](mailto:tuexen@freebsd.org)）是明斯特应用技术大学的教授，同时为 Netflix 做兼职承包商，自 2009 年以来一直是 FreeBSD 源代码提交者。他的研究重点是传输协议，如 SCTP 和 TCP，它们在 IETF 的标准化及其在 FreeBSD 中的实现。
 
