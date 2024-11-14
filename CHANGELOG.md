@@ -19,3 +19,4 @@
   - 校对《FreeBSD 接口 API（IfAPI）》
   - 校对《FreeBSD 内核开发工作流程》
   - 校对《更现代的内核调试工具》
+  - 校对《配置自己的 VPN——内置 FreeBSD、Wireguard、IPv6 和广告拦截（基于 FreeBSD）》
