@@ -1,4 +1,4 @@
-# KDE 持续集成（CI）和 FreeBSD
+# FreeBSD 与 KDE 持续集成（CI） 
 
 - 原文链接：[KDE CI and FreeBSD](https://freebsdfoundation.org/our-work/journal/browser-based-edition/development-workflow-and-ci/kde-ci-and-freebsd/)
 - 作者：Ben Cooksley
