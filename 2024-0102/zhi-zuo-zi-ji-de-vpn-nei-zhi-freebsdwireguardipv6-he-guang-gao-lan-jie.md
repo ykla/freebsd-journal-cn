@@ -6,7 +6,7 @@
 
 >**注意**
 >
->本文操作设定基于 FreeBSD。如果你想要基于 OpenBSD 的版本，请点击[这里](https://it-notes.dragas.net/2023/04/03/make-your-own-vpn-wireguard-ipv6-and-ad-blocking-included/)查看。
+>本文操作配置基于 FreeBSD。如果你想要基于 OpenBSD 的版本，请点击[这里](https://it-notes.dragas.net/2023/04/03/make-your-own-vpn-wireguard-ipv6-and-ad-blocking-included/)查看。
 
 VPN 是一种基础工具，用于安全地连接到自己的服务器和设备。许多人出于各种原因使用商业 VPN，从不信任自己的服务提供商（尤其通过公共热点连接时），到希望用不同的 IP 地址（可能是来自别国）来“上网”。在这儿，我想突出一些已被引入基础堆栈的新特性——其中许多是默认开启的，有些可能需要专门打开。每个功能都会介绍一些细节，帮助改善网络体验。
 
