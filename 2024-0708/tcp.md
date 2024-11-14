@@ -5,7 +5,7 @@
 
 TCP 大型接收卸载（TCP Large Receive Offload，TCP LRO）是一种特定于协议的方法，用于降低接收 TCP 段（TCP segment）时所需的 CPU 资源。它也是实现特定的，本篇文章介绍了它在 FreeBSD 内核中的实现。在任何给定时刻，TCP 通常用于单向通信，尽管 TCP 提供了双向通道。例如，当使用 TCP 作为传输协议的应用协议是请求/响应类型（如 HTTP）时，即是这种情况。
 
-TCP LRO 可以能以多种方式降低所需的 CPU 资源，包括：
+TCP LRO 可采用多种方式降低所需的 CPU 资源，包括：
 
 * 合并到达确认（acknowledgment，ACK），向 TCP 栈发送单个大的扩展 ACK，而非多个较小的 ACK。适用于 TCP 端点主要发送用户数据的情况。
 * 将多个传入的数据段合并成一个较大的数据块。这对于 TCP 端点主要接收用户数据时非常有用。
@@ -94,7 +94,7 @@ TCP LRO 的初步实现由 Andrew Gallatin 完成于 2006 年，特定于 mxge(4
 
 TCP 的精确 ECN（显式拥塞通知）目前是由互联网工程任务组（IETF）指定的一项 TCP 特性，FreeBSD 正在开发对此的支持。除了使用两个新的 TCP 选项外，它还改变了两个现有 TCP 标志的使用，并使用了一个额外的标志。这需要对 TCP LRO 代码进行修改，以便仍然能够对支持精确 ECN 的 TCP 连接聚合传入的 TCP 段。
 
-对 VXLAN 的支持也可以得到改善，以利用 mbuf 队列。
+可以改进对 VXLAN 的支持，使其能够利用 mbuf 排队机制。
 
 ---
 
