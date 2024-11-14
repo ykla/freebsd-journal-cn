@@ -1,4 +1,4 @@
-# RACK 和 FreeBSD 可用的 TCP 堆栈
+# 适用于 FreeBSD 的 RACK 和备用 TCP 协议栈
 
 - 原文链接：[RACK and Alternate TCP Stacks for FreeBSD](https://freebsdfoundation.org/our-work/journal/browser-based-edition/networking-10th-anniversary/rack-and-alternate-tcp-stacks-for-freebsd/)
 - 作者：Randall Stewart、Michael TÜxen
