@@ -23,4 +23,5 @@
   - 校对《SR-IOV 已成为 FreeBSD 的重要功能》
   - 校对《FreeBSD iSCSI 入门》
 - 2024.11.15
-  - 校对《TCP LRO 简介》  
+  - 校对《TCP LRO 简介》
+  - 校对《TCP/IP 历险记：TCP BBLog》
