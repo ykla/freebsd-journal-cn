@@ -27,7 +27,7 @@
 ## 2024-0304
 
 * [FreeBSD 内核开发工作流](2024-0304/freebsd-nei-he-kai-fa-gong-zuo-liu.md)
-* [KDE 持续集成（CI）和 FreeBSD](2024-0304/kde-chi-xu-ji-cheng-ci-he-freebsd.md)
+* [FreeBSD 与 KDE 持续集成（CI）](2024-0304/kde-chi-xu-ji-cheng-ci-he-freebsd.md)
 * [更现代的内核调试工具](2024-0304/geng-xian-dai-de-nei-he-tiao-shi-gong-ju.md)
 * [从零开始的 ZFS 镜像及 makefs -t zfs](2024-0304/cong-ling-kai-shi-de-zfs-jing-xiang-ji-makefstzfs.md)
 * [提升 Git 使用体验](2024-0304/ti-sheng-git-shi-yong-ti-yan.md)
