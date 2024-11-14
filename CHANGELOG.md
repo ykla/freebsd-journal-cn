@@ -17,3 +17,4 @@
   - 校对《实用软件：使用 Zabbix 监控主机》
   - 校对《BATMAN：更优的可移动热点网络方式》
   - 校对《FreeBSD 接口 API（IfAPI）》
+  - 校对《FreeBSD 内核开发工作流程》
