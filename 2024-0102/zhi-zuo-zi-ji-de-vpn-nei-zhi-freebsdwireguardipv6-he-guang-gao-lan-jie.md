@@ -177,7 +177,7 @@ service pf start
 pkg install unbound
 ```
 
-不久前，我找到了一个脚本并稍作修改。虽然我不记得从哪里得到的，但我会把它放在这里，却无法引用原作者。
+不久前，我找到了一个脚本并稍作修改。我记不清楚原始作者是谁了，所以我只在这里贴出来脚本。
 
 ### 创建更新 Unbound 广告拦截的脚本 `/usr/local/sbin/unbound-adhosts.sh`：
 
