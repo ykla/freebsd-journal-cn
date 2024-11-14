@@ -184,7 +184,7 @@ nvmft0: association terminated
 
 ## 结论
 
-NVMe-oF 支持将包含主机和控制器支持的功能引入 FreeBSD 15.0。Fabrics 支持的开发由 Chelsio Communications, Inc. 赞助。
+对 NVMe-oF 的支持即包含主机和控制器的功能会引入 FreeBSD 15.0。Fabrics 功能的开发由 Chelsio Communications, Inc. 赞助。
 
 ---
 
