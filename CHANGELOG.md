@@ -21,3 +21,4 @@
   - 校对《更现代的内核调试工具》
   - 校对《配置自己的 VPN——内置 FreeBSD、Wireguard、IPv6 和广告拦截（基于 FreeBSD）》
   - 校对《SR-IOV 已成为 FreeBSD 的重要功能》
+  - 校对《FreeBSD iSCSI 入门》
