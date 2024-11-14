@@ -5,21 +5,21 @@
 
 恐慌（Panic）是一个奇妙的词！
 
-它简洁地概述了一个极其复杂的情绪事件。我们可以说“士兵们慌乱了”，于是便能想象一场战斗的局势。我们可以用它来表达小小的疏忽带来的分量，也可以解释当我们踏上飞机却怀疑自己是否关掉了烤箱时的大脑思考。
+它精要概述了一个极其复杂的情绪事件。我们可以说“士兵们慌乱了”，于是便能想象一场战斗的局势。我们可以用它来表达小小的疏忽带来的分量，也可以解释当我们踏上飞机却怀疑自己是否关掉了烤箱时的大脑想法。
 
-一定是关了吧。
+肯定是关了吧。
 
-“恐慌”也许是我最喜欢的书名词汇之一：《恐慌！Unix 系统崩溃转储分析》（*Panic! Unix System Crash Dump Analysis*）——哇！我一定得有一本。所有使用此类标题的作者肯定写了一本好书，即使它只是一本旧的 Sun OS/Solaris 技术手册。
+“恐慌（Panic）”也许是我最喜欢的书名词汇之一：《Panic! Unix 系统崩溃转储分析》（*Panic! Unix System Crash Dump Analysis*）——哇！我一定得有一本。所有使用此类标题的作者肯定写了一本好书，即使它只是一本陈旧的 Sun OS/Solaris 技术手册。
 
-优秀的书名比技术论文更具有时效性，而最先过时的内容往往是现有系统的厂商文档。到了 2024 年，我发现在操作系统调试方法方面的最新资料非常难找。看看当前出版的作品，你会以为我们在 2004 年就已经完善了操作系统。我从未使用过 SunOS 或 Solaris，但《恐慌！》给了我一直想要的崩溃分析入门。
+优秀的书名比技术论文更具有时效性，而最先过时的内容往往是现有系统的厂商文档。到了 2024 年，我发现非常难找到在操作系统调试方法方面的最新资料。看看当下的出版作品，你会以为我们在 2004 年就已经完善了操作系统。我从未使用过 SunOS 和 Solaris，但《Panic!》给了我一直想要的崩溃分析入门。
 
-我承认，我一直不理解为什么人们如此渴望核心转储——我会想，核心转储能比堆栈跟踪给我们更多什么呢？但从《恐慌！》中，我迈出了崩溃分析的第一步，体验了在 FreeBSD 上使用顶尖内核调试工具的旅程。让我来展示我学到的东西。别担心，不需要等着湿透的柠檬纸巾了。
+我承认，我一直不理解为什么人们如此渴望核心转储——我会想，核心转储能比堆栈跟踪给我们更多什么呢？但从《Panic!》中，我迈出了崩溃分析的第一步，体验了在 FreeBSD 上使用顶尖内核调试工具的旅程。让我来展示我学到的东西。别担心，不需要等着湿透的柠檬纸巾了。（**译者注：此处指不必无聊地等待和无意义的步骤，即本文切中目标，简单高校**）
 
 ## 获取内核转储
 
-我得坦白，知道你不会尝试进行内核转储分析，除非的确必要。当你遇到一台卡住的机器时，这种情况下的生活就是打印调试的世界。
+我得坦白，明知你不会尝试进行内核转储分析，除非确有必要。当你遇到一台卡住的机器时，这种情况下的生活就是打印调试的世界。
 
-获取可用的核心转储并不难——你需要把系统设置成接收崩溃转储（参见 dumpon(8)），然后进入调试器。通常，系统会主动帮助你进入调试器，让系统陷入恐慌。FreeBSD 提供了一项功能，即使在没有出现问题时也可以让内核陷入恐慌。在测试系统上将 sysctl `debug.kdb.panic` 设置 1，即可进入调试提示符：
+获取能用的核心转储并不难——你需要把系统设置成接收崩溃转储（参见 dumpon(8)），然后进入调试器。通常，系统会主动帮助你进入调试器，让系统陷入 Panic。FreeBSD 提供了一项功能，即使在没有出现问题时也可以让内核陷入 Panic。在测试系统上将 sysctl `debug.kdb.panic` 设置 1，即可进入调试提示符：
 
 ```sh
 # sysctl debug.kdb.panic=1
@@ -29,16 +29,16 @@
 
 此外，FreeBSD 虚拟机镜像默认配置为在启动时运行 savecore，且保存崩溃转储文件。
 
-在设置 `debug.kdb.panic` 后，你将进入 ddb(4) 提示符。ddb 是一款功能齐全的实时系统调试器——它是款很好的分析工具，但今天我们不需要它。
+在设置 `debug.kdb.panic` 后，你将进入 ddb(4) 提示符。ddb 是一款功能齐全的实时系统调试器——它是款很好的分析工具，但今天我们用不到它。
 
-在 ddb 中可以使用 `dump` 命令导出运行中的内核。
+在 ddb 中，可以使用 `dump` 命令导出运行中的内核。
 
 ```sh
 ddb> dump
 Dumping 925 out of 16047 MB:..2%..11%..21%..32%..42%..51%..61%..71%..82%..92%
 ```
 
-恐慌状态下系统无法使用，因此需要重启以继续操作。
+Panic 状态下系统无法使用，因此需要重启以继续操作。
 
 ```sh
 ddb> reboot
@@ -137,9 +137,9 @@ __curthread () at /usr/src/sys/amd64/include/pcpu_aux.h:57
 (kgdb)
 ```
 
-`kgdb` 启动时会显示许可证（已省略），然后打印内核信息缓冲区的最后部分，这是 `kgdb` 提供的一个很有用的功能。消息缓冲区的最后部分向我们提供了恐慌信息、一些其他信息以及堆栈跟踪。
+`kgdb` 启动时会显示许可证（已省略），然后打印内核信息缓冲区的最后部分，这是由 `kgdb` 提供的一个很有用的功能。消息缓冲区的最后部分向我们提供了 Panic 信息、一些其他信息以及堆栈跟踪。
 
-使用 `kgdb` 的 `bt`（backtrace）命令，我们可以获取堆栈跟踪，并通过 `frames` 命令在堆栈中移动，查看恐慌发生时的具体情况。
+使用 `kgdb` 的 `bt`（backtrace）命令，我们可以获取堆栈跟踪，并通过 `frames` 命令在堆栈中移动，查看 Panic 发生时的具体情况。
 
 ```sh
 (kgdb) bt
@@ -171,13 +171,13 @@ warning: Source file is more recent than executable.
 2436 }
 ```
 
-在这里，我列出了导致恐慌的回溯路径，识别了大约在 frame #11 处调用的 `panic`，并要求 `kgdb` 跳转到 frame **#12**（导致恐慌的具体代码），然后列出该处的代码。进一步调查可以帮助我们找出在此崩溃转储中导致恐慌的原因。
+在这里，我列出了导致 Panic 的回溯路径，识别了大约在 frame #11 处调用的 `panic`，并要求 `kgdb` 跳转到 frame **#12**（导致 Panic 的具体代码），然后列出该处的代码。进一步调查可以帮助我们找出在此崩溃转储中导致 Panic 的原因。
 
 这是内核调试的基本步骤，查看当时的情况并分析崩溃转储，以找出变量所持有的值。为了在内核上下文中有用，lldb 也需要能够完成这些任务。
 
 ### lldb
 
-在过去的十年里，FreeBSD 一直在向更自由许可的 llvm/clang 工具链迁移。尽管一度缺失调试支持，但在 2024 年，FreeBSD 内核的调试功能终于在 lldb 实现。
+在过去的十年里，FreeBSD 一直在向更加自由许可的 llvm/clang 工具链迈进。尽管一度缺失调试支持，但在 2024 年，FreeBSD 内核的调试功能终于在 lldb 实现。
 
 lldb 可以将 FreeBSD 内核转储导入为核心文件，并在堆栈帧之间移动。
 
@@ -187,7 +187,7 @@ lldb 是由苹果开发的。我还记得他们将默认调试器从 gdb 切换�
 
 ### 使用 lldb 探索
 
-lldb 不需要特殊配置即可分析内核转储。加载崩溃转储的方式与 kgdb 类似，只是参数位置略有不同：
+无需特殊配置 lldb 即可分析内核转储。加载崩溃转储的方式与 kgdb 类似，只是参数位置略有不同：
 
 ```sh
 $ lldb --core <核心文件> path/to/kernel/symbols
@@ -205,7 +205,7 @@ Core file '/home/tj/code/scripts/gdb/coredump/vmcore.0' (x86_64) was loaded.
 
 这比 kgdb 的启动过程更简洁，但缺少了一些崩溃转储的关键信息。究竟是什么导致了此次转储呢？
 
-`kgdb` 并没有进行任何魔法操作（否则它可能会有一个“修复”（fix）命令来搭配“断点”（break）命令）。它所做的只是查找转储中的已知符号，并在启动时将其打印出来。
+`kgdb` 并没有进行什么神奇的操作（否则它可能会有个“修复”（fix）命令来搭配“断点”（break）命令）。它所做的只是查找转储中的已知符号，并在启动时将其打印出来。
 
 我们可以自己做这些操作。
 
@@ -293,7 +293,7 @@ mtx_lock = 0
 (char *) 0xfffff8001ffeba99 “panic: Assertion !tcp_in_hpts(tp) failed at /usr/src/sys/netinet/tcp_subr.c:2432\ncpuid = 2\ntime = 1706644478\nKDB: stack backtrace:\ndb_trace_self_wrapper() at db_trace_self_wrapper+0x2b/frame 0xfffffe0047d2f480\nvpanic() at vpanic+0x132/frame 0xfffffe0047d2f5b0\npanic() at panic+0x43/frame 0xfffffe0047d2f610\ntcp_discardcb() at tcp_discardcb+0x25b/frame 0xfffffe0047d2f660\ntcp_usr_detach() at tcp_usr_detach+0x51/frame 0xfffffe0047d2f680\nsorele_locked() at sorele_locked+0xf7/frame 0xfffffe0047d2f6b0\ntcp_close() at tcp_close+0x155/frame 0xfffffe0047d2f6e0\nrack_check_data_after_close() at rack_check_data_after_close+0x8a/frame 0xfffffe0047d2f720\nrack_do_fin_wait_1() at rack_do_fin_wait_1+0x141/frame 0xfffffe0047d2f7a0\nrack_do_segment_nounlock() at rack_do_segment_nounlock+0x243b/frame 0xfffffe0047d2f9a0\nrack_do_segment() at rack_do_segment+0xda/frame 0xfffffe0047d2fa00\ntcp_input_with_port() at tcp_input_with_port+0x1157/frame 0xfffffe0047d2fb50\ntcp_input() at tcp_input+0xb/frame 0xfffffe0047d2fb60\nip_input() at ip_in”...
 ```
 
-输出的格式不太友好，控制字符直接打印出来了，不过我们仍然能读取内核消息缓冲区的内容。由于输出被截断了，无法获取完整的回溯信息。让我们试试其他命令：
+输出的格式不太友好，控制字符直接打印出来了，不过我们仍然能读取内核消息缓冲区的内容。由于输出被截断，无法获取完整的回溯信息。让我们试试其他命令：
 
 ```sh
 (lldb) x/b msgbufp->msg_ptr+msgbufp->msg_rseq
@@ -309,7 +309,7 @@ error: or set target.max-memory-read-size if you will often need a larger limit.
 
 ## 一些来自 Lua 的帮助
 
-lldb 还提供了一个脚本接口进行控制，这也是为什么许多命令的输入非常冗长。目前，lldb 支持 C++ 和 Python 脚本，并已试验性地支持 Lua。FreeBSD 的基本系统中自带 Lua，而 2024 年的 FreeBSD 版本 lldb 默认支持 Lua。
+lldb 还提供了一个脚本接口进行控制，这也是为什么许多命令的输入非常冗长。目前，lldb 支持 C++ 和 Python 脚本，且已试验性地支持 Lua。FreeBSD 的基本系统中自带 Lua，而 2024 年的 FreeBSD 版本的 lldb 默认支持 Lua。
 
 可以通过以下方式简单试验：
 
@@ -332,7 +332,7 @@ msgbuf/”magic”16t”size”16t”bufx”16t”bufr”n4X
 
 使用 Lua 实现类似的机制应该没问题，因为这已经提供了一个示例。
 
-lldb 的 Lua 接口是从 SWIG 绑定生成的，这是一种描述库之间接口的 C++ 格式。Python 和 Lua 绑定是用相同的方式生成的。如果对 API 和如何使用有疑问，可以通过查看 lldb 项目提供的 Python API 文档找到答案。虽然这种方法不太方便，但还是可以实现。
+lldb 的 Lua 接口是通过 swig 绑定生成的。swig 是一种使用 C++ 格式来描述库间接口的工具。Python 和 Lua 绑定是用相同的方式生成的。如果对 API 及如何使用有疑问，可通过查看 lldb 项目提供的 Python API 文档找到答案。虽说这种方法不太方便，但还是能用。
 
 很快我就厌倦了在解释器中运行命令，考虑到命令的长度，有时操作起来很麻烦。lldb 可以在解释器运行后从文件中加载 Lua 脚本。使用一个全新的会话：
 
@@ -372,7 +372,7 @@ msgbuf = lldb.target:FindFirstGlobalVariable(“msgbufp”)
 
 这会返回一个 SBValue 实例，代表核心转储中内存中的这个结构体实例。我们可以使用 `GetChildMemberWithName` 方法和成员名（例如 `msg_rseq`）来访问结构体的子成员。
 
-`lldb.process` 对象允许我们从内核转储中读取内存。正确组合引用、地址和值来执行所需操作有时可能需要一些调整。
+对象 `lldb.process` 允许我们从内核转储中读取内存。正确组合引用、地址和值来执行所需操作有时可能需要一些调整。
 
 使用这些方法，我们可以确定消息缓冲区的起始位置，从核心转储中读取它，并使用 Lua 打印出来。我将所有内容放入了一个名为 `msgbuf.lua` 的脚本中：
 
@@ -433,11 +433,11 @@ Lua 已经帮助我们扩展了缓冲区中的控制字符，从而在消息缓�
 
 ## 更好的调试功能
 
-在内核调试方面，lldb 还是个新手，且在 Lua 环境中仍有许多功能不可用，但现有的功能足以使其成为一个有用的工具。资深的 gdb 用户可能会对这些示例的价值存疑，毕竟 lldb 的语法复杂了许多，可能看起来更像是为了改变而改变。
+在内核调试方面，lldb 还是个新手，且在 Lua 环境中仍有许多功能不可用，但现有的功能足以使其成为一个有用的工具。gdb 资深用户可能会对这些示例的价值存疑，毕竟 lldb 的语法复杂许多，可能看起来更像是为了改变而改变。
 
-lldb 及其内置的 Lua 的一个重要价值在于它随 FreeBSD 发行版一同分发。lldb Lua 拥有自由许可协议，与 FreeBSD 兼容，从 2024 年初开始，CURRENT 构建版本中默认启用了它。这让内核开发人员和问题排查人员可以使用 lldb Lua 编写脚本，并提供给用户进行分析。
+lldb 及其内置的 Lua 的一个重要价值在于它随 FreeBSD 发行版一同分发。lldb Lua 拥有与 FreeBSD 兼容自由许可协议，从 2024 年初开始，CURRENT 构建版本中默认启用了它。这让内核开发人员和问题排查人员可以使用 lldb Lua 编写脚本，并提供给用户进行分析。
 
-kgdb 很早就支持 gdb 脚本，但这种脚本语言并不友好。而 Lua 虽然有些奇怪，但在许多环境中都很常见，并且是 FreeBSD 启动加载程序的一部分。我编写了一个工具，可以从崩溃的内核镜像中提取 TCP 日志文件——主要的难题在于如何获取内存。一旦获取了数据，将其创建并写入文件则是轻而易举的事。
+kgdb 很早就支持 gdb 脚本，但这种脚本语言并不友好。而 Lua 虽然有些奇怪，但在许多环境中都很常见，并且是 FreeBSD 启动加载程序的一部分。我编写了个工具，能从崩溃的内核镜像中提取 TCP 日志文件——主要的难题在于如何获取内存。只要获取了数据，将其创建并写入文件则是轻而易举的事。
 
 内核转储包含所有信息，其中可能包含敏感数据。一种合理的脚本语言使开发人员可以提供脚本，从内核镜像中提取进一步的调试信息，无需移动大型核心转储文件，也无需担心让陌生人接触可能的敏感信息。
 
