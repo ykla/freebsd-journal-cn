@@ -3,7 +3,7 @@
 - 原文链接：[NVMe Over Fabrics in FreeBSD](https://freebsdfoundation.org/our-work/journal/browser-based-edition/storage-and-filesystems/nvme-over-fabrics-in-freebsd-2/)
 - 作者：John Baldwin
 
-**NVM Express (NVMe) 是一种访问非易失性存储设备（如固态硬盘）的新兴标准。**
+**NVM Express (NVMe) 是一种新兴的非易失性存储设备（如固态硬盘）访问标准。**
 
 NVMe 最初是为了通过 PCIe 访问非易失性内存设备而定义的。它包括用于 PCIe 控制器设备的寄存器定义、存储在主内存中的命令提交和完成队列的布局与结构，以及一组命令。
 
