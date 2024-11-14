@@ -217,7 +217,7 @@ sed -e ‘s/#.*$//’ -e ‘/^[[:space:]]*$/d’ >> $2
   sed -e 's/#.*$//' -e '/^[[:space:]]*$/d' | \
   awk '/^0.0.0.0/ { print $2 }' >> $_tmpfile
 
-# 创建 unbound(8) 本地区域文件
+# 创建 unbound(8) 局域网文件
 sort -fu $_tmpfile | grep -v “^[[:space:]]*$” | \
 awk '{
   print “local-zone: \”” $1 “\” redirect”
