@@ -25,3 +25,4 @@
 - 2024.11.15
   - 校对《TCP LRO 简介》
   - 校对《TCP/IP 历险记：TCP BBLog》
+  - 校对《FreeBSD 中的 RACK 栈和替代 TCP 栈》
