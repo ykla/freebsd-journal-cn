@@ -32,3 +32,4 @@
   - 校对《嵌入式 FreeBSD：打造自己的镜像》
   - 校对《基于 Samba 的时间机器备份》
   - 校对《从零开始的 ZFS 镜像及 makefs -t zfs》
+  - 校对《if_ovpn 还是 OpenVPN》
