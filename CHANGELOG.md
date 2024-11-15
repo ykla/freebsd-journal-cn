@@ -28,3 +28,4 @@
   - 校对《FreeBSD 中的 RACK 栈和替代 TCP 栈》
   - 校对《FreeBSD 14 中有关 TCP 的更新》
   - 校对《FreeBSD 中的 NVMe-oF》
+  - 校对《使用 ZFS 原生加密保护数据》
