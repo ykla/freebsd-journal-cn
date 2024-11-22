@@ -188,4 +188,6 @@ Valgrind 的[Bugzilla](https://bugs.kde.org/buglist.cgi?bug_status=UNCONFIRMED&b
 
 在 Valgrind 上工作是一个巨大的挑战。调试可能非常困难——我常常发现自己一边调试客户程序，一边调试 Valgrind 运行客户程序，同时还用 vgdb 调试在 Valgrind 中运行的客户程序。我学到了很多关于 ELF、信号和系统调用的知识，当然，也学到了关于 Valgrind 本身的很多东西。总是有很多需要学习的地方——例如 aarch64 和 amd64 的操作码细节，以及动态重编译中使用的各种技巧。
 
-Paul Floyd 自 2.1 版本以来间歇性使用 FreeBSD，并从 10.0 版本起开始认真使用。他已经是 Valgrind 开发团队的成员四年，拥有电子学博士学位，现居住在法国阿尔卑斯山边缘的格勒诺布尔，供职于西门子 EDA，开发模拟电子电路仿真工具。
+---
+
+**Paul Floyd** 自 2.1 版本以来间歇性使用 FreeBSD，并从 10.0 版本起开始认真使用。他已经是 Valgrind 开发团队的成员四年，拥有电子学博士学位，现居住在法国阿尔卑斯山边缘的格勒诺布尔，供职于西门子 EDA，开发模拟电子电路仿真工具。
