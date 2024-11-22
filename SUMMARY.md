@@ -6,6 +6,10 @@
 ## 2024-0910
 
 * [字符设备驱动程序教程](2024-0910/Character.md)
+* [VPP 移植到了 FreeBSD：基础用法](2024-0910/vpp.md)
+* [利用 Kyua 的 Jail 功能提升 FreeBSD 测试套件的并行效率](2024-0910/Enhancing.md)
+* [FreeBSD 上的 Valgrind](2024-0910/Valgrind.md)
+* [嵌入式 FreeBSD：探索 bhyve](2024-0910/Embedded.md)
 
 ## 2024-0708
 
