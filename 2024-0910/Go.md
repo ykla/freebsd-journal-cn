@@ -13,13 +13,13 @@
 
 然后我发现了 paperless-ngx，这是 `ocrmypdf` 的一部分，但它在整个系统中只是一个相对较小的部分。它是一个文档管理系统，你可以将文档导入其中，它会创建一个完全可搜索的档案，自动检测内容（AI 无处不在）并根据你定义的规则将其归档。基本上，我可以把一封信交给它，它会识别出这是来自银行的文件，并根据检测到的日期将其归档，同时使用 `ocrmypdf` 使其变得可搜索，并添加有用的元数据。文件会最终被存储在一个目录中，目录可以是主题相关的（例如我从该银行收到的所有文件），或者按年-月-日-描述分类，甚至完全由你来决定。你还可以将整个目录导入到 paperless-ngx，它会自动识别哪些文档已经扫描过，并跳过那些文档，而剩下的则会通过处理管道继续处理。随着每个文档的处理，未来类似文档被正确分类的概率也会增加。此外，它还配备了一个漂亮的 Web 用户界面，可以轻松地将文件拖放到界面中进行扫描，并轻松找到已有的文档。另一种将文档导入的方法是通过一个“incoming”文件夹，你可以在办公室与同事共享这个文件夹，或者将文件作为附件（还记得电子邮件吗？）发送到它。
 
-该软件堆栈本身令人印象深刻，甚至可能让人感到有些望而生畏，尽管 [paperless-ngx 网站](https://docs.paperless-ngx.com/) 提供了优秀的文档。为了获得顺畅的扫描体验，许多软件和服务需要协同工作。幸运的是，`deskutils/py-paperless-ngx` 下有一个相关的端口。更棒的是，端口维护者创建了一份安装后手册，详细列出了如何启动一个正常工作的 paperless-ngx 堆栈的所有步骤。我是不是提到过，我真心喜欢端口维护者？有了这些说明，我迅速在自己的设备上设置好了 paperless-ngx。首先在 Raspberry Pi 3 上设置，然后在 Pi 4 上也成功运行了。尽管 Pi 3 由于处理能力有限，可能需要更多的耐心来获得最终结果，但 Pi 4 运行得非常顺畅，扫描时间也合适。你可以在办公室或家里运行它，几乎不会对电费账单产生影响，同时允许其他人扫描文档而不会看到他人的文件。如果你处理很多文档并希望将其数字化，看看我们正在进行的 paperless-ngx 设置吧，等你体验之后再感谢我…
+该软件堆栈本身令人印象深刻，甚至可能让人感到有些望而生畏，尽管 [paperless-ngx 网站](https://docs.paperless-ngx.com/) 提供了优秀的文档。为了获得顺畅的扫描体验，许多软件和服务需要协同工作。幸运的是，`deskutils/py-paperless-ngx` 下有一个相关的 Port。更棒的是，Port 维护者创建了一份安装后手册，详细列出了如何启动一个正常工作的 paperless-ngx 堆栈的所有步骤。我是不是提到过，我真心喜欢 Port 维护者？有了这些说明，我迅速在自己的设备上设置好了 paperless-ngx。首先在 Raspberry Pi 3 上设置，然后在 Pi 4 上也成功运行了。尽管 Pi 3 由于处理能力有限，可能需要更多的耐心来获得最终结果，但 Pi 4 运行得非常顺畅，扫描时间也合适。你可以在办公室或家里运行它，几乎不会对电费账单产生影响，同时允许其他人扫描文档而不会看到他人的文件。如果你处理很多文档并希望将其数字化，看看我们正在进行的 paperless-ngx 设置吧，等你体验之后再感谢我…
 
 ## Paperless-ngx 设置
 
 无论你使用的是 Raspberry Pi、其他嵌入式设备，还是一台完整的服务器，其实并不重要。只要它运行 FreeBSD，你就可以跟着做。我不会花时间介绍基础的安装或系统的硬化，因为有很多其他很好的文章已经覆盖了这些内容。只要确保在将你的 paperless-ngx 服务连接到网络，供其他人使用时，做好相应的安全配置。
 
-首先，安装 paperless-ngx 端口：
+首先，安装 Port paperless-ngx：
 
 ```sh
 # pkg install deskutils/py-paperless-ngx
@@ -99,7 +99,7 @@ Celery 还运行一个可选组件，叫做 Flower。它用于监控 Celery 控�
 # su -l paperless -c '/usr/local/bin/paperless createsuperuser'
 ````
 
-我已经在运行一个 nginx web 服务器（SSL 代理），所以我可以重用它来指向我的 paperless-ngx 网站。如果您还没有 web 服务器，端口也提供了一个现成的配置文件，位于 `/usr/local/share/examples/paperless-ngx/nginx.conf`，您只需将其复制到 `/usr/local/etc/nginx/` 目录即可。这个配置文件还包括 SSL 配置，避免有人窃听流量，获取登录信息并做出其他恶意行为。要创建一个有效期为一年的密钥，可以运行以下较长的 `openssl` 命令（或者通过 `lets-encrypt` 获取密钥）：
+我已经在运行一个 nginx web 服务器（SSL 代理），所以我可以重用它来指向我的 paperless-ngx 网站。如果您还没有 web 服务器，Port 也提供了一个现成的配置文件，位于 `/usr/local/share/examples/paperless-ngx/nginx.conf`，您只需将其复制到 `/usr/local/etc/nginx/` 目录即可。这个配置文件还包括 SSL 配置，避免有人窃听流量，获取登录信息并做出其他恶意行为。要创建一个有效期为一年的密钥，可以运行以下较长的 `openssl` 命令（或者通过 `lets-encrypt` 获取密钥）：
 
 ```sh
 # openssl req -x509 -nodes -days 365 -newkey rsa:4096 \
@@ -126,7 +126,7 @@ Voila! 现在，您可以在浏览器中访问 `paperless.conf` 中定义的 web
 
 ## 准备、开始、扫描
 
-现在就可以了。将一份您手头的 PDF 文档拖放到 Web UI 中，看看 paperless-ngx 如何开始处理它。左侧的“日志”部分提供了 paperless-ngx 如何选择匹配通信方和其他详细信息，帮助您调整匹配规则。处理完成后，您可以在仪表板或文档文件夹中找到最终结果。继续扫描其他文档，它们将全部存储在 `/var/db/paperless/media/documents/archive` 目录中（如果您没有在 `paperless.conf` 中修改该路径），然后按照存储路径定义进行存放。希望您能像我一样发现 paperless-ngx 对文档的管理非常有用。我总是期待收到下一封信，以便用 paperless-ngx 扫描它。感谢创建 paperless-ngx 的团队，以及使 FreeBSD 端口安装体验如此出色的所有人。
+现在就可以了。将一份您手头的 PDF 文档拖放到 Web UI 中，看看 paperless-ngx 如何开始处理它。左侧的“日志”部分提供了 paperless-ngx 如何选择匹配通信方和其他详细信息，帮助您调整匹配规则。处理完成后，您可以在仪表板或文档文件夹中找到最终结果。继续扫描其他文档，它们将全部存储在 `/var/db/paperless/media/documents/archive` 目录中（如果您没有在 `paperless.conf` 中修改该路径），然后按照存储路径定义进行存放。希望您能像我一样发现 paperless-ngx 对文档的管理非常有用。我总是期待收到下一封信，以便用 paperless-ngx 扫描它。感谢创建 paperless-ngx 的团队，以及使 FreeBSD Port 安装体验如此出色的所有人。
 
 ----
 
