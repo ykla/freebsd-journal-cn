@@ -3,6 +3,10 @@
 * [FreeBSD 中文期刊](README.md)
 * [编辑日志](CHANGELOG.md)
 
+## 2024-0910
+
+* [字符设备驱动程序教程](2024-0910/Character.md)
+
 ## 2024-0708
 
 * [FreeBSD 中的 NVMe-oF](2024-0708/NVMe-oF.md)
