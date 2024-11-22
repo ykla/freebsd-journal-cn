@@ -175,11 +175,11 @@ case1_body()
                atf_skip “This test requires tesseract”
        fi
 
-       # test code...
+       # 测试代码……
 }
 case1_cleanup()
 {
-       # cleanup code...
+       # 清除代码……
 }
 
 atf_init_test_cases()
