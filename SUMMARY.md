@@ -10,7 +10,7 @@
 * [利用 Kyua 的 Jail 功能提升 FreeBSD 测试套件的并行效率](2024-0910/Enhancing.md)
 * [FreeBSD 上的 Valgrind](2024-0910/Valgrind.md)
 * [嵌入式 FreeBSD：探索 bhyve](2024-0910/Embedded.md)
-* [TCP/IP 探险：FreeBSD TCP 协议栈中的 Pacing](2024-0910/TCP.md)
+* [TCP/IP 历险记：FreeBSD TCP 协议栈中的 Pacing](2024-0910/TCP.md)
 * [实用软件：实现无纸化（Paperless）](2024-0910/Go.md)
 
 ## 2024-0708
