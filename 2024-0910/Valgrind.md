@@ -30,7 +30,6 @@ Valgrind 现在已有超过[20 年的历史](https://nnethercote.github.io/2022/
 
 Valgrind 的开发由少数几个人进行，大约有二十位做出了重要贡献。一些公司也为其提供了帮助。RedHat/IBM 可能是贡献最多的公司。Sun 在 Solaris 积极开发期间也有贡献。Apple 也曾贡献过，直到他们突然变得反感 GPL。
 
-
 ## Valgrind 在 FreeBSD 上的历史
 
 Valgrind 在 FreeBSD 上的历史相当长且充满波折。我不会提及每一个做出贡献的人（而且我甚至不确定是否有完整的名单，因为一些源代码仓库已经无法访问）。Doug Robson 在 2004 年做了大量的初期工作。接下来的接力者是 Stan Sedov，他在 2009 到 2011 年期间维护了这个 Port。在那时，曾有一段时间推动将 FreeBSD 的源代码提交到上游，但最终未能成功。上游的维护者对质量标准要求非常严格，FreeBSD 的 Port 虽然接近合格，但始终未能达到要求。其次，需要有人维护 Port，最好是 Valgrind 团队的成员。我不知道为什么这一点从未发生过。从 2021 年 4 月开始，我开始维护 [FreeBSD Port](https://github.com/paulfloyd/freebsd_valgrind)，并且已经有 4 年多时间拥有 Valgrind 的提交权限。现在，我是 Valgrind 的主要贡献者。
@@ -52,7 +51,6 @@ Valgrind 在 FreeBSD 上的历史相当长且充满波折。我不会提及每�
 ### Callgrind 和 Cachegrind
 
 这两个工具用于 CPU 性能分析。Callgrind 用于分析函数调用。Cachegrind 通常用于使用基本缓存和分支预测模型分析 CPU 指令。这些模型从来都不是很准确，现在甚至显得非常不现实。此外，Valgrind 并不执行任何预测执行。基于这些原因，当前版本的 Valgrind 默认不再使用 Cachegrind 进行缓存仿真。一些人喜欢指令计数的精确性，但就我个人而言，我通常更喜欢像 Google 的[perftools](https://github.com/gperftools/gperftools)（[port devel/google-perftools](https://www.freshports.org/devel/google-perftools/)）、Linux 的 perf 和[gprofng](https://www.sourceware.org/binutils/docs/gprofng.html)这样的采样分析工具，尤其是在处理大型问题时（运行时间为小时或天，内存使用量达到数百 GB）。
-
 
 ### Massif 和 DHAT
 
@@ -79,7 +77,6 @@ Valgrind 本身有点复杂。开发 Valgrind 最困难的部分之一就是它�
 这些工具本身只占代码量的不到 10%。主要的代码量来自 CPU 仿真和“核心”部分。核心包括很多内容——libc 替代、系统调用包装器、内存管理、gdb 接口、DWARF 读取器、信号处理、内部数据结构和函数重定向。
 
 开发 Valgrind 时的一个额外难题是，由于它完全静态化，你无法在其上使用 sanitizers。然而，你可以在 Valgrind 内部运行 Valgrind！这需要一个特殊的构建，最终你会得到一个外部 Valgrind 和一个内部 Valgrind，内部 Valgrind 是外部 Valgrind 的“客体”，而内部 Valgrind 的“客体”是一个可执行程序。显然，这样会使得一切变得更慢。我确实使用免费的 Coverity Scan 服务对 FreeBSD 上构建的 Valgrind 进行静态分析。它大多数时候发现的是常见的假阳性，但也找到了几处实际的 bug，包括一些是我自己添加的。我仍然需要做一些工作，为 Valgrind 的内部 libc 替代，特别是分配函数，提供代码模型。
-
 
 ## Valgrind 在运行时
 
@@ -109,7 +106,6 @@ Valgrind 拦截所有系统调用。幸运的是，大多数系统调用要么�
 
 有一件棘手的事情是，运行在虚拟 CPU 上的代码必须保持在虚拟 CPU 上。虽然 Valgrind 会在物理 CPU 上本地执行某些客户代码，但通常这种本地执行范围非常有限。如果客户的控制流逃回物理 CPU，事情就会变得非常糟糕。我将举两个例子，说明为了确保 Valgrind 保持控制所需的扭曲。首先是线程创建。当调用‘pthread_create’时，Valgrind 需要确保操作系统不会运行作为第三个参数传递的函数。相反，它需要用一个“run_thread_in_valgrind”函数挂钩第三个参数。类似地，对于信号，Valgrind 需要确保客户信号处理程序在 Valgrind 下运行，然后信号处理程序返回后也继续在 Valgrind 下运行。这些事情需要一些非常 hacky 的代码。Valgrind 还需要大量调整信号掩码。当客户程序运行时，信号会被屏蔽，宿主会轮询并处理信号。当发生系统调用时，信号会被解屏蔽，执行系统调用，然后再次屏蔽信号。没有这个小舞蹈，阻塞的系统调用就无法被中断。
 
-
 ## Valgrind 移植
 
 当我开始查看 Valgrind 的移植时，它的状态很糟糕。如前所述，从 2009 年到 2011 年，曾有一段推动将其移植到上游的努力。从 2011 年到 2018 年，它的维护变得非常有限。
@@ -135,7 +131,6 @@ Valgrind 不能让客户代码执行。所以，它处理所有可能的信号�
 第一个问题是一个非常小的代码更改。当从客户信号处理程序返回时，Valgrind 在 i386 上崩溃了。经过大量调试，我将问题缩小到汇编语言中的 retpoline 函数 VG\_(_x86_freebsd_SUBST_FOR_sigreturn_)。某个时刻，ucontext 结构的大小发生了变化。VG\_(_x86_freebsd_SUBST_FOR_sigreturn_)在错误的偏移位置寻找返回地址——0x14 而不是 0x1c。这意味着虚拟 CPU 在某个无效的地址处恢复执行。砰！很快就触发了断言。
 
 我与信号的第二次大战是间歇性的。如果信号在 Valgrind 执行“普通”客户代码时到达，那是非常好的，因为它知道应该从哪里恢复。但如果信号在系统调用时到达呢？情况就变得复杂了，因为系统调用是 Valgrind 让客户在物理 CPU 上运行的地方之一。Valgrind 不能在其全局锁中执行客户的系统调用。系统调用可能会阻塞，这会导致多线程进程挂起。相反，它释放锁，然后执行系统调用。现在，如果在锁被释放的窗口期间发生了中断，Valgrind 需要尝试弄清楚中断发生的位置，以便决定是否需要重新启动。为此，执行客户系统调用的机器代码函数 ML(_do_syscall_for_client_WRK_)有一个与之相关的地址表，包含了设置、重启、完成、提交和结束的地址。这个方法通常很好用，但偶尔会因断言失败而出错。问题出在系统调用状态的设置上。在 Linux 上，它只保存在 RAX 寄存器中，并从小型汇编函数返回，所以无需做任何特殊处理。而在 FreeBSD（和 Darwin）上，它保存在进位标志中。这需要调用一个函数来在合成 CPU 中设置进位标志。如果信号在 Valgrind 调用*LibVEX_GuestAMD64_put_rflag_c*函数时到达，这个情况就没有处理——导致了断言。遗憾的是，在 C 中没有简单的方法来判断指令指针正在执行哪个函数。你可以轻松地获取函数开始的地址，但函数结束的位置在哪里呢？我曾考虑过使用 Valgrind 的 DWARF 调试信息（它应该始终存在，且 Valgrind 内置了 DWARF 读取代码）。最后，我采取了一个丑陋且不标准的方法。我获取了*LibVEX_GuestAMD64_put_rflag_c*之后的一个虚拟函数的地址。即使没有保证编译器和链接器会按照源文件中的顺序布局函数，这个方法在 i386 和 amd64 上都有效。然而，后来当我处理[aarch64 移植](https://github.com/paulfloyd/freebsdarm64_valgrind)时，这个方法就不行了，因为设置进位标志的函数使用了几个辅助函数，而这些辅助函数并没有按顺序布局。因此，我改为在执行客户系统调用的汇编例程中设置一个全局变量。
-
 
 ### GlusterFS swapcontext 崩溃
 
