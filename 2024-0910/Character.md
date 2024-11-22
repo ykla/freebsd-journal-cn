@@ -3,17 +3,17 @@
 - 原文地址：[Character Device Driver Tutorial](https://freebsdfoundation.org/our-work/journal/browser-based-edition/kernel-development/character-device-driver-tutorial/)
 - 作者：John Baldwin
 
-**字符设备提供了由设备文件系统（[devfs(5)](https://man.freebsd.org/devfs/5)）暴露到用户空间应用程序的伪文件**。与标准文件系统不同，在标准文件系统中，像读取和写入等操作的语义，在文件系统内的所有文件间是一样的；而所有字符设备都为每个文件操作定义了自己的语义。字符设备驱动程序会声明一个字符设备 switch（character device switch）（`struct cdevsw`），其中包含了每个文件操作的函数指针。
+**字符设备提供了由设备文件系统（[devfs(5)](https://man.freebsd.org/devfs/5)）暴露到用户空间应用程序的伪文件**。与标准文件系统不同，在标准文件系统中，像读取和写入等操作的语义，在文件系统内的所有文件间是一样的；而所有字符设备为每个文件操作都定义了自己的语义。字符设备驱动程序会声明一个字符设备 switch（character device switch）（`struct cdevsw`），其中包含了每个文件操作的函数指针。
 
-字符设备 switch 通常作为硬件设备驱动程序的一部分实现。例如，FreeBSD 的内核提供了几种包装器 API，它们在一组更简单的操作之上实现了字符设备。例如，[disk(9)](https://man.freebsd.org/disk/9) API 在 `struct disk` 中的方法之上实现了一个内部字符设备 switch。某些设备驱动程序提供了字符设备以暴露未与现有内核子系统映射的设备行为到用户空间。
+字符设备 switch 通常作为硬件设备驱动程序的一部分实现。例如，FreeBSD 的内核提供了几种包装器 API，它们在一组更简单的操作之上实现了字符设备。例如，[disk(9)](https://man.freebsd.org/disk/9) API 在 `struct disk` 的方法之上实现了一个内部字符设备 switch。某些设备驱动程序提供了字符设备以暴露未与现有内核子系统映射的设备行为到用户空间。
 
-其他字符设备切换纯粹作为软件构造实现。例如，`/dev/null` 和 `/dev/zero` 字符设备并未与任何硬件设备关联。
+其他字符设备 switch 完全以软件构造实现。例如，字符设备 `/dev/null` 和 `/dev/zero` 并未与任何硬件设备关联。
 
-在三篇文章的系列中，本文是第一篇，我们将逐步构建一个简单的字符设备驱动程序，逐步添加新功能，以探索字符设备切换及其驱动程序可以实现的多个操作。每个版本的设备驱动程序的完整源代码可以在 [https://github.com/bsdjhb/cdev_tutorial](https://github.com/bsdjhb/cdev_tutorial) 上找到。我们将从一个创建单个字符设备的基本驱动程序开始。
+在三篇系列文章中，本文是第一篇，我们将逐步构建一款简单的字符设备驱动程序，逐步添加新功能，以探索字符设备 switch 及其驱动程序能实现的多项操作。可以在 [https://github.com/bsdjhb/cdev_tutorial](https://github.com/bsdjhb/cdev_tutorial) 上找到每个版本的设备驱动程序的完整源代码。我们将从一款创建单个字符设备的基本驱动程序开始。
 
 ## 生命周期管理
 
-字符设备驱动程序负责显式地创建和销毁字符设备。活动的字符设备通过 `struct cdev` 的实例表示。字符设备通过 [make_dev_s(9)](https://man.freebsd.org/make_dev_s/9) 函数创建。此函数接受一个指向参数结构体的指针、一个指向字符设备对象指针的指针，以及一个 printf 风格的格式字符串及其后续参数。格式字符串和后续参数用于构建字符设备的名称。
+字符设备驱动程序负责显式创建和销毁字符设备。活动的字符设备通过 `struct cdev` 的实例表示。字符设备通过函数 [make_dev_s(9)](https://man.freebsd.org/make_dev_s/9) 创建。此函数接受一个指向参数结构体的指针、一个指向字符设备对象指针的指针，以及一个 printf 风格的格式字符串及其后跟参数。格式字符串和后跟参数用于构建字符设备的名称。
 
 参数结构体包含几个必填字段和若干可选字段。在设置任何字段之前，结构体必须通过调用 `make_dev_args_init()` 进行初始化。`mda_devsw` 成员必须指向字符设备切换。`mda_uid`、`mda_gid` 和 `mda_mode` 字段应设置为设备节点的初始用户 ID、组 ID 和权限。大多数字符设备由 `root:wheel` 拥有，可以使用常量 `UID_ROOT` 和 `GID_WHEEL`。`mda_flags` 字段还应设置为 `MAKEDEV_NOWAIT` 或 `MAKEDEV_WAITOK`。如果需要，还可以通过 C 或操作符包含其他标志。对于我们的示例驱动程序，我们设置了 `MAKEDEV_CHECKNAME`，以便在设备已经存在时优雅地失败并返回错误，而不是使系统崩溃。
 
