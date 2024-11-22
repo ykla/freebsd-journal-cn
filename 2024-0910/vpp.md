@@ -3,7 +3,7 @@
 - 原文链接：[Porting VPP to FreeBSD: Basic Usage](https://freebsdfoundation.org/our-work/journal/browser-based-edition/kernel-development/porting-vpp-to-freebsd-basic-usage/)
 - 作者：Tom Jones
 
-**Vector Packet Process (VPP)** 是一个高性能的框架，用于在用户空间处理数据包。得益于 FreeBSD 基金会和 RGNets 的项目，我获得资助将 VPP 移植到 FreeBSD，并且非常高兴与*FreeBSD Journal*的读者分享一些基本的使用方法。
+**Vector Packet Process (VPP)** 是一个高性能的框架，用于在用户空间处理数据包。得益于 FreeBSD 基金会和 RGNets 的项目，我获得资助将 VPP 移植到 FreeBSD，并且非常高兴与《FreeBSD 期刊》的读者分享一些基本的使用方法。
 
 VPP 使得转发和路由应用程序可以在用户空间编写，并提供一个 API 可控的接口。通过 DPDK（在 Linux 上）和 DPDK 及 netmap（在 FreeBSD 上），VPP 实现了高性能的网络处理。这些 API 允许直接的零拷贝数据访问，并可用于创建可以显著超过主机转发性能的转发应用程序。
 
