@@ -3,6 +3,16 @@
 * [FreeBSD 中文期刊](README.md)
 * [编辑日志](CHANGELOG.md)
 
+## 2024-1112
+
+* [字符设备驱动程序教程（第二部分）](zifu.md)
+* [面向 Linux 和 Windows 用户的 bhyve](bhyce.md)
+* [Xen 与 FreeBSD](xen.md)
+* [Wifibox：一种嵌入式虚拟化无线路由器](wifibox.md)
+* [嵌入式 FreeBSD：Fabric——起步阶段](qianrushi.md)
+* [DGP：一种新的数据包控制方法](dgp.md)
+* [会议报告：我在都柏林的 EuroBSDCon 体验](con.md)
+
 ## 2024-0910
 
 * [字符设备驱动程序教程](2024-0910/Character.md)
