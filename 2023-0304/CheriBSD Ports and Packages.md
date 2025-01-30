@@ -119,7 +119,7 @@ CheriBSD/Morello 软件包构建基础设施包括：本地机器开始构建，
 
 图 1 展示了上述组件的概况。根据 `poudrier-remote.sh` 的命令，FreeBSD/amd64 和 FreeBSD/arm64 主机会创建 Poudriere jail、ports，并分别在 CheriBSD/aarch64c 和 CheriBSD/aarchjails jail 中构建 port。CheriBSD/aarch64c jail 使用 QEMU 用户模式执行为 CheriABI 编译的程序，而为 amd64 架构编译的工具链实用程序则以原生方式执行。同样地， CheriBSD/aarch64 jail 也是以原生方式执行所有程序， 因为它们是为 arm64 编译的。目前没有任何 ports 的混合 ABI 编译时依赖项，它们部分使用了 CHERI 功能， 并必须在构建过程中执行。因此，混合 ABI 包不需要 QEMU 用户模式。下面几节将更详细地描述构建基础设施组件。
 
-![图1](../2022-0304/2.1.png)
+![图1](../2023-0304/2.1.png)
 
 **图1: CheriBSD 的软件包构建过程**
 
