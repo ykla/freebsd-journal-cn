@@ -71,7 +71,7 @@ FreeBSD 有一个被称为兼容层的功能，它为针对不同 ABI 编译的�
 
 在默认情况下， `pkg(8)` 软件包管理器会根据 `uname(1)` 的 `NT_FREEBSD_ABI_TAG` ELF 注释来决定使用哪个软件包仓库。该注释的值被用来构建 ABI pkg 变量的值， 它可以被嵌入到软件包仓库的 URL 中 (参见 pkg.conf(5) 和 `/etc/pkg/FreeBSD.conf`)。例如， 在运行 FreeBSD 14-CURRENT 的 amd64 主机上，URL：
 
-```
+```sh
 pkg+http://pkg.FreeBSD.org/${ABI}/latest
 ```
 
@@ -241,11 +241,11 @@ $ pkg64c install cheri-desktop
 $ pkg64 install cheri-desktop-hybrid-extras
 ```
 
-![图1](../2022-0304/2.2.png)
+![图1](../2023-0304/2.2.png)
 
 **图 2：运行 CheriBSD 的 Arm Morello 开发板**
  
-![图1](../2022-0304/2.3.png)
+![图1](../2023-0304/2.3.png)
 
 **图 3：内存安全的 Morello 桌面环境（CheriBSD, KDE Plasma, Wayland）【注3】**
 
