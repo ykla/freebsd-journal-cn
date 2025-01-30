@@ -106,7 +106,7 @@ example/data 17547008 0 17547008 0% /example/data
 # zpool destroy example
 ```
 
-### RAID-Z
+## RAID-Z
 
 RAID-Z 池需要三块及更多磁盘，但在磁盘发生故障时可以提供数据丢失保护。由于 ZFS 池可以使用多个磁盘，因此文件系统设计本身就支持 RAID。
 
@@ -156,7 +156,7 @@ ZFS 创建数据集的快照，用户可备份文件系统以便未来回滚或�
 # zfs list -t snapshot storage/home
 ```
 
-### 恢复 RAID-Z
+## 恢复 RAID-Z
 
 每个软件 RAID 都有一种方法来监控其状态。使用以下命令查看 RAID-Z 设备的状态：
 
