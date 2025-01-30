@@ -106,3 +106,12 @@
 * [CheriBSD port 和软件包](<2023-0304/CheriBSD Ports and Packages.md>)
 * [让我们来试试 ChatGPT](<2023-0304/Let’s chat, GPT.md>)
 * [GPU 直通](<2023-0304/GPU Passthrough.md>)
+
+## 2023-0102
+
+* [ZFS 的原子 I/O 与 PostgreSQL](2023-0102/zfs.md)
+* [虚拟实验室——BSD 编程研讨会](2023-0102/lab.md)
+* [ZFS 简介](2023-0102/zfs2.md)
+* [会议报告：落基山庆祝女性计算机科学家](2023-0102/women.md)
+* [进行中/征稿：数据包批处理](2023-0102/batch.md)
+* [desktop.md](2023-0102/desktop.md)
