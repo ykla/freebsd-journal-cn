@@ -105,7 +105,7 @@ VBIOS 被提取出来后，它就得被传递给虚拟机。因此，我们在 b
 
 如前所述，GPU 直通与 PCI 直通是一样的。bhyve 的 `-s` 参数可以用于 GPU 直通，如以下代码块所示：
 
-```
+```sh
 bhyve \
 −s 0,hostbridge \
 −s 2,passthru,0/2/0 \
@@ -115,7 +115,7 @@ bhyve \
 
 如果你想把 VBIOS 传给虚拟机，我们在 bhyve 的 `-s` 参数中增加了一个 ROM 选项：
 
-```
+```sh
 −s 2,passthru,0/2/0,rom=/home/user/vbios.rom
 ```
 
