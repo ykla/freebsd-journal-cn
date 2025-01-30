@@ -4,13 +4,14 @@
 - 作者：ED MASTE
 - 译者：ykla 【】为译者注
 
-FreeBSD 起源于 386BSD，并在最初只支持一种 CPU 架构，即 Intel 80386。对第二种架构 DEC Alpha【是由迪吉多公司开发的64位RISC指令集架构微处理器】的支持在 FreeBSD 3.2 中被加入，接着是对 64 位 x86（amd64）的支持。支持等级的概念尚未完全确定，但 amd64 在 2003 年被提升为一级支持状态。64 位的 ARM 架构 AArch64，也称为 arm64，在 2021 年获得了一级支持的地位。我们将探讨这意味着什么，以及我们是如何实现这一步的。
+FreeBSD 起源于 386BSD，并在最初只支持一种 CPU 架构，即 Intel 80386。对第二种架构 DEC Alpha【是由迪吉多公司开发的 64 位 RISC 指令集架构微处理器】的支持在 FreeBSD 3.2 中被加入，接着是对 64 位 x86（amd64）的支持。支持等级的概念尚未完全确定，但 amd64 在 2003 年被提升为一级支持状态。64 位的 ARM 架构 AArch64，也称为 arm64，在 2021 年获得了一级支持的地位。我们将探讨这意味着什么，以及我们是如何实现这一步的。
 
 在 FreeBSD 中引入一种新的一级支持架构是一个具有挑战性的任务，它需要大量的努力，以确保该架构得到充分支持、稳定、高性能，并且与现有的 FreeBSD 生态系统兼容。
 
 **FreeBSD 基金会看到了 64 位 ARM 架构的潜力，并了解到其他开发者对在该平台上进行 FreeBSD 移植感兴趣。**
 
 ## Tier-1 状态
+
 在 FreeBSD 项目中，Tier-1 状态是指完全支持的架构，Tier-2 是开发或小众架构，Tier-3 是实验性架构。在 FreeBSD 项目网站 <https://docs.freebsd.org/en/articles/committers-guide/#archs> 上有关支持等级的文件记录了这三个等级。
 
 Tier-1 状态主要涉及 FreeBSD 项目对该架构的保证，包括生成 RELEASE 版本的软件包、提供预构建软件包、由安全团队提供支持，并在更新中保持向后兼容性目标。
@@ -22,6 +23,7 @@ Tier-1 状态还涵盖一些隐含特征，例如硬件可用性。FreeBSD 并�
 Tier-1 平台还应该是自举的，也就是说，在该平台上可以构建新版本的内核、C 运行时、用户空间工具和其他基本系统的 FreeBSD。
 
 ## 平台的起源
+
 和其他几个平台一样，FreeBSD/arm64 起源于一位积极开发者的兴趣。Andrew Turner 是一位长期从事 FreeBSD/arm 开发的开发者，在 Arm 宣布 AArch64 架构后不久就开始研究。FreeBSD 基金会看到了 64 位 Arm 的潜力，并了解到其他实体对在该平台上进行 FreeBSD 移植感兴趣。基金会组建了一个项目，协调并赞助了 Andrew Turner 和工程公司 Semihalf 的工作，同时得到了 Arm 和 CPU 供应商 Cavium 的支持。
 
 在 FreeBSD 中最早与 arm64 相关的提交是为 kernel-toolchain 构建目标添加构建基础设施。顾名思义，该目标用于构建工具链（编译器、链接器等），然后用于编译、链接和转换内核。在当时，FreeBSD 的基本系统中包含了 Clang，所以编译器支持相对简单。然而，当时 FreeBSD 仍包含旧版本的 GNU ld 链接器，不支持 AArch64。因此，早期的构建支持依赖于安装了 aarch64-binutils port 或软件包，并自动使用提供的链接器。**第一个针对 arm64 的内核修改是：**
@@ -76,8 +78,6 @@ FreeBSD 提供了超过 30,000 个第三方软件包在其 ports 中，并且其
 
 将 FreeBSD/arm64 带入 Tier-1 阶段的目标带来了 ports 的一些额外要求。ports 没有官方的层次结构或 port 的分级分类，但有一些关键的 port。这些关键 port 提供工具链组件或其他依赖项，这些依赖项对于构建整个 ports 中的大型 port 是必需的。我们必须确保这些关键 port 在 arm64 上工作正常，并满足 Tier-1 的要求。确保这些软件包在 FreeBSD/arm64 上可用且可以持续构建是必要的。我们还需要及时为 Tier-1 架构构建软件包，这需要具备能力的服务器硬件。FreeBSD 基金会从 Ampere Computing 购买了服务器，并且该项目还收到了 Ampere 捐赠的额外服务器。这些硬件使得 arm64 软件包集合可以按照 x86 架构的每周频率进行构建。
 
-
-
 ## FreeBSD 团队的支持
 
 **将新的架构提升到 Tier-1 状态需要得到 FreeBSD 项目内的几个团队的支持和同意。**
@@ -114,13 +114,12 @@ Ampere “Mount Jade”
 ![image](https://github.com/FreeBSD-Ask/freebsd-journal-cn/assets/10327999/4721725a-d91b-479b-b3d8-30cffcb9a44a)
 Raspberry Pi 4
 
-
 ![image](https://github.com/FreeBSD-Ask/freebsd-journal-cn/assets/10327999/57263b2a-c50f-4583-8186-ec07baedd486)
 Microsoft Arm Developer Kit
 
-
 ![image](https://github.com/FreeBSD-Ask/freebsd-journal-cn/assets/10327999/23ac923c-ed09-45d1-85b8-1d9f28d1b5fd)
 Pine A64 LTS
+
 ---
 
 ED MASTE 是 FreeBSD 基金会的高级技术总监，负责管理基金会的技术路线图、开发团队和赞助项目。他还是当期选举产生的 FreeBSD 核心团队成员。除了 FreeBSD，他还为许多其他开源项目做出了贡献，包括 LLVM、ELF Tool Chain、QEMU 和 Open vSwitch。他与妻子 Anna 和孩子们一起生活在加拿大的基奇纳-滑铁卢地区。
