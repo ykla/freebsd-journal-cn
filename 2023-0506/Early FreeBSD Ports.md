@@ -1,4 +1,4 @@
-**早期的 FreeBSD 移植**
+# 早期的 FreeBSD 移植
 
 - 原文：[Early FreeBSD Ports](https://freebsdfoundation.org/wp-content/uploads/2023/06/rabson_early_ports.pdf)
 
