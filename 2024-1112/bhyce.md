@@ -9,7 +9,7 @@ FreeBSD bhyve 虚拟化程序在 2011 年 5 月由 Neel Natu 和 Peter Grehan �
 
 首先是 Linux，然后有了一种方法来重新打包 Windows 8 或 Windows Server 2012 以使其安装。这对于普通用户来说管理起来过于复杂，直到 bhyve 引入 UEFI 启动特性，事情才真正起飞。
 
-UEFI 启动是 bhyve 所等待的杀手级特性。它使得可以在 FreeBSD bhyve 上安装并运行各种操作系统。当 FreeBSD 11 发布时，我们终于拥有了一个与其他操作系统相媲美的虚拟化组件。
+UEFI 启动是 bhyve 所等待的杀手级特性。它使得可以在 FreeBSD bhyve 上安装并运行各种操作系统。当 FreeBSD 11 发布时，我们终于拥有了与其他操作系统相媲美的虚拟化组件。
 
 虽然 UEFI 启动是 bhyve 的杀手级特性，但 bhyve 的杀手级应用是 Windows Server 2016。这是一个转折点，企业能够在没有修改的情况下运行 bhyve 和 Windows，获得一个可靠的企业级虚拟化程序，以稳定的方式运行商业工作负载。
 
@@ -17,7 +17,7 @@ UEFI 启动是 bhyve 所等待的杀手级特性。它使得可以在 FreeBSD bh
 
 然而，问题仍然存在，因为 Windows 需要安装多个驱动程序，无论是在镜像中还是在安装后，以避免性能问题。在 2018 年 7 月，通过实现 PCI-NVMe 存储仿真，这个问题得到了部分解决，最终让 bhyve 在一般工作负载的存储性能上超越了 KVM。
 
-如今，Windows 在 bhyve 上运行仍然需要至少 RedHat 提供的 VirtIO-net 驱动程序，以确保网络传输可靠并超过 1Gb/s。RedHat 提供的 Windows MSI 包中还有其他驱动程序，建议在生产环境实现前加载这些驱动程序。对于 Linux，大多数发行版都包括所有相关驱动程序，包括本文中使用的 AlmaLinux。对于 Linux 安装，推荐使用 NVMe 仿真存储作为后端，然而，如果你计划将 Linux 工作负载在 bhyve 和 KVM 之间迁移，建议将客户机设置为使用 VirtIO-blk 存储。
+如今，Windows 在 bhyve 上运行仍然至少需要 RedHat 提供的 VirtIO-net 驱动程序，以确保网络传输可靠且超过 1Gb/s。RedHat 提供的 Windows MSI 包中还有其他驱动程序，建议在生产环境实现前加载这些驱动程序。对于 Linux，大多数发行版都包括所有相关驱动程序，包括本文中使用的 AlmaLinux。对于 Linux 安装，推荐使用 NVMe 仿真存储作为后端，然而，如果你计划将 Linux 工作负载在 bhyve 和 KVM 之间迁移，建议将客户机设置为使用 VirtIO-blk 存储。
 
 以下配置适用于典型的类型 2 虚拟化程序配置中的标准 FreeBSD 工作站，或用于仅托管客户机工作负载并与客户机相关联的存储和网络的专用 FreeBSD 服务器，适用于类型 1 虚拟化程序。
 
@@ -40,7 +40,7 @@ UEFI 启动是 bhyve 所等待的杀手级特性。它使得可以在 FreeBSD bh
 pkg install openntpd vm-bhyve bhyve-firmware
 ```
 
-简而言之，OpenNTPD 是来自 OpenBSD 项目的一个简单时间守护进程。它可以防止主机时间偏移。当虚拟化程序由于客户工作负载而面临极大压力时，这可能导致系统时间迅速失去同步。OpenNTPD 通过确保您的上游时间源通过 HTTPS 协议报告正确的时间，来保持时间的准确性。bhyve-firmware 是一个元软件包，用于从软件包中加载 bhyve 支持的最新 EDK2 固件。最后，vm-bhyve 是一个用于 bhyve 的管理系统，使用 shell 编写，避免了复杂的依赖关系。
+简而言之，OpenNTPD 是来自 OpenBSD 项目的一个简单时间守护进程。它可以防止主机时间偏移。当虚拟化程序由于客户工作负载而面临极大压力时，这可能导致系统时间迅速失去同步。OpenNTPD 通过确保您的上游时间源通过 HTTPS 协议报告正确的时间，来保持时间的准确性。bhyve-firmware 是个元包，用于从软件包中加载 bhyve 支持的最新 EDK2 固件。最后，vm-bhyve 是用于 bhyve 的管理系统，使用 shell 编写，避免了复杂的依赖关系。
 
 使用 vm-bhyve 为机器引导并做好准备非常简单，但需要注意一些 ZFS 选项，以确保客户在底层存储上能够保持良好的性能，特别是对于一般工作负载：
 
@@ -57,13 +57,13 @@ EOF
 
 在我们深入讨论之前，我们应该先下载稍后将使用的 ISO 文件，以便 vm-bhyve 安装程序可以使用它们。要将 ISO 下载到 vm-bhyve ISO 存储中，可以使用 `vm iso` 命令：
 
-```
+```sh
 # vm iso https://files.bsd.engineer/Windows11-bhyve.iso
 ```
 
 (sha256 – 46c6e0128d1123d5c682dfc698670e43081f6b48fcb230681512edda216d3325)
 
-```
+```sh
 # vm iso https://repo.almalinux.org/almalinux/9.5/isos/x86_64/AlmaLinux-9.5-x86_64-dvd.iso
 ```
 
@@ -152,7 +152,7 @@ Windows 虚拟机在安装过程中需要稍作调整，以便在安装 VirtIO �
 # vm configure windows-guest
 ```
 
-将 `network0_type="e1000"` 修改为 e1000。
+将 `network0_type="e1000"` 修改为 `e1000`。
 
 待安装了 RedHat VirtIO 驱动程序，可以恢复为 `virtio-net`。
 
@@ -165,7 +165,7 @@ Windows 虚拟机在安装过程中需要稍作调整，以便在安装 VirtIO �
 # vm install linux-guest AlmaLinux-9.5-x86_64-dvd.iso
 ```
 
-待安装启动，bhyve 将进入等待状态。它将在与 VNC 控制台端口建立连接之前不会开始 ISO 启动过程。要确定哪个虚拟机控制台正在相应的 VNC 端口上运行，可以使用 `list` 子命令：
+待安装启动，bhyve 将进入等待状态。它将在与 VNC 控制台端口建立连接之前不会开始 ISO 启动过程。要确定哪个虚拟机控制台正在相应的 VNC 端口上运行，可以使用子命令 `list` ：
 
 ```sh
 # vm list
@@ -181,13 +181,13 @@ windows-guest default uefi 2 8G [::]:5900 No Locked (host)
 [::1]:5900 # if it is on your local machine using localhost
 ```
 
-安装完 Windows 客户端后，可以加载 VirtIO 驱动程序。驱动程序可以在以下位置找到：
+安装完 Windows 客户端后，可以加载 VirtIO 驱动程序。可以在以下位置找到驱动程序：
 
 [https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/virtio-win-0.1.266-1/virtio-win-gt-x64.msi](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/virtio-win-0.1.266-1/virtio-win-gt-x64.msi)
 
 (sha256 – 37b9ee622cff30ad6e58dea42fd15b3acfc05fbb4158cf58d3c792b98dd61272)
 
-安装完 Windows 后，使用 Edge 浏览器访问上述 URL 下载并安装这些驱动程序。安装完成后，关闭主机，将虚拟机配置文件中的网络接口切换回 virtio-net，系统即可正常启动。
+安装完 Windows 后，使用 Edge 浏览器访问上述链接下载并安装这些驱动程序。安装完成后，关闭主机，将虚拟机配置文件中的网络接口切换回 virtio-net，系统即可正常启动。
 
 现在，我们已经安装了可用的客户端，但需要对其进行控制，以便根据需要启动和停止。以下命令将对您的客户端执行基本操作，如启动、停止或立即关闭：
 
@@ -202,7 +202,7 @@ windows-guest default uefi 2 8G [::]:5900 No Locked (host)
 
 ## 总结
 
-本文简要介绍了如何控制 bhyve 并使用 FreeBSD 包管理库中直接提供的工具安装常见操作系统。vm-bhyve 能做的远不止本文所描述的内容，详细信息可以参考 vm(8) 手册页。
+本文简要介绍了如何控制 bhyve 并使用 FreeBSD 包管理库中直接提供的工具安装常见操作系统。vm-bhyve 能做的远不止本文所述的内容，详细信息可以参考 vm(8) 手册页。
 
 ---
 
