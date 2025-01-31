@@ -10,7 +10,7 @@ CHERI 是一个硬件/软件/语义学联合设计项目，旨在提高现有和
 
 随着 Arm Morello 平台的发布，CHERI 的生态系统迅速扩大。
 
-直到 2022 年，CHERI 项目主要由剑桥大学、SRI 国际和他们的合作伙伴开发，包括微软、谷歌和 Arm。随着 Arm Morello 平台的发布，CHERI 生态系统迅速扩大，这是 CHERI 第一个面向大众的硬件实现。2022 年 1 月，Arm 开始向公司、学术和政府机构运送第一批（大约一千块）Morello 开发板。为了给 Morello 用户提供一个用户友好的工作环境，*CheriBSD*——一个基于 FreeBSD 的操作系统，适配 Arm Morello 和 CHERIRISC-V ——他们需要一个基础工具，在 Morello 发布之前构建和分发兼容 CHERI 的第三方软件。今天，有几十所大学、政府研究实验室和公司在 Morello 的工作中使用 CheriBSD，并且每天都依赖这个基础系统。
+直到 2022 年，CHERI 项目主要由剑桥大学、SRI 国际和他们的合作伙伴开发，包括微软、谷歌和 Arm。随着 Arm Morello 平台的发布，CHERI 生态系统迅速扩大，这是 CHERI 第一个面向大众的硬件实现。2022 年 1 月，Arm 开始向公司、学术和政府机构运送第一批（大约一千块）Morello 开发板。为了给 Morello 用户提供一个用户友好的工作环境，*CheriBSD*——一个基于 FreeBSD 的操作系统，适配 Arm Morello 和 CHERIRISC-V ——他们需要一个基础工具，在 Morello 发布之前构建和分发兼容 CHERI 的第三方软件。今天，有几十所大学、政府研究实验室和公司在 Morello 的工作中使用 CheriBSD，并且每天都依赖这个基本系统。
 
 这篇文章介绍了我们在没有 CHERI 的硬件支持情况下，使用 QEMU 用户模式、FreeBSD ports 和 Poudriere 为 CheriBSD 构建第三方软件包的历程。在讨论软件包构建基础设施的实施细节的同时，文章总结了我们需要做哪些决定和改变，以最终实现约 24,000 个 AArch64 软件包和约 9,000 个支持 CHERI 的软件包。
 
@@ -71,7 +71,7 @@ FreeBSD 有一个被称为兼容层的功能，它为针对不同 ABI 编译的�
 
 在默认情况下， `pkg(8)` 软件包管理器会根据 `uname(1)` 的 `NT_FREEBSD_ABI_TAG` ELF 注释来决定使用哪个软件包仓库。该注释的值被用来构建 ABI pkg 变量的值， 它可以被嵌入到软件包仓库的 URL 中 (参见 pkg.conf(5) 和 `/etc/pkg/FreeBSD.conf`)。例如， 在运行 FreeBSD 14-CURRENT 的 amd64 主机上，URL：
 
-```
+```sh
 pkg+http://pkg.FreeBSD.org/${ABI}/latest
 ```
 
@@ -111,7 +111,7 @@ CheriBSD/Morello 软件包构建基础设施包括：本地机器开始构建，
 构建者使用以下软件栈：
 
 - QEMU BSD 用户模式用于 CheriABI 程序【注10】；
-- CheriBSD 基础系统；
+- CheriBSD 基本系统；
 - CHERI LLVM 工具链；
 - CheriBSD ports【注6】；
 - 为 CheriBSD 扩展的 Poudriere【注5、7】；
@@ -119,7 +119,7 @@ CheriBSD/Morello 软件包构建基础设施包括：本地机器开始构建，
 
 图 1 展示了上述组件的概况。根据 `poudrier-remote.sh` 的命令，FreeBSD/amd64 和 FreeBSD/arm64 主机会创建 Poudriere jail、ports，并分别在 CheriBSD/aarch64c 和 CheriBSD/aarchjails jail 中构建 port。CheriBSD/aarch64c jail 使用 QEMU 用户模式执行为 CheriABI 编译的程序，而为 amd64 架构编译的工具链实用程序则以原生方式执行。同样地， CheriBSD/aarch64 jail 也是以原生方式执行所有程序， 因为它们是为 arm64 编译的。目前没有任何 ports 的混合 ABI 编译时依赖项，它们部分使用了 CHERI 功能， 并必须在构建过程中执行。因此，混合 ABI 包不需要 QEMU 用户模式。下面几节将更详细地描述构建基础设施组件。
 
-![图1](../2022-0304/2.1.png)
+![图1](../2023-0304/2.1.png)
 
 **图1: CheriBSD 的软件包构建过程**
 
@@ -171,7 +171,7 @@ b. 我们改变了 QEMU，使其更接近 CheriBSD/FreeBSD 的系统调用接口
 4. 为 CHERI-RISC-V 和 Arm Morello 进行的与机器相关的修改，包括 CHERI 能力许可位和能力寄存器访问例程。
 
 这一部分的项目花了我们最长的时间。目前，用户模式本身可以通过 cheribuild qemu-cheri-bsd-user 分支2 轻松使用。
- 例如，你可以在 FreeBSD/amd64 主机上从 CheriBSD/riscv64c 基础系统运行 CheriABI shell，使用
+ 例如，你可以在 FreeBSD/amd64 主机上从 CheriBSD/riscv64c 基本系统运行 CheriABI shell，使用
 
 ```
 $ ./cheribuild.py run-user-shell-riscv64-purecap
@@ -205,7 +205,7 @@ $ ./cheribuild.py run-user-shell-riscv64-purecap
 
 ### Poudriere
 
-我们的 Poudriere fork【注7】支持在 FreeBSD 和 CheriBSD 主机上构建软件包。在默认情况下，它使用它所执行的操作系统的基础系统压缩包，但用户可以用 poudrier-jail(8) 的一个新参数 `-o` 来指定操作系统。由于 CheriBSD 的基本系统中不包含工具链，Poudriere 使用 pkg 或 pkg64 在 Poudriere jail 中安装它，在本地基本目录之外，以免与从 CheriBSD ports 构建的工具链发生冲突。Poudriere 有两种套装配置：Cheriabi 和 Hybridabi。两者都使用相同的工具链，但定义了不同的 LOCALBASE 值，而且 cheriabi 可以启用 CheriABI 无法使用的混合 ABI 构建工具。
+我们的 Poudriere fork【注7】支持在 FreeBSD 和 CheriBSD 主机上构建软件包。在默认情况下，它使用它所执行的操作系统的基本系统压缩包，但用户可以用 poudrier-jail(8) 的一个新参数 `-o` 来指定操作系统。由于 CheriBSD 的基本系统中不包含工具链，Poudriere 使用 pkg 或 pkg64 在 Poudriere jail 中安装它，在本地基本目录之外，以免与从 CheriBSD ports 构建的工具链发生冲突。Poudriere 有两种套装配置：Cheriabi 和 Hybridabi。两者都使用相同的工具链，但定义了不同的 LOCALBASE 值，而且 cheriabi 可以启用 CheriABI 无法使用的混合 ABI 构建工具。
 
 在 CheriBSD/Morello 主机上为开发分支构建 CheriABI 包需要执行三个简单的命令：
 
@@ -241,11 +241,11 @@ $ pkg64c install cheri-desktop
 $ pkg64 install cheri-desktop-hybrid-extras
 ```
 
-![图1](../2022-0304/2.2.png)
+![图1](../2023-0304/2.2.png)
 
 **图 2：运行 CheriBSD 的 Arm Morello 开发板**
  
-![图1](../2022-0304/2.3.png)
+![图1](../2023-0304/2.3.png)
 
 **图 3：内存安全的 Morello 桌面环境（CheriBSD, KDE Plasma, Wayland）【注3】**
 

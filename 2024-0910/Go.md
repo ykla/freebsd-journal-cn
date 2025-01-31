@@ -62,7 +62,7 @@ Paperless-ngx 使用数据库来存储各种信息。初始化数据库非常简
 # service paperless-worker enable
 ```
 
-您可以在 paperless-ngx 网站上找到这些服务的详细描述。由于我们希望在不重启系统的情况下使用 paperless-ngx，接下来我们将启动所有这些服务：
+你可以在 paperless-ngx 网站上找到这些服务的详细描述。由于我们希望在不重启系统的情况下使用 paperless-ngx，接下来我们将启动所有这些服务：
 
 ```sh
 # service paperless-beat start
@@ -93,13 +93,13 @@ Celery 还运行一个可选组件，叫做 Flower。它用于监控 Celery 控�
 
 ## 设置 Web UI
 
-为了保护基于 Django 的 Web UI，其中存储了迄今为止所有扫描的文档，您可以像这样设置一个超级用户密码：
+为了保护基于 Django 的 Web UI，其中存储了迄今为止所有扫描的文档，你可以像这样设置一个超级用户密码：
 
 ```sh
 # su -l paperless -c '/usr/local/bin/paperless createsuperuser'
 ````
 
-我已经在运行一个 nginx web 服务器（SSL 代理），所以我可以重用它来指向我的 paperless-ngx 网站。如果您还没有 web 服务器，Port 也提供了一个现成的配置文件，位于 `/usr/local/share/examples/paperless-ngx/nginx.conf`，您只需将其复制到 `/usr/local/etc/nginx/` 目录即可。这个配置文件还包括 SSL 配置，避免有人窃听流量，获取登录信息并做出其他恶意行为。要创建一个有效期为一年的密钥，可以运行以下较长的 `openssl` 命令（或者通过 `lets-encrypt` 获取密钥）：
+我已经在运行一个 nginx web 服务器（SSL 代理），所以我可以重用它来指向我的 paperless-ngx 网站。如果你还没有 web 服务器，Port 也提供了一个现成的配置文件，位于 `/usr/local/share/examples/paperless-ngx/nginx.conf`，你只需将其复制到 `/usr/local/etc/nginx/` 目录即可。这个配置文件还包括 SSL 配置，避免有人窃听流量，获取登录信息并做出其他恶意行为。要创建一个有效期为一年的密钥，可以运行以下较长的 `openssl` 命令（或者通过 `lets-encrypt` 获取密钥）：
 
 ```sh
 # openssl req -x509 -nodes -days 365 -newkey rsa:4096 \
@@ -107,26 +107,26 @@ Celery 还运行一个可选组件，叫做 Flower。它用于监控 Celery 控�
 -out /usr/local/etc/nginx/selfsigned.crt
 ```
 
-当然，您可以在必要时对 `nginx.conf` 进行调整。完成后，启用它在系统启动时自动启动，并在当前会话中启动：
+当然，你可以在必要时对 `nginx.conf` 进行调整。完成后，启用它在系统启动时自动启动，并在当前会话中启动：
 
 ```sh
 # service nginx enable
 # service nginx start
 ```
 
-Voila! 现在，您可以在浏览器中访问 `paperless.conf` 中定义的 web URL 并登录到应用程序。
+Voila! 现在，你可以在浏览器中访问 `paperless.conf` 中定义的 web URL 并登录到应用程序。
 
 ## Web UI 中的基础配置
 
-在扫描第一份文档之前，我建议首先在左侧的“管理”部分设置一些项目。首先，定义“通信方”——这些是向您发送纸质文档的人或组织。可以是银行、保险公司，也可以是个人。您可以给他们一个描述性的名称，并配置 paperless-ngx，以便它在检测到某些关键词或其他条件时，将文档归档到该通信方下。
+在扫描第一份文档之前，我建议首先在左侧的“管理”部分设置一些项目。首先，定义“通信方”——这些是向你发送纸质文档的人或组织。可以是银行、保险公司，也可以是个人。你可以给他们一个描述性的名称，并配置 paperless-ngx，以便它在检测到某些关键词或其他条件时，将文档归档到该通信方下。
 
-接下来，定义文档类型。合同与情书不同，账单与证书不同，依此类推。这样，您可以让 paperless-ngx 区分某个通信方是向您发送账单，还是合同。两者都有可能发生，尤其是政府机构（至少在我所在的地方）往往会在不同的上下文中与您通信，而您希望将这些文档保持分开。这正是 paperless-ngx 的优势所在：一旦定义了您的活跃通信方及其典型文档，您就不需要再担心正确分类了。只需添加文档，让 paperless-ngx 自动完成分类。通过一些调整，您就可以扫描大量文档。那么，如何排序它们呢？这就是存储路径的作用。
+接下来，定义文档类型。合同与情书不同，账单与证书不同，依此类推。这样，你可以让 paperless-ngx 区分某个通信方是向你发送账单，还是合同。两者都有可能发生，尤其是政府机构（至少在我所在的地方）往往会在不同的上下文中与你通信，而你希望将这些文档保持分开。这正是 paperless-ngx 的优势所在：一旦定义了你的活跃通信方及其典型文档，你就不需要再担心正确分类了。只需添加文档，让 paperless-ngx 自动完成分类。通过一些调整，你就可以扫描大量文档。那么，如何排序它们呢？这就是存储路径的作用。
 
-这些路径定义了文档应存放在文件系统中的位置以及目录层次结构。我个人使用的路径是 `{created_year}/{correspondent}/{title}`，这意味着我有像 `2024/insuranceXZY/YearlyReport.pdf` 这样的目录。如果您希望将所有与税务相关的文档存放在单独的目录中，请在存储路径部分定义该规则，并设置条件以匹配符合此条件的文档。最棒的是，如果您改变了排序方式，修改存储路径将自动移动并重新命名您已扫描的文档，而无需您手动执行繁琐的 `mkdir`、`cp`、`mv`、`rm` 等操作。
+这些路径定义了文档应存放在文件系统中的位置以及目录层次结构。我个人使用的路径是 `{created_year}/{correspondent}/{title}`，这意味着我有像 `2024/insuranceXZY/YearlyReport.pdf` 这样的目录。如果你希望将所有与税务相关的文档存放在单独的目录中，请在存储路径部分定义该规则，并设置条件以匹配符合此条件的文档。最棒的是，如果你改变了排序方式，修改存储路径将自动移动并重新命名你已扫描的文档，而无需你手动执行繁琐的 `mkdir`、`cp`、`mv`、`rm` 等操作。
 
 ## 准备、开始、扫描
 
-现在就可以了。将一份您手头的 PDF 文档拖放到 Web UI 中，看看 paperless-ngx 如何开始处理它。左侧的“日志”部分提供了 paperless-ngx 如何选择匹配通信方和其他详细信息，帮助您调整匹配规则。处理完成后，您可以在仪表板或文档文件夹中找到最终结果。继续扫描其他文档，它们将全部存储在 `/var/db/paperless/media/documents/archive` 目录中（如果您没有在 `paperless.conf` 中修改该路径），然后按照存储路径定义进行存放。希望您能像我一样发现 paperless-ngx 对文档的管理非常有用。我总是期待收到下一封信，以便用 paperless-ngx 扫描它。感谢创建 paperless-ngx 的团队，以及使 FreeBSD Port 安装体验如此出色的所有人。
+现在就可以了。将一份你手头的 PDF 文档拖放到 Web UI 中，看看 paperless-ngx 如何开始处理它。左侧的“日志”部分提供了 paperless-ngx 如何选择匹配通信方和其他详细信息，帮助你调整匹配规则。处理完成后，你可以在仪表板或文档文件夹中找到最终结果。继续扫描其他文档，它们将全部存储在 `/var/db/paperless/media/documents/archive` 目录中（如果你没有在 `paperless.conf` 中修改该路径），然后按照存储路径定义进行存放。希望你能像我一样发现 paperless-ngx 对文档的管理非常有用。我总是期待收到下一封信，以便用 paperless-ngx 扫描它。感谢创建 paperless-ngx 的团队，以及使 FreeBSD Port 安装体验如此出色的所有人。
 
 ----
 

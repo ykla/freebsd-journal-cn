@@ -19,7 +19,7 @@ ChatGPT 显然更复杂，而且比 Eliza 多了很多知识。这个软件令�
 
 节点中四个磁盘的启动分区、交换分区和 freebsd 分区的磁盘设置与 ZFS 相结合，总是有点棘手。我的目标是创建一个 RAID-10 zpool（2 个镜像条带在一起），磁盘上有磁盘序列号作为标识，像这样：
 
-```
+```sh
 pool: mypool
  state: ONLINE
 config:
@@ -40,7 +40,7 @@ mypool           ONLINE    0     0     0
 
 ***BCR***【作者向 Chatgpt 提问】：你将如何为这段代码创建一个函数：
 
-```
+```sh
 for S in $SSD; do
       gpart add -t freebsd-swap -l swap${COUNTER} -s ${SWAP} -a 4k “${S}”
       echo “Setting ${SWAP} of swap space on disk ${S}.”
@@ -59,7 +59,7 @@ done
 
 ***ChatGPT***：根据你提供的代码片段，我认为你是想创建一个在多个磁盘上设置交换和 ZFS 分区的函数。这里有一个函数样本，可以完成这个任务：
 
-```
+```sh
 setup_partitions() {
     local SSD=$1
     local SWAP_SIZE=$2
@@ -89,7 +89,7 @@ setup_partitions() {
 ```
 ***ChatGPT***：你可以通过传递两个参数来调用这个函数：一个 SSD 阵列和所需的交换空间大小。例如，如果你有两个固态硬盘（`/dev/sda` 和 `/dev/sdb`），你希望它们每个都有 4GB 的交换空间，你可以这样调用这个函数：
 
-```
+```sh
 SSD=(“/dev/sda” “/dev/sdb”)
 SWAP_SIZE=”4g”
 setup_partitions “$SSD” “$SWAP_SIZE”
@@ -110,7 +110,7 @@ setup_partitions “$SSD” “$SWAP_SIZE”
 
 ***BCR***：你会如何将这段代码统一为一个通用函数，供两者使用？
 
-```
+```sh
 for HD in $HDD; do
         gpart add -t freebsd-swap -l swap${COUNTER} -s ${SWAP} -a 4k “${HD}”
         echo “Setting ${SWAP} of swap space on disk ${HD}.”
@@ -144,7 +144,7 @@ done
 
 ***ChatGPT***： 为了将这两段代码统一到一个通用函数中，你可以创建一个函数，该函数需要三个参数：一个磁盘阵列，所需的交换大小，以及一个指示磁盘是 HDD 还是 SSD 的参数。下面是他的例子：
 
-```
+```sh
 setup_partitions() {
     local disks=(“$@”)
     local swap_size=$2
@@ -183,7 +183,7 @@ NUM_DISKS=$counter
 
 ***ChatGPT***: 你可以用一个磁盘阵列、所需的交换空间大小和一个指示磁盘是 HDD 还是 SSD 的参数来调用这个函数。例如，要在两个 HDD（`/dev/ada0` 和 `/dev/ada1`）上设置具有 2GB 交换空间的分区，以及两个 SSD（`/dev/ada2` 和 `/dev/ada3`）上设置具有 4GB 交换空间的分区，你可以这样调用这个函数：
 
-```
+```sh
 DD=(“/dev/ada0” “/dev/ada1”)
 SSD=(“/dev/ada2” “/dev/ada3”)
 SWAP_SIZE_HDD=”2g”
@@ -202,7 +202,7 @@ setup_partitions “${SSD[@]}” “$SWAP_SIZE_SSD” “false”
 
 ***ChatGPT***： 当然可以！这里有 `/bin/sh` 语法的相同代码：
 
-```
+```sh
 #!/bin/sh
 
 setup_partitions() {
@@ -255,7 +255,7 @@ setup_partitions “$SSD” “$SWAP_SIZE_SSD” “false”
 
 ***ChatGPT***: 如果我们想对 HDD 和 SSD 使用同样的 4g 交换空间容量，我们可以修改 `setup_partitions` 函数，使其只接受一个磁盘参数，并删除 `is_hdd` 参数和确定磁盘序号的条件逻辑。下面是更新后的代码在 `/bin/sh` 语法中的样子：
 
-```
+```sh
 #!/bin/sh
 
 setup_partitions() {
@@ -311,7 +311,7 @@ setup_partitions “$HDD $SSD” “$SWAP_SIZE”
 
 下面是应用这些优化后的代码：
 
-```
+```sh
 #!/bin/sh
 
 setup_partitions() {
@@ -365,4 +365,4 @@ setup_partitions “$HDD $SSD” “$SWAP_SIZE”
 
 ---
 
-BENEDICT REUSCHLING 是 FreeBSD 项目的文档提交者和文档工程小组的成员。他曾在 FreeBSD 核心团队任职两届。他在德国达姆施塔特应用科学大学管理着一个大数据集群。他还在为本科生教授"Unix for Developers"【UNIX 开发】课程。他还是每周 bsdnow.tv 播客的主持人之一。
+**BENEDICT REUSCHLING** 是 FreeBSD 项目的文档提交者和文档工程小组的成员。他曾在 FreeBSD 核心团队任职两届。他在德国达姆施塔特应用科学大学管理着一个大数据集群。他还在为本科生教授"Unix for Developers"【UNIX 开发】课程。他还是每周 bsdnow.tv 播客的主持人之一。

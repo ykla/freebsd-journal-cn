@@ -23,7 +23,7 @@ TwinCAT 运行时是所有 Beckhoff 工控机的共同标准，自然，TwinCAT 
 
 图 1 显示了该系统的结构:
 
-![图1](../2022-0304/1.png)
+![图 1](../2023-0304/1.png)
 
 图 1：TwinCAT 在 FreeBSD 上的集成
 
@@ -57,7 +57,7 @@ bhyve 托管的虚拟机也受益于 OpenZFS，它是 TwinCAT/BSD 上的默认�
 
 bhyve 被集成到 TwinCAT/BSD 中，以便配置一个像图 2 所示的系统设置:
 
-![图2](../2022-0304/2.png)
+![图2](../2023-0304/2.png)
 
 图 2：TwinCAT/BSD 上的虚拟机配置样本
 
@@ -105,7 +105,7 @@ VBIOS 被提取出来后，它就得被传递给虚拟机。因此，我们在 b
 
 如前所述，GPU 直通与 PCI 直通是一样的。bhyve 的 `-s` 参数可以用于 GPU 直通，如以下代码块所示：
 
-```
+```sh
 bhyve \
 −s 0,hostbridge \
 −s 2,passthru,0/2/0 \
@@ -115,7 +115,7 @@ bhyve \
 
 如果你想把 VBIOS 传给虚拟机，我们在 bhyve 的 `-s` 参数中增加了一个 ROM 选项：
 
-```
+```sh
 −s 2,passthru,0/2/0,rom=/home/user/vbios.rom
 ```
 

@@ -3,7 +3,17 @@
 * [FreeBSD 中文期刊](README.md)
 * [编辑日志](CHANGELOG.md)
 
-## 2024-0910
+## 2024-1112 虚拟化
+
+* [字符设备驱动程序教程（第二部分）](2024-1112/zifu.md)
+* [面向 Linux 和 Windows 用户的 bhyve](2024-1112/bhyce.md)
+* [Xen 与 FreeBSD](2024-1112/xen.md)
+* [Wifibox：一种嵌入式虚拟化无线路由器](2024-1112/wifibox.md)
+* [嵌入式 FreeBSD：Fabric——起步阶段](2024-1112/qianrushi.md)
+* [DGP：一种新的数据包控制方法](2024-1112/dgp.md)
+* [会议报告：我在都柏林的 EuroBSDCon 体验](2024-1112/hui.md)
+
+## 2024-0910 内核开发
 
 * [字符设备驱动程序教程](2024-0910/Character.md)
 * [VPP 移植到了 FreeBSD：基础用法](2024-0910/vpp.md)
@@ -13,7 +23,7 @@
 * [TCP/IP 历险记：FreeBSD TCP 协议栈中的 Pacing](2024-0910/TCP.md)
 * [实用软件：实现无纸化（Paperless）](2024-0910/Go.md)
 
-## 2024-0708
+## 2024-0708 存储与文件系统
 
 * [FreeBSD 中的 NVMe-oF](2024-0708/NVMe-oF.md)
 * [FreeBSD iSCSI 入门](2024-0708/iscsi.md)
@@ -22,7 +32,7 @@
 * [TCP LRO 简介](2024-0708/tcp.md)
 * [基于 Samba 的时间机器备份](2024-0708/samba.md)
 
-## 2024-0506
+## 2024-0506 配置管理对决
 
 * [基本系统中的 mfsBSD](2024-0506/ji-ben-xi-tong-zhong-de-mfsbsd.md)
 * [rdist](2024-0506/rdist.md)
@@ -34,7 +44,7 @@
 * [TCP/IP 历险记：TCP BBLog](2024-0506/tcpip-li-xian-ji-tcp-bblog.md)
 * [实用软件：开发定制 Ansible 模块](2024-0506/shi-yong-ruan-jian-kai-fa-ding-zhi-ansible-mo-kuai.md)
 
-## 2024-0304
+## 2024-0304 开发工作流与集成
 
 * [FreeBSD 内核开发工作流程](2024-0304/freebsd-nei-he-kai-fa-gong-zuo-liu.md)
 * [FreeBSD 与 KDE 持续集成（CI）](2024-0304/kde-chi-xu-ji-cheng-ci-he-freebsd.md)
@@ -42,7 +52,7 @@
 * [从零开始的 ZFS 镜像及 makefs -t zfs](2024-0304/cong-ling-kai-shi-de-zfs-jing-xiang-ji-makefstzfs.md)
 * [提升 Git 使用体验](2024-0304/ti-sheng-git-shi-yong-ti-yan.md)
 
-## 2024-0102
+## 2024-0102 网络（十周年）
 
 * [FreeBSD 中的 RACK 栈和替代 TCP 栈](2024-0102/rack-he-freebsd-ke-yong-de-tcp-dui-zhan.md)
 * [FreeBSD 14 中有关 TCP 的更新](2024-0102/freebsd-14-you-guan-tcp-de-geng-xin.md)
@@ -53,22 +63,22 @@
 * [配置自己的 VPN——基于 FreeBSD、Wireguard、IPv6 和广告拦截](2024-0102/zhi-zuo-zi-ji-de-vpn-nei-zhi-freebsdwireguardipv6-he-guang-gao-lan-jie.md)
 * [实用软件：使用 Zabbix 监控主机](2024-0102/shi-yong-ruan-jian-shi-yong-zabbix-jian-kong-zhu-ji.md)
 
-## 2023-1112
+## 2023-1112 FreeBSD 14.0
 
 * [LinuxBoot：从 Linux 启动 FreeBSD](2023-1112/linuxboot-cong-linux-qi-dong-freebsd.md)
 * [FreeBSD 容器镜像](2023-1112/freebsd-rong-qi-jing-xiang.md)
 * [现在用 Webhook 触发我](2023-1112/xian-zai-yong-webhooks-chu-fa-wo.md)
 * [新的 Ports 提交者：oel Bodenmann (jbo@freebsd.org)](2023-1112/xin-de-port-ti-jiao-zhe-oel-bodenmann-jbofreebsd.org.md)
 
-## 2023-0910
+## 2023-0910 Port 与软件包
 
 * [回忆录：与 Warner Losh（@imp）的访谈](2023-0910/recollections-an-interview-with-warner-losh-imp.md)
-* [在您自己的仓库中定制 Poudriere 源](2023-0910/custom-poudriere-packages-in-your-own-repository.md)
+* [在你自己的仓库中定制 Poudriere 源](2023-0910/custom-poudriere-packages-in-your-own-repository.md)
 * [Wazuh 和 MITRE Caldera 在 FreeBSD Jail 中的使用](2023-0910/wazuh-and-mitre-caldera-using-freebsd-jails.md)
 * [PEP 517](2023-0910/pep-517.md)
 * [CCCamp 2023 旅行报告](2023-0910/cccamp-2023-trip-report.md)
 
-## 2023-0708
+## 2023-0708 容器与云
 
 * [在 Firecracker 上的 FreeBSD](2023-0708/freebsd-on-firecracker.md)
 * [使用 pot 和 nomad 管理 Jail](2023-0708/jail-orchestration-with-pot-and-nomad.md)
@@ -77,7 +87,7 @@
 * [实用的 Port](2023-0708/practical-ports.md)
 * [我们收到的来信](2023-0708/we-get-letters.md)
 
-## 2023-0506
+## 2023-0506 FreeBSD 三十周年纪念特刊
 
 * [CheriBSD 近十多年的历程](<2023-0506/A Dozen Years of CheriBSD.md>)
 * [AArch64：成为新的 FreeBSD 的一级架构](<2023-0506/AArch64\_Bringing a New FreeBSD Architecture to Tier-1.md>)
@@ -91,8 +101,17 @@
 * [FreeBSD 30 周年：成功的秘诀](<2023-0506/FreeBSD at 30 Years\_ Its Secrets to Success.md>)
 * [FreeBSD 在日本：回忆之旅与今日之实](<2023-0506/FreeBSD in Japan\_A Trip Down Memory Lane and Today’s Reality.md>)
 
-## 2023-0304
+## 2023-0304 嵌入式
 
 * [CheriBSD port 和软件包](<2023-0304/CheriBSD Ports and Packages.md>)
 * [让我们来试试 ChatGPT](<2023-0304/Let’s chat, GPT.md>)
 * [GPU 直通](<2023-0304/GPU Passthrough.md>)
+
+## 2023-0102 构建 FreEBSD Web 服务器
+
+* [ZFS 的原子 I/O 与 PostgreSQL](2023-0102/zfs.md)
+* [虚拟实验室——BSD 编程研讨会](2023-0102/lab.md)
+* [ZFS 简介](2023-0102/zfs2.md)
+* [会议报告：落基山庆祝女性计算机科学家](2023-0102/women.md)
+* [进行中/征稿：数据包批处理](2023-0102/batch.md)
+* [基金会与 FreeBSD 桌面](2023-0102/desktop.md)
