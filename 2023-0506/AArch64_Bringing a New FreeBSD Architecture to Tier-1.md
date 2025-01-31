@@ -127,4 +127,4 @@ Pine A64 LTS
 
 ---
 
-**ED MASTE* 是 FreeBSD 基金会的高级技术总监，负责管理基金会的技术路线图、开发团队和赞助项目。他还是当期选举产生的 FreeBSD 核心团队成员。除了 FreeBSD，他还为许多其他开源项目做出了贡献，包括 LLVM、ELF Tool Chain、QEMU 和 Open vSwitch。他与妻子 Anna 和孩子们一起生活在加拿大的基奇纳-滑铁卢地区。
+**ED MASTE** 是 FreeBSD 基金会的高级技术总监，负责管理基金会的技术路线图、开发团队和赞助项目。他还是当期选举产生的 FreeBSD 核心团队成员。除了 FreeBSD，他还为许多其他开源项目做出了贡献，包括 LLVM、ELF Tool Chain、QEMU 和 Open vSwitch。他与妻子 Anna 和孩子们一起生活在加拿大的基奇纳-滑铁卢地区。
