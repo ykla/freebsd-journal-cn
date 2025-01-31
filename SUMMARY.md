@@ -11,7 +11,7 @@
 * [Wifibox：一种嵌入式虚拟化无线路由器](2024-1112/wifibox.md)
 * [嵌入式 FreeBSD：Fabric——起步阶段](2024-1112/qianrushi.md)
 * [DGP：一种新的数据包控制方法](2024-1112/dgp.md)
-* [会议报告：我在都柏林的 EuroBSDCon 体验](2024-1112/con.md)
+* [会议报告：我在都柏林的 EuroBSDCon 体验](2024-1112/hui.md)
 
 ## 2024-0910 内核开发
 
