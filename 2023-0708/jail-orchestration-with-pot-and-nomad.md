@@ -285,7 +285,7 @@ Minipot 是一个有用的单节点安装的作为学习或本地测试的平台
 
 值得一提的是，前面提到的设置可以混合不同的操作系统：唯一必须运行 FreeBSD 的服务器是针对 jail/pot 工作负载的 nomad 客户端。
 
-Nomad 或 consul 服务器可以在 Linux 或 Solaris 上运行，允许您重用可能已经可用基础设施。
+Nomad 或 consul 服务器可以在 Linux 或 Solaris 上运行，允许你重用可能已经可用基础设施。
 
 
 作为入口代理，我们使用 traefik，与本地 consul 同步。但是，可以使用其它服务，如 nginx 或 ha-proxy，以及 consul-template 来实现相同的结果。在这种配置中，consul-template 负责监测 consul 的变更，呈现代理配置模板，并将新配置通知代理。

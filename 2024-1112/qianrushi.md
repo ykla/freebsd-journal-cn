@@ -51,7 +51,7 @@ Zynq> fatload mmc 0 0x4000000 static.bit
 Zynq> fpga loadb 0 0x4000000 4045663
 ```
 
-第一个命令将 `static.bit` 文件从 SD 卡的 FAT 分区加载到内存中。第二个命令告诉 U-boot 用当前在内存地址 `0x4000000` 中的文件内容来编程 FPGA。此时，您应该看到板上的四个 LED 中有两个亮起了红色。恭喜！您已经构建并加载了第一个 FPGA 设计！
+第一个命令将 `static.bit` 文件从 SD 卡的 FAT 分区加载到内存中。第二个命令告诉 U-boot 用当前在内存地址 `0x4000000` 中的文件内容来编程 FPGA。此时，你应该看到板上的四个 LED 中有两个亮起了红色。恭喜！你已经构建并加载了第一个 FPGA 设计！
 
 我们可以在这里结束，但在我们结束之前，让我们再做两件事。首先，让我们让 LED 闪烁，而不仅仅是亮起；其次，让我们看看如何在 FreeBSD 下加载 FPGA。这将为更酷的事情打下基础。
 
@@ -95,7 +95,7 @@ create_clock -add -name sys_clk_pin -period 8.00 \
 
 同样，一个简单的 `make` 命令应该会构建出一个 `implementation/blinky.bit` 文件，该文件可以像上面一样转移到 SD 卡并加载到 FPGA 中。
 
-现在，您应该能看到 LEDs 按二进制计数闪烁。
+现在，你应该能看到 LEDs 按二进制计数闪烁。
 
 好了，在我们结束本期专栏之前，让我们谈谈最后一件事。让我们看看如何从 FreeBSD 中编程 FPGA。事实证明，这很简单。有一个 `/dev/devcfg` 设备，最初是为了让你直接将 bit 文件 `cat` 到该设备上，但我认为对它的工作并没有完全完成。有一个简单的 C 程序 `xbin2bit`，它有自己的 [`git 仓库`](https://github.com/christopher-bowman/xbin2bit)。如果你有 root 权限（默认情况下 `/dev/devcfg` 是 root 所有），你可以直接运行它并传递你的 bit 文件：
 

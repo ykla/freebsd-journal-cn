@@ -129,7 +129,7 @@ RISC-V 和 PowerPC 的移植工作正在进展中，希望在几个版本后它�
 
 ## 如何联系
 
-Xen 社区通过 [xen-devel 邮件列表](https://xenproject.org/resources/mailing-lists/) 进行代码审查。对于更为非正式的交流和讨论，我们还设有一些供所有人访问的 [Matrix 房间](https://xenproject.org/resources/matrix/)。对于 FreeBSD/Xen 特定的问题，还可以通过 [freebsd-xen 邮件列表](https://lists.freebsd.org/subscription/freebsd-xen) 进行咨询，当然，您还可以通过 [FreeBSD Bugzilla](https://bugs.freebsd.org/) 报告与 FreeBSD/Xen 相关的任何问题。
+Xen 社区通过 [xen-devel 邮件列表](https://xenproject.org/resources/mailing-lists/) 进行代码审查。对于更为非正式的交流和讨论，我们还设有一些供所有人访问的 [Matrix 房间](https://xenproject.org/resources/matrix/)。对于 FreeBSD/Xen 特定的问题，还可以通过 [freebsd-xen 邮件列表](https://lists.freebsd.org/subscription/freebsd-xen) 进行咨询，当然，你还可以通过 [FreeBSD Bugzilla](https://bugs.freebsd.org/) 报告与 FreeBSD/Xen 相关的任何问题。
 
 ---
 

@@ -84,7 +84,7 @@ PR 应该以某种用户可见的方式上改进项目。
 
 创建复刻图 2，第 2 部分。
 
-在你点击“Create Fork（创建复刻）”后，GUI 将重定向到新创建的存储库。您可以将克隆版本库所需的 URL 复制到常规位置，如图 3 所示。
+在你点击“Create Fork（创建复刻）”后，GUI 将重定向到新创建的存储库。你可以将克隆版本库所需的 URL 复制到常规位置，如图 3 所示。
 
 ![](https://freebsdfoundation.org/wp-content/uploads/2024/07/Figure3.png)
 

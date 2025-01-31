@@ -76,7 +76,7 @@ FreeBSD 使用 ELF Tool Chain 项目来提供一些杂项二进制实用工具�
 
 FreeBSD 提供了超过 30,000 个第三方软件包在其 ports 中，并且其中许多软件包具有与架构相关的特性。机器相关的基础设施（例如，对于给定 port 在给定架构上进行编译的控制）是 ports 的基本部分。FreeBSD/arm64 作为 Tier-2 架构可用，FreeBSD 社区成员进行了实验并发现了无法构建的 port。这些问题要么被修复，要么在适当情况下从 aarch64 架构上排除。
 
-将 FreeBSD/arm64 带入 Tier-1 阶段的目标带来了 ports 的一些额外要求。ports 没有官方的层次结构或 port 的分级分类，但有一些关键的 port。这些关键 port 提供工具链组件或其他依赖项，这些依赖项对于构建整个 ports 中的大型 port 是必需的。我们必须确保这些关键 port 在 arm64 上工作正常，并满足 Tier-1 的要求。确保这些软件包在 FreeBSD/arm64 上可用且可以持续构建是必要的。我们还需要及时为 Tier-1 架构构建软件包，这需要具备能力的服务器硬件。FreeBSD 基金会从 Ampere Computing 购买了服务器，并且该项目还收到了 Ampere 捐赠的额外服务器。这些硬件使得 arm64 软件包集合可以按照 x86 架构的每周频率进行构建。
+将 FreeBSD/arm64 带入 Tier-1 阶段的目标带来了 ports 的一些额外要求。ports 没有官方的层次结构或 port 的分级分类，但有一些关键的 port。这些关键 port 提供工具链组件或其他依赖项，这些依赖项对于构建整个 ports 中的大型 port 是必需的。我们必须确保这些关键 port 在 arm64 上工作正常，并满足 Tier-1 的要求。确保这些软件包在 FreeBSD/arm64 上可用且可以持续构建是必要的。我们还需要及时为 Tier-1 架构构建软件包，这需要具备能力的服务器硬件。FreeBSD 基金会从 Ampere Computing 购买了服务器，并且该项目还收到了 Ampere 捐赠的额外服务器。这些硬件使得 arm64 软件包可以按照 x86 架构的每周频率进行构建。
 
 ## FreeBSD 团队的支持
 

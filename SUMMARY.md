@@ -73,7 +73,7 @@
 ## 2023-0910 Port 与软件包
 
 * [回忆录：与 Warner Losh（@imp）的访谈](2023-0910/recollections-an-interview-with-warner-losh-imp.md)
-* [在您自己的仓库中定制 Poudriere 源](2023-0910/custom-poudriere-packages-in-your-own-repository.md)
+* [在你自己的仓库中定制 Poudriere 源](2023-0910/custom-poudriere-packages-in-your-own-repository.md)
 * [Wazuh 和 MITRE Caldera 在 FreeBSD Jail 中的使用](2023-0910/wazuh-and-mitre-caldera-using-freebsd-jails.md)
 * [PEP 517](2023-0910/pep-517.md)
 * [CCCamp 2023 旅行报告](2023-0910/cccamp-2023-trip-report.md)
