@@ -345,4 +345,4 @@ g_io_request+0x2d7
 
 ---
 
-**DOMAGOJ STOLFA** 是剑桥大学的研究助理，专注于虚拟化系统的动态追踪。他自2016年起就一直在 FreeBSD 上与 bhyve 和 DTrace 合作并贡献补丁。Domagoj 还是剑桥大学高级操作系统课程的教学助理，教授使用 FreeBSD、DTrace 和 PMC 的操作系统概念。
+**DOMAGOJ STOLFA** 是剑桥大学的研究助理，专注于虚拟化系统的动态追踪。他自 2016 年起就一直在 FreeBSD 上与 bhyve 和 DTrace 合作，贡献补丁。Domagoj 还是剑桥大学高级操作系统课程的教学助理，教授使用 FreeBSD、DTrace 和 PMC 的操作系统概念。
