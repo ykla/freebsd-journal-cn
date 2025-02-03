@@ -10,5 +10,5 @@
 
 原文位于：<https://freebsdfoundation.org/our-work/journal/>
 
-本书部署网站：<https://freebsd-journal-cn.bsdcn.org/>
+本书部署网站：<https://book.bsdcn.org/>
 
