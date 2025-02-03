@@ -72,9 +72,9 @@ void fn(db_expr_t addr, bool have_addr, db_expr_t count, char *modif)
 DB_COMMAND(double, db_double_cmd)
 {
 if (have_addr)
- db_printf(“%u\n”, (u_int)addr * 2);
+ db_printf("%u\n", (u_int)addr * 2);
 else
- db_printf(“no address\n”);
+ db_printf("no address\n");
 }
 ```
 
@@ -132,12 +132,12 @@ DB_COMMAND_FLAGS(sum, db_sum_cmd, CS_MORE)
 long total;
 db_expr_t value;
 if (!have_addr)
- db_error(“no values to sum\n”);
+ db_error("no values to sum\n");
 total = addr;
 while (db_expression(&value))
  total += value;
 db_skip_to_eol();
-db_printf(“Total is %lu\n”, total);
+db_printf("Total is %lu\n", total);
 }
 ```
 
@@ -165,12 +165,12 @@ device_t dev;
 int token;
 token = db_read_token();
 if (token != tIDENT)
- db_error(“Missing or invalid device name”);
+ db_error("Missing or invalid device name");
 dev = device_lookup_by_name(db_tok_string);
 db_skip_to_eol();
 if (dev == NULL)
- db_error(“device not found\n”);
-db_printf(“%p\n”, device_get_softc(dev));
+ db_error("device not found\n");
+db_printf("%p\n", device_get_softc(dev));
 }
 ```
 
@@ -206,19 +206,19 @@ DDB 命令表包含一组命令。可以通过在现有表中定义一个特殊�
 **清单 8 显示了这些命令的一些示例输出。** 
 
 ```c
-/* Holds list of “demo *” commands. */
+/* 保存“demo *”命令的列表。*/
 static struct db_command_table db_demo_table = LIST_HEAD_INITIALIZER(db_demo_table);
 6 of 8
 FreeBSD Journal • November/December 2022 11
-/* Defines a “demo” top-level command. */
+/* 定义了一个“demo”顶级命令。 */
 _DB_SET(_cmd, demo, NULL, db_cmd_table, 0, &db_demo_table);
 _DB_FUNC(_demo, one, db_demo_one_cmd, db_demo_table, 0, NULL)
 {
-db_printf(“one\n”);
+db_printf("one\n");
 }
 _DB_FUNC(_demo, two, db_demo_two_cmd, db_demo_table, 0, NULL)
 {
-db_printf(“two\n”);
+db_printf("two\n");
 }
 ```
 
@@ -251,7 +251,7 @@ char *rs;
 int len;
 for (rs = ring;;) {
  …
- db_printf(“\n”);
+ db_printf("\n");
  if (db_pager_quit)
 
 Break;
