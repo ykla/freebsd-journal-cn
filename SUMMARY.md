@@ -122,7 +122,7 @@
 * [DTrace：老式跟踪系统的新扩展](2022-1112/dtrace.md)
 * [基于证书的 Icinga 监控](2022-1112/icinga.md)
 * [活动监控脚本（activitymonitor.sh）](2022-1112/act.md)
-* [务用 IPv6（第四部分）](2022-1112/ipv6.md)
+* [实用 IPv6（第四部分）](2022-1112/ipv6.md)
 * [EuroBSDCon 会议报道](2022-1112/huiyi.md)
 * [实用 Port：Prometheus 的安装与配置](2022-1112/prometheus.md)
 * [书评：《用火解决问题：管理老化的计算机系统（并为现代系统保驾护航）》*Kill It with Fire: Manage Aging Computer Systems (and Future Proof Modern Ones)*](2022-1112/book.md)
