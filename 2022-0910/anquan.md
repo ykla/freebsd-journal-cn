@@ -1,6 +1,7 @@
 # 访谈：保障 FreeBSD 安全性
 
-- 原文链接：[KeepingFreeBSDSecure:LearntheWhysandHowswiththeFreeBSDSecTeam](https://freebsdfoundation.org/wp-content/uploads/2022/11/interview.pdf) - 作者：**PAMBAKER** & **ANNEDICKISON**
+- 原文链接：[Keeping FreeBSD Secure: Learn the Whys and Hows with the FreeBSD Sec Team](https://freebsdfoundation.org/wp-content/uploads/2022/11/interview.pdf)
+- 作者：**PAMBAKER** & **ANNEDICKISON**
 
 我们都熟悉这样的场景：房间一片漆黑，唯一的光源来自笔记本电脑的屏幕。一个戴着兜帽的人正疯狂地敲击键盘。突然，终端窗口里出现了一行行符号、字母和数字，这个神秘的角色露出了得意的微笑。他们/已经/入侵了。
 
