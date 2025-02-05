@@ -84,7 +84,7 @@
 最后，我们讨论了 **FreeBSD Jail**，让学员体验它们的强大功能，并学习如何使用 **iocage** 进行管理。  
 
 对于希望深入学习的学员，我们推荐 **MWL.io**，该网站提供了 **Michael W Lucas** 撰写的 FreeBSD 书籍，包括：  
-- **《FreeBSD Mastery》**系列  
+- **《FreeBSD Mastery》** 系列  
 - **《Poudriere 使用指南》**  
 - **《FreeBSD 安装手册》**  
 - **《FreeBSD Jail 深度解析》**  
