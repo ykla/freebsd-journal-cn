@@ -27,7 +27,7 @@
 
 如果说部署 Python 堆栈如此繁琐，那是否真的值得呢？归根结底——是的——这主要得益于并行计算。默认情况下，DataFrame 对象的计算是单线程的。然而，Pandarallel 包通过多进程方式实现了无缝并行化。尽管这种方式并不完美（因为它要求复制数据），但对于 CPU 密集型计算来说，其加速效果仍然十分显著。
 
-![1)0UO27}W6UHYUIH9YMN1TK](https://github.com/user-attachments/assets/403adffa-d2f2-4398-858d-d79b9db770b4)
+![](https://github.com/user-attachments/assets/403adffa-d2f2-4398-858d-d79b9db770b4)
 
 **图 3.Make 监理的并行化方案**
 
