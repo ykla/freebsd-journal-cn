@@ -1,7 +1,7 @@
 # 《编程智慧:编程鬼才的经验和思考》（*The Kollected 编程智慧:编程鬼才的经验和思考*）书评
 
-- 原文链接：[A review of  The Kollected 编程智慧:编程鬼才的经验和思考]()
-- 作者：**https://freebsdfoundation.org/wp-content/uploads/2022/03/reuschling_practical_ports.pdf**
+- 原文链接：[A review of  The Kollected 编程智慧:编程鬼才的经验和思考](https://freebsdfoundation.org/wp-content/uploads/2022/03/reuschling_practical_ports.pdf)
+- 作者：**BENEDICT REUSCHLING**
 
 亲爱的 Practical Ports，
 
