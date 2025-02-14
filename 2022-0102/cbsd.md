@@ -51,11 +51,11 @@ cbsd jconstruct-tui
 
 ![](https://github.com/user-attachments/assets/3add189e-d5e8-4672-b4a9-e14cbece2fcf)
 
-这两种对话框的输出是生成文本配置文件，其中包含 jcreate 脚本的参数集合，您可以直接从 TUI 界面或命令行调用该脚本。
+这两种对话框的输出是生成文本配置文件，其中包含 jcreate 脚本的参数集合，你可以直接从 TUI 界面或命令行调用该脚本。
 
 选项 3：使用配置文件或命令行参数。
 
-与之前的方法相比，这种方法较为复杂，因为它需要了解可配置参数的名称，但它适合于环境开发的自动化。您可以通过以下方式合成配置文件模板：
+与之前的方法相比，这种方法较为复杂，因为它需要了解可配置参数的名称，但它适合于环境开发的自动化。你可以通过以下方式合成配置文件模板：
 
 ```sh
 jname="myjail1"
@@ -90,7 +90,7 @@ cbsd jcreate jconf=<文件路径>
 
 ## Jail 模板
 
-我们不会详细讨论典型的容器工作操作，因为这些内容已经在 [网站](https://www.bsdstore.ru/en/docs.html) 上描述。我们将介绍一些 CBSD 项目的创新，旨在简化在 jail 中引用，特别是与容器模板的工作。模板是容器描述和配置的方法。对于容器来说，它可以被导出为可移植的镜像。容器可以包含一个标准的运行时环境，但在大多数情况下，它们用于服务/应用程序的隔离和通过镜像进行分发。这种方式有其优缺点。容器方法的一些优点包括服务部署的速度、不会影响基础系统环境，以及能够提交依赖项的版本，使得应用程序完全正常运行。
+我们不会详细讨论典型的容器工作操作，因为这些内容已经在 [网站](https://www.bsdstore.ru/en/docs.html) 上描述。我们将介绍一些 CBSD 项目的创新，旨在简化在 jail 中引用，特别是与容器模板的工作。模板是容器描述和配置的方法。对于容器来说，它可以被导出为可移植的镜像。容器可以包含一个标准的运行时环境，但在大多数情况下，它们用于服务/应用程序的隔离和通过镜像进行分发。这种方式有其优缺点。容器方法的一些优点包括服务部署的速度、不会影响基本系统环境，以及能够提交依赖项的版本，使得应用程序完全正常运行。
 
 谈到这种方法的缺点，最主要的问题是安全性，特别是当使用没有自包含构建脚本（模板）的容器或镜像时。这使得对容器进行操作性软件更新变得困难（例如，修复 [0-day](<https://en.wikipedia.org/wiki/Zero-day_(computing)>) 漏洞），并且容易出现后门，这些后门可能是图像收集者故意或无意留下的。考虑到安装某些软件的复杂性，通常会发现容器中配置的服务是手动放置的，或者丢失了组装说明。
 
@@ -187,11 +187,11 @@ cbsd jcreate jname=jail1 runasap=1
 cbsd forms module=redis jname=jail1
 ```
 
-将出现熟悉的 TUI 界面，显示 Redis 模块的参数，您可以根据需要进行配置：
+将出现熟悉的 TUI 界面，显示 Redis 模块的参数，你可以根据需要进行配置：
 
 ![](https://github.com/user-attachments/assets/6c449efc-a184-40fc-867e-de07e1498e82)
 
-让我们保留默认参数，并通过 [COMMIT] 操作选择它们。脚本运行完成可能需要一段时间（取决于互联网连接速度，因为模块从官方仓库 pkg.FreeBSD.org 安装 redis 服务器），因此您需要再次确认容器中的服务已安装并正在运行：
+让我们保留默认参数，并通过 [COMMIT] 操作选择它们。脚本运行完成可能需要一段时间（取决于互联网连接速度，因为模块从官方仓库 pkg.FreeBSD.org 安装 redis 服务器），因此你需要再次确认容器中的服务已安装并正在运行：
 
 ```sh
 ~ # cbsd jexec jname=jail1 sockstat -4l
@@ -199,7 +199,7 @@ USER COMMAND PID FD PROTO LOCAL ADDRESS FOREIGN ADDRESS
 redis redis-serv 8910 7 tcp4 172.16.0.13:6379 *:*
 ```
 
-通过重新使用 cbsd forms 调用，您可以随时重新配置服务。此外，forms 会保留以前的值，并且在初始化时始终输出当前数据。例如，让我们更改一组参数：
+通过重新使用 cbsd forms 调用，你可以随时重新配置服务。此外，forms 会保留以前的值，并且在初始化时始终输出当前数据。例如，让我们更改一组参数：
 
 - 将端口设置为 7777；
 
@@ -247,7 +247,7 @@ env H_PORT=9999 cbsd forms module=redis jname=jail1 inter=0
 
 [https://github.com/cbsd/cbsd/blob/v13.0.18/etc/defaults/forms_export_vars.conf](https://github.com/cbsd/cbsd/blob/v13.0.18/etc/defaults/forms_export_vars.conf)
 
-这些值可以自动导出到文件或各种服务发现服务，如 [Consul](https://www.consul.io/)。在这种情况下，您的集群会自动获取这些值，可以用于构建 SOA（面向服务的架构），但这是另一个话题。
+这些值可以自动导出到文件或各种服务发现服务，如 [Consul](https://www.consul.io/)。在这种情况下，你的集群会自动获取这些值，可以用于构建 SOA（面向服务的架构），但这是另一个话题。
 
 除了 redis，[这里](https://github.com/cbsd) 还有其他服务配置模板：命名为 `modules-forms-XXXX` 的仓库。例如，尝试使用以下模板：
 
@@ -263,7 +263,7 @@ env H_PORT=9999 cbsd forms module=redis jname=jail1 inter=0
 
 • modules-forms-elasticsearch
 
-注意：尽管传统上 1 个服务对应 1 个容器，但对于 CBSD forms，您可以将多个模板应用于同一个环境，从而一次性获得所有服务。
+注意：尽管传统上 1 个服务对应 1 个容器，但对于 CBSD forms，你可以将多个模板应用于同一个环境，从而一次性获得所有服务。
 
 ## 它是如何工作的
 
@@ -343,13 +343,13 @@ pkg-1.17.4 Package manager
 redis-6.2.6 Persistent key-value database
 ```
 
-换句话说，通过使用 cbsdpuppet1 容器，您无需在每个容器中安装 puppet7 和必要的依赖项——配置应用不依赖于有限容器中是否存在任何系统软件。
+换句话说，通过使用 cbsdpuppet1 容器，你无需在每个容器中安装 puppet7 和必要的依赖项——配置应用不依赖于有限容器中是否存在任何系统软件。
 
 ## 尾声
 
-cbsd forms 是 CBSD 框架在处理基于 jail 的容器时最强大的功能之一，它在 CBSD 和配置管理器之间架起了桥梁。因此，CBSD 项目通过适当的 Puppet 模块为 FreeBSD 提供支持，而不是依赖 sed/awk 脚本支持和静态模板。如果某个模块能够在 FreeBSD 环境中运行，您可以通过 cbsd forms 透明地使用它。这对特定的 CBSD 用户和所有 FreeBSD 上的 Puppet 用户都有好处。如果您使用其他配置系统，可以通过使用 cbsd forms 脚本调用其他系统。
+cbsd forms 是 CBSD 框架在处理基于 jail 的容器时最强大的功能之一，它在 CBSD 和配置管理器之间架起了桥梁。因此，CBSD 项目通过适当的 Puppet 模块为 FreeBSD 提供支持，而不是依赖 sed/awk 脚本支持和静态模板。如果某个模块能够在 FreeBSD 环境中运行，你可以通过 cbsd forms 透明地使用它。这对特定的 CBSD 用户和所有 FreeBSD 上的 Puppet 用户都有好处。如果你使用其他配置系统，可以通过使用 cbsd forms 脚本调用其他系统。
 
-CBSD 项目支持基于现有模板的即用型镜像的振荡和分发，您可以通过 CBSD 仓库使用 cbsd repo 和 cbsd images。请参阅内联文档和示例：
+CBSD 项目支持基于现有模板的即用型镜像的振荡和分发，你可以通过 CBSD 仓库使用 cbsd repo 和 cbsd images。请参阅内联文档和示例：
 
 ```sh
 ~ # cbsd repo --help
