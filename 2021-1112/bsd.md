@@ -1,11 +1,11 @@
-# WPT/CFT：OccamBSD
+# 进行中的工作/征求反馈：OccamBSD
 
-- 原文链接：[WPT/CFT：OccamBSD](https://freebsdfoundation.org/wp-content/uploads/2022/01/WIP.CFT-OccamBSD.pdf)
+- 原文链接：[进行中的工作/征求反馈：OccamBSD](https://freebsdfoundation.org/wp-content/uploads/2022/01/WIP.CFT-OccamBSD.pdf)
 - 作者：**TOM JONES & MICHAEL DEXTER**
 
 ---
 
-WIP/CFT 是由 Tom Jones 主持的新栏目，将包含一些有趣的、长期进行的项目和工作进展，你可能会对此感兴趣并希望参与贡献。本期的内容是 Tom 与 OccamBSD 作者 Michael Dexter 的对话。
+进行中的工作/征求反馈是由 Tom Jones 主持的新栏目，将包含一些有趣的、长期进行的项目和工作进展，你可能会对此感兴趣并希望参与贡献。本期的内容是 Tom 与 OccamBSD 作者 Michael Dexter 的对话。
 
 ---
 
