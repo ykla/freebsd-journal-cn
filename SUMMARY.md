@@ -175,3 +175,11 @@
 * [WPT/CFT: mkjail](2022-0102/mkjail.md)
 * [《编程智慧:编程鬼才的经验和思考》（*The Kollected Kode Vicious*）书评](2022-0102/book.md)
 * [会议报告：EuroBSDCon 2021 我的第一次 EuroBSDCon：一位新组织者的视角](2022-0102/huiyi.md)
+
+## 2021-1112 存储
+
+* [开放通道 SSD](2021-1112/SSD.md)
+* [构建 FreeBSD 社区](2021-1112/shequ.md)
+* [与完美操作系统同行 27 年](2021-1112/27.md)
+* [WPT/CFT：OccamBSD](2021-1112/bsd.md)
+* [通过 iSCSI 导入 ZFS ZIL——不要在工作中这样做——就像我做的那样](2021-1112/port.md)
