@@ -113,7 +113,7 @@
 * [虚拟实验室——BSD 编程研讨会](2023-0102/lab.md)
 * [ZFS 简介](2023-0102/zfs2.md)
 * [会议报告：落基山庆祝女性计算机科学家](2023-0102/women.md)
-* [WPT/CFT：数据包批处理](2023-0102/batch.md)
+* [进行中的工作/征求反馈：数据包批处理](2023-0102/batch.md)
 * [基金会与 FreeBSD 桌面](2023-0102/desktop.md)
 
 ## 2022-1112 可观测性和衡量标准
@@ -145,7 +145,7 @@
 * [FreeBSD 入门研讨会](2022-0708/bsd.md)
 * [实用 IPv6（第二部分）](2022-0708/ipv6.md)
 * [在 2022 年及以后推广 FreeBSD](2022-0708/2022.md)
-* [WPT/CFT：Socket 缓冲区](2022-0708/socket.md)
+* [进行中的工作/征求反馈：Socket 缓冲区](2022-0708/socket.md)
 * [FreeBSD 开发者峰会报告](2022-0708/huiyi.md)
 * [支持 Electromagnetic Field 2022](2022-0708/ele.md)
 
@@ -155,7 +155,7 @@
 * [LLDB 14 —— FreeBSD 新调试器](2022-0506/lldb.md)
 * [实用 IPv6（第一部分）](2022-0506/ipv6.md)
 * [利用 netdump(4) 进行事后内核调试](2022-0506/netdump.md)
-* [WPT/CFT：FreeBSD 启动性能](2022-0506/freebsd.md)
+* [进行中的工作/征求反馈：FreeBSD 启动性能](2022-0506/freebsd.md)
 * [实用 Port：在 OpenZFS 上设置 NFSv4 文件服务器](2022-0506/port.md)
 
 ## 2022-0304 ARM64 是一级架构
@@ -163,7 +163,7 @@
 * [FreeBSD/ARM64 上的数据科学](2022-0304/datascience.md)
 * [Pinebook Pro 上的 FreeBSD](2022-0304/pinebook.md)
 * [嵌入式控制器的 ACPI 支持](2022-0304/acpi.md)
-* [WPT/CFT：Lumina 桌面征集开发人员](2022-0304/mkjail.md)
+* [进行中的工作/征求反馈：Lumina 桌面征集开发人员](2022-0304/mkjail.md)
 * [实用 Port：如何设置 Apple 时间机器](2022-0304/apple.md)
 
 ## 2022-0102 软件与系统管理
@@ -181,5 +181,5 @@
 * [开放通道 SSD](2021-1112/ssd.md)
 * [构建 FreeBSD 社区](2021-1112/shequ.md)
 * [与完美操作系统同行 27 年](2021-1112/27.md)
-* [WPT/CFT：OccamBSD](2021-1112/bsd.md)
+* [进行中的工作/征求反馈：OccamBSD](2021-1112/bsd.md)
 * [通过 iSCSI 导入 ZFS ZIL——不要在工作中这样做——就像我做的那样](2021-1112/port.md)
