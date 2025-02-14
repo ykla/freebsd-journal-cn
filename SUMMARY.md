@@ -56,7 +56,7 @@
 
 * [FreeBSD 中的 RACK 栈和替代 TCP 栈](2024-0102/rack-he-freebsd-ke-yong-de-tcp-dui-zhan.md)
 * [FreeBSD 14 中有关 TCP 的更新](2024-0102/freebsd-14-you-guan-tcp-de-geng-xin.md)
-* [if\_ovpn 还是 OpenVPN](2024-0102/ifovpn-hai-shi-openvpn.md)
+* [if_ovpn 还是 OpenVPN](2024-0102/ifovpn-hai-shi-openvpn.md)
 * [SR-IOV 已成为 FreeBSD 的重要功能](2024-0102/sriov-yi-cheng-wei-freebsd-zhong-zhong-yao-de-gong-neng.md)
 * [FreeBSD 接口 API（IfAPI）](2024-0102/freebsd-jie-kou-apiifapi.md)
 * [BATMAN：更优的可移动热点网络方式](2024-0102/batman-geng-jia-de-ke-yi-dong-adhoc-wang-luo-fang-shi.md)
@@ -172,7 +172,7 @@
 * [使用 Git 贡献到 FreeBSD Ports](2022-0102/git.md)
 * [CBSD：第一部分——生产环境](2022-0102/cbsd.md)
 * [将 OpenBSD 的 pf syncookie 代码移植到 FreeBSD 的 pf](2022-0102/pf.md)
-* [WPT/CFT: mkjail](2022-0102/mkjail.md)
+* [进行中的工作/征求反馈：mkjail](2022-0102/mkjail.md)
 * [《编程智慧:编程鬼才的经验和思考》（*The Kollected Kode Vicious*）书评](2022-0102/book.md)
 * [会议报告：EuroBSDCon 2021 我的第一次 EuroBSDCon：一位新组织者的视角](2022-0102/huiyi.md)
 
