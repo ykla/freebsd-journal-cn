@@ -89,17 +89,17 @@
 
 ## 2023-0506 FreeBSD 三十周年纪念特刊
 
-* [CheriBSD 近十多年的历程](<2023-0506/A Dozen Years of CheriBSD.md>)
-* [AArch64：成为 FreeBSD 新的一级架构](<2023-0506/AArch64\_Bringing a New FreeBSD Architecture to Tier-1.md>)
-* [岁月如梭：我个人的时间线](<2023-0506/How Time Flies\_A Personal Timeline.md>)
-* [安装 FreeBSD 1.0：回顾 30 年前](<2023-0506/Installing FreeBSD 1.0 30 Years On.md>)
-* [ZFS 是如何进入 FreeBSD 的呢？](<2023-0506/How ZFS Made Its Way into FreeBSD.md>)
-* [我不是来自约克郡的，我保证！](<2023-0506/I’m Not from Yorkshire,I Promise!.md>)
-* [回忆录：采访 David Greenman Lawrence](<2023-0506/Recollections\_An Interview with David Greenman Lawrence.md>)
-* [FreeBSD 和早期的 Unix社区](<2023-0506/FreeBSD and the Early Unix Communities.md>)
-* [早期的 FreeBSD 移植](<2023-0506/Early FreeBSD Ports.md>)
-* [FreeBSD 30 周年：成功的秘诀](<2023-0506/FreeBSD at 30 Years\_ Its Secrets to Success.md>)
-* [FreeBSD 在日本：回忆之旅与今日之实](<2023-0506/FreeBSD in Japan\_A Trip Down Memory Lane and Today’s Reality.md>)
+* [CheriBSD 近十多年的历程](2023-0506/CheriBSD.md)
+* [AArch64：成为 FreeBSD 新的一级架构](2023-0506/AArch64.md)
+* [岁月如梭：我个人的时间线](2023-0506/Timeline.md)
+* [安装 FreeBSD 1.0：回顾 30 年前](2023-0506/Installing.md)
+* [ZFS 是如何进入 FreeBSD 的呢？](2023-0506/ZFS.md)
+* [我不是来自约克郡的，我保证！](2023-0506/Promise.md)
+* [回忆录：采访 David Greenman Lawrence](2023-0506/Recollections.md)
+* [FreeBSD 和早期的 Unix社区](2023-0506/Unix.md)
+* [早期的 FreeBSD 移植](2023-0506/Ports.md)
+* [FreeBSD 30 周年：成功的秘诀](2023-0506/30.md)
+* [FreeBSD 在日本：回忆之旅与今日之实](2023-0506/Japan.md)
 
 ## 2023-0304 嵌入式
 
