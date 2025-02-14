@@ -13,15 +13,15 @@ mkjail 避免了许多其他功能更全面的 jail 框架所带来的复杂性�
 
 mkjail 通过减少其工作场景而变得简单。它仅提供创建所谓的“胖” jail，而每个胖 jail 都有一个单独的 jail。
 
-mkjail 使用一个小的配置文件来描述将要创建的 jail 的 zfs 数据集位置、它们在文件系统中的位置，以及应该安装到 jail 中的安装集。若使用 mkjail 创建了 jail，它必须以与使用基础系统工具管理的其他 jail 相同的方式集成到 /etc/jail.conf 中。
+mkjail 使用一个小的配置文件来描述将要创建的 jail 的 zfs 数据集位置、它们在文件系统中的位置，以及应该安装到 jail 中的安装集。若使用 mkjail 创建了 jail，它必须以与使用基本系统工具管理的其他 jail 相同的方式集成到 /etc/jail.conf 中。
 
-使用基础系统工具创建 jail 是直接的——bsdinstall 有一个 jail 命令，可以将 jail 安装到任何指定的目录中。mkjail 扩展了这个功能，并处理与 zfs 工具的集成，以及执行更新和升级的干净接口。
+使用基本系统工具创建 jail 是直接的——bsdinstall 有一个 jail 命令，可以将 jail 安装到任何指定的目录中。mkjail 扩展了这个功能，并处理与 zfs 工具的集成，以及执行更新和升级的干净接口。
 
 mkjail 在更新和升级 jail 时表现出色，将这些操作转化为单个命令。因为 mkjail 只运行胖 jail，所以在执行更新和升级时，不会出现与精简 jail 相关的管理问题。
 
 mkjail[1] 最初由 Mark Felder 开发，由 BSDCan 的 Dan Lagille 上传到 GitHub，并得到了 Andrew Fyfe 的贡献。该项目在 GitHub 上进行开发（https://github.com/mkjail/mkjail），并且仍然非常年轻——源代码树导入到 GitHub 可以追溯到 2021 年中。
 
-mkjail 旨在成为一个小工具，用于增强和简化 jail 的创建、更新和升级。它是通过几个小型 shell 脚本编写的，足够小，可以集成到 FreeBSD 的基础系统中。
+mkjail 旨在成为一个小工具，用于增强和简化 jail 的创建、更新和升级。它是通过几个小型 shell 脚本编写的，足够小，可以集成到 FreeBSD 的基本系统中。
 
 mkjail 很高兴通过其 GitHub 接受贡献，形式可以是代码或文档的 pull 请求，也可以在 GitHub 上讨论错误和新特性的 issues。mkjail 完全用 sh 编写，这使得贡献代码相对简单。
 

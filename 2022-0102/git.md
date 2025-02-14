@@ -36,20 +36,20 @@ pkg install git
 
 ## 克隆 Ports 树
 
-如果您希望为树中贡献一个新的 port，但还没有具体的想法，可以从 FreeBSD Wiki 上扫描请求的 port 列表开始。假设我们希望为列表中的一个应用程序——Nyxt 浏览器——创建一个新的 port。第一步是克隆 FreeBSD ports 仓库。如果您使用的是 ZFS，您可能希望为您的开发 ports 树创建一个专用的数据集。
+如果你希望为树中贡献一个新的 port，但还没有具体的想法，可以从 FreeBSD Wiki 上扫描请求的 port 列表开始。假设我们希望为列表中的一个应用程序——Nyxt 浏览器——创建一个新的 port。第一步是克隆 FreeBSD ports 仓库。如果你使用的是 ZFS，你可能希望为你的开发 ports 树创建一个专用的数据集。
 
 ```sh
 zfs create zroot/usr/home/ashish/freebsd/ports
 ```
 
-当然，将 `zroot/usr/home/ashish/freebsd/ports` 替换为您的数据集布局。现在克隆仓库。您正在下载整个仓库，它包括超过 30,000 个 ports 和 28 年的历史，因此这个过程会花费一些时间。
+当然，将 `zroot/usr/home/ashish/freebsd/ports` 替换为你的数据集布局。现在克隆仓库。你正在下载整个仓库，它包括超过 30,000 个 ports 和 28 年的历史，因此这个过程会花费一些时间。
 
 ```sh
 git clone -o freebsd --config remote.freebsd.fetch=+refs/notes/*:refs/notes/*
 https://git.freebsd.org/ports.git ~/freebsd/ports
 ```
 
-`-o freebsd` 设置了默认远程仓库的名称，用于协作（拉取和推送更改）。`--config remote.freebsd.fetch=+refs/notes/*:refs/notes/*` 将 Subversion 修订号添加到转换为 Git 之前提交的注释字段中。克隆完成后，您可以选择创建一个子 ZFS 数据集，在构建 ports 时存储软件分发文件。
+`-o freebsd` 设置了默认远程仓库的名称，用于协作（拉取和推送更改）。`--config remote.freebsd.fetch=+refs/notes/*:refs/notes/*` 将 Subversion 修订号添加到转换为 Git 之前提交的注释字段中。克隆完成后，你可以选择创建一个子 ZFS 数据集，在构建 ports 时存储软件分发文件。
 
 ```sh
 zfs create zroot/usr/home/ashish/ports/distfiles
@@ -60,20 +60,20 @@ zfs create zroot/usr/home/ashish/ports/distfiles
 zfs set compression=off zroot/usr/home/ashish/freebsd/ports/distfiles
 ```
 
-您可以通过几种方式告诉 `make(1)` 您的 ports 树的位置。第一个选项是将配置添加到 `/etc/make.conf` 文件中。
+你可以通过几种方式告诉 `make(1)` 你的 ports 树的位置。第一个选项是将配置添加到 `/etc/make.conf` 文件中。
 
 ```c
 .if ${.CURDIR:M/usr/home/ashish/freebsd/ports/*}
 PORTSDIR=/usr/home/ashish/freebsd/ports
 .endif
 ```
-另一种方法是设置 `PORTSDIR` 环境变量。例如，如果您的 shell 是 zsh，您可以将以下行添加到 `~/.zshrc` 文件中。
+另一种方法是设置 `PORTSDIR` 环境变量。例如，如果你的 shell 是 zsh，你可以将以下行添加到 `~/.zshrc` 文件中。
 
 ```sh
 export PORTSDIR=/usr/home/ashish/freebsd/ports
 ```
 
-如果您计划使用多个 Ports ，像 `sysutils/direnv` 这样的工具对于根据当前目录加载或卸载环境变量非常有用。
+如果你计划使用多个 Ports ，像 `sysutils/direnv` 这样的工具对于根据当前目录加载或卸载环境变量非常有用。
 
 ## 保持更新
 
@@ -83,7 +83,7 @@ export PORTSDIR=/usr/home/ashish/freebsd/ports
 git -C ~/freebsd/ports fetch freebsd 
 ```
 
-获取（Fetching）让您有机会在将更改合并到本地分支之前检查这些更改。这里的 `-C ~/freebsd/ports` 指示 Git 在 `~/freebsd/ports` 目录下操作。如果当前工作目录是 `~/freebsd/ports`，从现在开始假设如此，那么这个标志可以省略。`freebsd` 参数表示从该远程仓库获取。
+获取（Fetching）让你有机会在将更改合并到本地分支之前检查这些更改。这里的 `-C ~/freebsd/ports` 指示 Git 在 `~/freebsd/ports` 目录下操作。如果当前工作目录是 `~/freebsd/ports`，从现在开始假设如此，那么这个标志可以省略。`freebsd` 参数表示从该远程仓库获取。
 
 要列出推送到 `freebsd` 主分支但尚未合并到本地主分支的提交，请运行：
 
@@ -91,7 +91,7 @@ git -C ~/freebsd/ports fetch freebsd
 git log --oneline main..freebsd/main 
 ```
 
-在最上面的哈希值旁边，您会看到两个指针，`freebsd/main` 和 `freebsd/HEAD`。`HEAD` 通常是指向分支中最后一次提交的指针，在这种情况下，它和 `freebsd/main` 一样，指向远程仓库主分支的最后一次提交。如果我们运行：
+在最上面的哈希值旁边，你会看到两个指针，`freebsd/main` 和 `freebsd/HEAD`。`HEAD` 通常是指向分支中最后一次提交的指针，在这种情况下，它和 `freebsd/main` 一样，指向远程仓库主分支的最后一次提交。如果我们运行：
 
 ```sh
 git log --oneline freebsd/main
@@ -175,7 +175,7 @@ git config --add core.hooksPath .hooks
 git config core.editor "emacs -nw"
 ```
 
-如果您希望在所有 Git 仓库中使用此编辑器，请在设置 `core.editor` 时添加 `--global` 选项：
+如果你希望在所有 Git 仓库中使用此编辑器，请在设置 `core.editor` 时添加 `--global` 选项：
 
 ```sh
 git config --global core.editor "emacs -nw"
@@ -187,7 +187,7 @@ git config --global core.editor "emacs -nw"
 git commit
 ```
 
-您的编辑器现在应该显示提交模板，模板中提供了创建提交信息的提示。主题行应采用以下格式：`<port-name>: <description>`，并且理想情况下应少于 50 个字符。一个好的主题行可能是：
+你的编辑器现在应该显示提交模板，模板中提供了创建提交信息的提示。主题行应采用以下格式：`<port-name>: <description>`，并且理想情况下应少于 50 个字符。一个好的主题行可能是：
 
 ```sh
 www/nyxt: (WIP) First attempt to port Nyxt browser.
@@ -204,39 +204,39 @@ TODO:
 - Add do-build target
 ```
 
-保存并退出编辑器后，您的更改将被提交。到目前为止，我们的更改从工作树进展到暂存区（索引），最终进入本地仓库。要检查您的提交，可以使用 `git log`，它还会确认 `HEAD` 和 `nyxt` 指针已经比主分支指针多了一次提交。
+保存并退出编辑器后，你的更改将被提交。到目前为止，我们的更改从工作树进展到暂存区（索引），最终进入本地仓库。要检查你的提交，可以使用 `git log`，它还会确认 `HEAD` 和 `nyxt` 指针已经比主分支指针多了一次提交。
 
 ## 重写本地历史
 
-在 Subversion 中提交意味着将您的更改发送到服务器，而在 Git 中，提交只是意味着在本地记录您的更改为一个新的快照。因此，在 Git 中，最好经常提交。当需要与他人共享您的工作时，您可以修改本地历史。有几种不同的方法可以重写历史。例如，如果您看到最近提交信息中的拼写错误，此时修复它是一个好时机，因为您的更改仍然是本地的。要修改最近一次提交，请运行：
+在 Subversion 中提交意味着将你的更改发送到服务器，而在 Git 中，提交只是意味着在本地记录你的更改为一个新的快照。因此，在 Git 中，最好经常提交。当需要与他人共享你的工作时，你可以修改本地历史。有几种不同的方法可以重写历史。例如，如果你看到最近提交信息中的拼写错误，此时修复它是一个好时机，因为你的更改仍然是本地的。要修改最近一次提交，请运行：
 
 ```sh
 git commit --amend
 ```
 
-并在编辑器中修改提交信息。如果您不小心没有在上次提交中暂存和提交 `www/Makefile` 的更改，只需在运行 `git commit --amend` 之前暂存该文件，它将被添加到上次提交中。关于重写历史的其他方法将在稍后讨论。
+并在编辑器中修改提交信息。如果你不小心没有在上次提交中暂存和提交 `www/Makefile` 的更改，只需在运行 `git commit --amend` 之前暂存该文件，它将被添加到上次提交中。关于重写历史的其他方法将在稍后讨论。
 
 ## 测试
 
-在请求审查之前，您的新 Port 必须经过测试。有两个 Port 检查工具可以提醒您常见的违规问题。使用以下命令安装它们：
+在请求审查之前，你的新 Port 必须经过测试。有两个 Port 检查工具可以提醒你常见的违规问题。使用以下命令安装它们：
 
 ```sh
 pkg install portlint portfmt
 ```
 
-要使用 portlint 检查您的 Port ，在 `~/freebsd/ports/www/nyxt` 目录下运行：
+要使用 portlint 检查你的 Port ，在 `~/freebsd/ports/www/nyxt` 目录下运行：
 
 ```sh
 portlint -AC
 ```
 
-要使用 portclippy 检查您的 Port （来自 portfmt 包），也在 `~/freebsd/ports/www/nyxt` 目录下运行：
+要使用 portclippy 检查你的 Port （来自 portfmt 包），也在 `~/freebsd/ports/www/nyxt` 目录下运行：
 
 ```sh
 portclippy Makefile
 ```
 
-请注意，虽然这些工具通常非常有用，但它们并不能捕捉所有的错误，有时也会提出不太合理的建议。另一个有用的工具是 portfmt。顾名思义，它可以帮助格式化您 Port 的 Makefile。
+请注意，虽然这些工具通常非常有用，但它们并不能捕捉所有的错误，有时也会提出不太合理的建议。另一个有用的工具是 portfmt。顾名思义，它可以帮助格式化你 Port 的 Makefile。
 
 ```sh
 portfmt -D Makefile
@@ -250,13 +250,13 @@ portfmt -D Makefile
 poudriere ports -c -m null -M ~/freebsd/ports
 ```
 
-`-m` 选项告诉 poudriere 使用 null 方法，即使用位于 `-M` 参数指定位置的现有 Ports 。使用 null 方法意味着我们将手动管理该树，包括保持其最新状态以及在测试时检出适当的分支。设置好 poudriere 后，您可以测试您的 Port 。如果您创建了一个名为 `13amd64` 的 jail，您可以在该 jail 中测试新 Port ，方法是
+`-m` 选项告诉 poudriere 使用 null 方法，即使用位于 `-M` 参数指定位置的现有 Ports 。使用 null 方法意味着我们将手动管理该树，包括保持其最新状态以及在测试时检出适当的分支。设置好 poudriere 后，你可以测试你的 Port 。如果你创建了一个名为 `13amd64` 的 jail，你可以在该 jail 中测试新 Port ，方法是
 
 ```sh
 poudriere testport -j 13amd64 www/nyxt
 ```
 
-理想情况下，您应该在各种一级平台上测试您的 Port （当前为 12i386、12amd64、13amd64 和 13arm64）。在构建新 Port 后，poudriere 可以构建一个包，并保持 jail 运行，且包已经安装。
+理想情况下，你应该在各种一级平台上测试你的 Port （当前为 12i386、12amd64、13amd64 和 13arm64）。在构建新 Port 后，poudriere 可以构建一个包，并保持 jail 运行，且包已经安装。
 
 ```sh
 poudriere bulk -i -j 13amd64 <category>/<port>
@@ -264,13 +264,13 @@ poudriere bulk -i -j 13amd64 <category>/<port>
 
 选项 `-i` 告诉 poudriere 在安装包后保持 jail 运行。这对于测试终端应用程序非常有用，但对于像 nyxt 这样的图形应用程序则不适用。
 
-如果 Port 有 OPTIONS，poudriere 会像官方包构建器一样测试和构建包，即选择默认的 OPTIONS。如果您想使用非默认选项来测试或构建包，可以运行
+如果 Port 有 OPTIONS，poudriere 会像官方包构建器一样测试和构建包，即选择默认的 OPTIONS。如果你想使用非默认选项来测试或构建包，可以运行
 
 ```sh
 poudriere options -j 13amd64 www/nyxt
 ```
 
-在运行 `poudriere testport` 或 `poudriere bulk` 之前，您可以通过配置 `pkg` 使用 poudriere 创建的本地仓库。如果您想在与 poudriere 相同的系统上安装包，需要配置 `pkg` 使用该仓库。根据 PKG.CONF(5)，可以在 `/usr/local/etc/pkg/repos/` 下放置本地配置文件。文件名没有特殊要求，但必须以 `.conf` 结尾。要设置本地仓库配置并禁用默认的官方仓库，可以创建 `/usr/local/etc/pkg/repos/local.conf` 文件并输入以下内容：
+在运行 `poudriere testport` 或 `poudriere bulk` 之前，你可以通过配置 `pkg` 使用 poudriere 创建的本地仓库。如果你想在与 poudriere 相同的系统上安装包，需要配置 `pkg` 使用该仓库。根据 PKG.CONF(5)，可以在 `/usr/local/etc/pkg/repos/` 下放置本地配置文件。文件名没有特殊要求，但必须以 `.conf` 结尾。要设置本地仓库配置并禁用默认的官方仓库，可以创建 `/usr/local/etc/pkg/repos/local.conf` 文件并输入以下内容：
 
 ```ini
 FreeBSD: {
@@ -283,7 +283,7 @@ Poudriere: {
 
 上述路径假设了 poudriere 的默认仓库位置，基于 13amd64 jail 的仓库，以及默认的 ports tree。
 
-如果您想为远程主机提供包，您将需要配置一个 web 服务器。Poudriere 还提供了一个 web 界面，可以显示当前和过去的构建信息。如果您的 web 服务器是 nginx，您可以在 `nginx.conf` 中添加如下的服务器配置来托管 poudriere 的界面和仓库：
+如果你想为远程主机提供包，你将需要配置一个 web 服务器。Poudriere 还提供了一个 web 界面，可以显示当前和过去的构建信息。如果你的 web 服务器是 nginx，你可以在 `nginx.conf` 中添加如下的服务器配置来托管 poudriere 的界面和仓库：
 
 ```ini
 server {
@@ -293,7 +293,7 @@ server {
  root /usr/local/share/poudriere/html;
  ssl_certificate /usr/local/etc/dehydrated/certs/example.org/fullchain.pem;
  ssl_certificate_key /usr/local/etc/dehydrated/certs/example.org/privkey.pem;
- # 如果您使用 dehydrated 作为 Let's Encrypt 客户端
+ # 如果你使用 dehydrated 作为 Let's Encrypt 客户端
  location /.well-known/acme-challenge {
 alias /usr/local/www/dehydrated;
  }
