@@ -2,7 +2,7 @@
 
 - 原文链接：[Programmers Programming Potpourri](https://freebsdfoundation.org/wp-content/uploads/2021/11/Programmers_Programming_Potpourri.pdf)
 - 作者：**BENEDICT REUSCHLING**
-- 
+
 ---
 
 本专栏介绍了一些对 FreeBSD 有用、独特或值得了解的 ports 和软件包。Ports 扩展了基本操作系统的功能，可以帮助你完成任务，甚至让你会心一笑。一起探索吧，也许你会发现一些新奇的东西。
