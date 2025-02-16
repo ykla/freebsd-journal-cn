@@ -198,4 +198,4 @@
 * [Panfrost 驱动程序](2021-0708/Panfrost.md)
 * [用 Git 更新 FreeBSD](2021-0708/git.md)
 * [FreeBSD 的新面孔](2021-0708/new.md)
-* [想给你的桌面加点配料？](2021-0708/Desk.md)
+* [想给你的桌面加点佐料？](2021-0708/Desk.md)
