@@ -1,4 +1,4 @@
-# 想给你的桌面加点配料？
+# 想给你的桌面加点佐料？
 
 - 原文链接：[Want Some Toppings on Your Desk?](https://freebsdfoundation.org/wp-content/uploads/2021/08/Practical-Ports.pdf)
 - 作者：**BENEDICT REUSCHLING**
