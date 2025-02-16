@@ -190,3 +190,12 @@
 * [如何为 FreeBSD 实现简单的 USB 驱动程序](2021-0910/usb.md)
 * [内核开发技巧](2021-0910/kernel.md)
 * [程序员编程杂谈](2021-0910/Programmers.md)
+
+## 2021-0708 桌面/无线网
+
+*[通往 FreeBSD 桌面的直线路径](2021-0708/Desktop.md)
+*[FreeBSD 13 中的人机接口设备 (HID) 支持](2021-0708/hid.md)
+*[Panfrost 驱动程序](2021-0708/Panfrost.md)
+*[用 Git 更新 FreeBSD](2021-0708/git.md)
+*[FreeBSD 的新面孔](2021-0708/new.md)
+*[想给你的桌面加点配料？](2021-0708/Desk.md)
