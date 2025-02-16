@@ -5,7 +5,7 @@
 
 本栏目的目标是聚焦那些最近获得提交权限的贡献者，并将他们介绍给 FreeBSD 社区。
 
-在这一期中，我们聚焦的对象是 Charlie Li，他在四月获得了他的 Ports 权限。
+在这一期中，我们聚焦的对象是 Charlie Li，他在四月获得了 Ports 权限。
 
 ![](https://github.com/user-attachments/assets/30ecc60d-4239-4c1f-8c53-b2be35a96ff6)
 
