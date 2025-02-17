@@ -199,3 +199,11 @@
 * [用 Git 更新 FreeBSD](2021-0708/git.md)
 * [FreeBSD 的新面孔](2021-0708/new.md)
 * [想给你的桌面加点佐料？](2021-0708/Desk.md)
+
+## 2021-0506 安全
+
+* [七种提升新安装 FreeBSD 安全性的方法](2021-0506/Security.md)
+* [copyinout 框架](2021-0506/copyinout.md)
+* [使用 TLS 改善 NFS 安全性](2021-0506/TLS.md)
+* [Capsicum 案例研究：Got](2021-0506/Got.md)
+* [对 Jail 进行安全扫描](2021-0506/jail.md)
