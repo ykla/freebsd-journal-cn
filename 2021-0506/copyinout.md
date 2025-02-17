@@ -5,9 +5,9 @@
 - 原文链接：[The copyinout Framework](https://freebsdfoundation.org/wp-content/uploads/2021/07/The-copyinout-Framework.pdf)
 - 作者：**KONRAD WITASZCZYK**
 
-在用户空间和内核空间之间的内存复制是系统调用中的一个关键操作。它用于复制系统调用的参数以及系统调用的结果。目前的复制函数原型是与类型无关的，复制一定数量的字节从任意缓冲区。当内核将其内存复制到用户空间时，必须确保不会泄露任何可能包含机密数据的内核数据。本文描述了 FreeBSD 和 CheriBSD 中当前复制函数的局限性，并提出了一个框架，可以提高系统调用处理程序的安全性和代码质量。
+在用户空间和内核空间之间的内存复制是系统调用中的一个关键操作。它用于复制系统调用的参数以及系统调用的结果。目前的复制函数原型是与类型无关的，复制一定数量的字节从任意缓冲区。当内核将其内存复制到用户空间时，必须确保不会泄露任何可能包含机密数据的内核数据。本文概述了 FreeBSD 和 CheriBSD 中当前复制函数的局限性，并提出了一个框架，可以提高系统调用处理程序的安全性和代码质量。
 
-所描述的 copyinout 框架是作为题为《能力感知内存复制在地址空间之间》的硕士论文的一部分实现的，该论文在哥本哈根大学的 Ken Friis Larsen 和微软研究院的 David Chisnall 的指导下完成。类型感知的 copyin 和 copyout API 的最初构想是由 David Chisnall 提出的。
+所述的 copyinout 框架是作为题为《能力感知内存复制在地址空间之间》的硕士论文的一部分实现的，该论文在哥本哈根大学的 Ken Friis Larsen 和微软研究院的 David Chisnall 的指导下完成。类型感知的 copyin 和 copyout API 的最初构想是由 David Chisnall 提出的。
 
 ## FreeBSD 中的内存复制函数
 
@@ -390,7 +390,7 @@ freebsd32_jail(struct thread *td, struct freebsd32_jail_args *uap)
 
 copyinout 框架的初步实现表明，生成拷贝函数可以提高系统调用处理程序的代码质量，并消除填充中的潜在内核内存泄漏。然而，代码生成工具必须改进，以支持更复杂的数据类型，并为所有支持的平台生成汇编拷贝函数实现。虽然框架的工作已经暂停了一段时间，但我们希望能够尽快恢复并实施这些改进。
 
-## 未来工作
+## 后续工作
 
 除了 copyinout 框架的基本功能外，还有几个想法可以在未来改进或应用它：
 
