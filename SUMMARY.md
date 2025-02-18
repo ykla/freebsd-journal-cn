@@ -220,9 +220,9 @@
 
 ## 2021-0102 案例研究
 
-* [Tarsnap 的 FreeBSD 集群](2021-0101/Tarsnap.md)
-* [BALLY WULFF](2021-0101/BALLY.md)
-* [Netflix Open Connect](2021-0101/Netflix.md)
-* [FreeBSD 的新面孔](2021-0101/Faces.md)
-* [写作学者的 FreeBSD](2021-0101/Writing.md)
-* [在世界之巅](2021-0101/Top.md)
+* [Tarsnap 的 FreeBSD 集群](2021-0102/Tarsnap.md)
+* [BALLY WULFF](2021-0102/BALLY.md)
+* [Netflix Open Connect](2021-0102/Netflix.md)
+* [FreeBSD 的新面孔](2021-0102/Faces.md)
+* [写作学者的 FreeBSD](2021-0102/Writing.md)
+* [在世界之巅](2021-0102/Top.md)
