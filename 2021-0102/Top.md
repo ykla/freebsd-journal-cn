@@ -21,7 +21,7 @@ top 10
 
 最流行的重写版本可能是 sysutils/htop，它通过颜色和可定制的显示扩展了基础的 top。从在笔记本电脑上添加剩余电池显示，到为那些在系统间跳跃的 ssh 用户显示主机名，一切都可以配置。进程视图提供了一个整洁的树形视图，显示由你的 shell 或系统守护进程处理数据所产生的线程。不过，由于我多年来经常玩 DOS 游戏，按空格键的频率太高，在 htop 中让我感到困惑。在 FreeBSD 的 top 实现中，这会导致显示刷新。而在 htop 中，它会选中光标下的进程。我应该研究 man 页面，看看它到底是做什么的，而不是指望 top 在每个地方都一样。
 
-说到旧的 DOS 游戏：在安装 sysutils/bashtop 并首次启动它后，我总有一种感觉，仿佛我又在运行专业的受保护模式运行时。它完全冻结了，首页将我重定向到 bpytop。仅仅从 GitHub 页面 [https://github.com/aristocratos/bpytop] 上看，我看到它不仅列出了对 FreeBSD 的支持，还有很多其他支持。我的手指迅速输入
+说到旧的 DOS 游戏：在安装 sysutils/bashtop 并首次启动它后，我总有一种感觉，仿佛我又在运行专业的受保护模式运行时。它完全冻结了，首页将我重定向到 bpytop。仅仅从 GitHub 页面 <https://github.com/aristocratos/bpytop> 上看，我看到它不仅列出了对 FreeBSD 的支持，还有很多其他支持。我的手指迅速输入
 
 ```c
 pkg install bpytop
@@ -36,11 +36,11 @@ pkg install bpytop
 
 网络管理员可能会看看 dns/dnstop，用来捕获并查看流经的 DNS 流量。比 bpytop 更简单的视图，但它有你需要的一切。或者试试 net-mgmt/bandwhich，找出你的带宽一天都流向了哪里。
 
-我还发现有一个尚未移植的工具，跟进程查看器无关，它叫 topgrade [https://github.com/r-darwish/topgrade]。它不仅可以从一个包管理器升级，还可以从系统中所有的包管理器进行升级。或许可以在做这件事时播放《壮志凌云》主题曲，那个 logo 确实让人联想到这一点。我运行这个工具的服务器没有声卡，所以我无法确认。想象一下所有数据中心的工作人员忙着弄清楚这是从机架中哪个机器发出来的！
+我还发现有一个尚未移植的工具，跟进程查看器无关，它叫 topgrade <https://github.com/r-darwish/topgrade>。它不仅可以从一个包管理器升级，还可以从系统中所有的包管理器进行升级。或许可以在做这件事时播放《壮志凌云》主题曲，那个 logo 确实让人联想到这一点。我运行这个工具的服务器没有声卡，所以我无法确认。想象一下所有数据中心的工作人员忙着弄清楚这是从机架中哪个机器发出来的！
 
-我还记得（当然是我随口记起的）一些尚未移植到 FreeBSD 的其他 top 类程序。电影《创：战纪》似乎启发了 eDEX-UI [https://github.com/GitSquared/edex-ui]，它有着未来感的设计。我们能把它移植过来吗？拜托了（加上糖）？
+我还记得（当然是我随口记起的）一些尚未移植到 FreeBSD 的其他 top 类程序。电影《创：战纪》似乎启发了 eDEX-UI <https://github.com/GitSquared/edex-ui>，它有着未来感的设计。我们能把它移植过来吗？拜托了（加上糖）？
 
-有一个名为 tui-rs [https://github.com/fdehau/tui-rs] 的 RUST 库，它为许多其他灵活而动态的窗口样式终端显示提供了构建模块。我在这里提到其中一个，它似乎是 tail(1) 对 top 的 head(1) 所做的：bottom [https://github.com/ClementTsang/bottom]。同时，sysutils/gotop 可能会引起你的兴趣，它用波浪线显示 CPU 使用情况。在笔记本和服务器上，它还尝试确定 CPU 温度。
+有一个名为 tui-rs <https://github.com/fdehau/tui-rs> 的 RUST 库，它为许多其他灵活而动态的窗口样式终端显示提供了构建模块。我在这里提到其中一个，它似乎是 tail(1) 对 top 的 head(1) 所做的：bottom <https://github.com/ClementTsang/bottom>。同时，sysutils/gotop 可能会引起你的兴趣，它用波浪线显示 CPU 使用情况。在笔记本和服务器上，它还尝试确定 CPU 温度。
 
 如果 www.unixtop.org 没有关闭的话，我会推荐你去那里了解这个工具的历史。幸运的是，archive.org 有 2017 年的存档，可以使用。维基百科也有很有启发性的信息，所以我就把它留给你了。希望这篇文章不会太过火，你能将一些实用工具加入到你的 Unix 工具箱中。
 
