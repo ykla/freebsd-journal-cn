@@ -217,3 +217,12 @@
 * [OpenZFS 中的 Zstandard 压缩](2021-0304/OpenZFS.md)
 * [会议报告：FreeBSD 供应商峰会](2021-0304/Report.md)
 * [Git 不够吗？](2021-0304/git.md)
+
+## 2021-0102 案例研究
+
+* [Tarsnap 的 FreeBSD 集群](2021-0101/Tarsnap.md)
+* [BALLY WULFF](2021-0101/BALLY.md)
+* [Netflix Open Connect](2021-0101/Netflix.md)
+* [FreeBSD 的新面孔](2021-0101/Faces.md)
+* [写作学者的 FreeBSD](2021-0101/Writing.md)
+* [在世界之巅](2021-0101/Top.md)
