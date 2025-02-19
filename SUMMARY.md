@@ -229,7 +229,7 @@
 
 ## 2020-1112 工作流/持续集成（CI）
 
-* [FreeBSD Mini-Git 入门](2020-1112/git.md)
+* [FreeBSD Git 快速入门](2020-1112/git.md)
 * [使用 syzkaller 进行内核 Fuzzing](2020-1112/syzkaller.md)
 * [*Mastering Vim Quickly* 书评](2020-1112/book.md)
 * [线上会议实用技巧](2020-1112/Online.md)
