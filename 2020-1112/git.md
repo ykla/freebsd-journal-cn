@@ -1,4 +1,4 @@
-# FreeBSD Mini-Git 入门
+# FreeBSD Git 快速入门
 
 - 原文链接：[FreeBSD mini-Git Primer](https://freebsdfoundation.org/wp-content/uploads/2021/01/Mini-Git.pdf)
 - 作者：**WARNER LOSH**
