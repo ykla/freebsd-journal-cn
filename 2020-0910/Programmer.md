@@ -28,7 +28,7 @@ FreeBSD 项目正在采用 Weblate 作为其基于网页的持续本地化平台
 
 专注于学习，FreeBSD 文档因其质量而广为人知。当你开始翻译任何文档时，我可以保证你会明白为什么。
 
-完整的文档集包含 35 篇文章和 8 本书。以下是来自 Weblate 的当前统计数据（https://translate-dev.freebsd.org/projects/freebsd-doc/#information）。
+完整的文档集包含 35 篇文章和 8 本书。以下是来自 Weblate 的当前统计数据（<https://translate-dev.freebsd.org/projects/freebsd-doc/#information>）。
 
 
 |                     | 字符串 | 单词量    |
