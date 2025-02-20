@@ -3,7 +3,7 @@
 - 原文链接：[Writing Good Commit Messages](https://freebsdfoundation.org/wp-content/uploads/2020/11/Writing-Commit-Messages.pdf)
 - 作者：**ED MASTE**
 
-## 为什么提交信息很重要？
+## 为何提交信息很重要？
 
 当你在 Git、Subversion 或其他版本控制系统（VCS）中提交更改时，你会被要求写一些描述提交的文本——提交信息（Commit Messages）。那么，提交信息有多重要呢？你是否应该花费相当多的精力去写它？如果你写的是“修复了一个 bug”，这真的很重要吗？
 
