@@ -1,7 +1,7 @@
 # 采访：Warner **LOSH**，第 2 部分
 
 - 原文链接：[Interview: Warner **LOSH**, Part 2](https://freebsdfoundation.org/wp-content/uploads/2020/11/Warner-**LOSH**.pdf)
-- 作者：BSD Now 第 362 集，2.11 BSD 复原。录制于 2020 年 8 月 5 日。
+- 作者：BSD Now 第 362 集，复原 2.11 BSD。录制于 2020 年 8 月 5 日。
 
 Benedict Reuschling 和 Alan JUDE 与 Warner LOSH 在讨论 Unix 历史及其有趣的细节。他们探讨了他的 2.11 BSD 复原项目，该项目也是 Unix Heritage Society（Unix 遗产协会）的一部分。此外，他所编写的名为 devmatch 的东西又是什么呢？希望你会喜欢这一切！第 1 部分已刊登在 2020 年 78 月刊。  
 
