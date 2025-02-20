@@ -234,3 +234,15 @@
 * [*Mastering Vim Quickly* 书评](2020-1112/book.md)
 * [线上会议实用技巧](2020-1112/Online.md)
 * [在控制台上进行网络监控](2020-1112/ports.md)
+
+## 2020-0910 贡献与入门
+
+* [采访：Warner Losh，第 2 部分](2020-0910/Warner.md)
+* [代码审查](2020-0910/Code.md)
+* [撰写良好的提交消息](2020-0910/Commit.md)
+* [如何在不是程序员的情况下做出贡献——成为 FreeBSD 译者](2020-0910/Programmer.md)
+* [如何成为文档提交者](2020-0910/Committer.md)
+* [谷歌编程之夏](2020-0910/Google.md)
+* [为 FreeBSD Journal 撰写文章](2020-0910/Journal.md)
+* [你为什么使用 FreeBSD](2020-0910/Why.md)
+* [FreeBSD 的新面孔](2020-0910/Faces.md)
