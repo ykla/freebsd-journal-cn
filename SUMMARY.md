@@ -246,3 +246,11 @@
 * [为 FreeBSD Journal 撰写文章](2020-0910/Journal.md)
 * [你为什么使用 FreeBSD](2020-0910/Why.md)
 * [FreeBSD 的新面孔](2020-0910/Faces.md)
+
+## 2020-0708 基准测试/调优
+
+* [FreeBSD Friday](2020-0708/Friday.md)
+* [采访：Warner Losh，第 1 部分](2020-0708/Losh.md)
+* [构建和运行开源社区](2020-0708/Community.md)
+* [在 FreeBSD 上轻松搭建我的世界（Minecraft）服务器](2020-0708/Minecraft.md)
+* [FreeBSD 的新面孔](2020-0708/Faces.md)
