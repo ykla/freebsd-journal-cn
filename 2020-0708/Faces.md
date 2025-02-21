@@ -73,7 +73,7 @@ FreeBSD 项目核心团队的选举在今年早些时候举行，结果公布于
 
 ## Mark Johnston，Bugmeister 和 CI 团队联络员
 
-![J](https://github.com/user-attachments/assets/05aace88-f2da-4826-a9a0-54042d9b5cd0)
+![](https://github.com/user-attachments/assets/05aace88-f2da-4826-a9a0-54042d9b5cd0)
 
 
 我因为在一家使用 FreeBSD 构建网络设备的公司做学生实习而接触了 FreeBSD。当时，我非常想参与开源项目，并对操作系统感兴趣，幸运的是，我设法在这家公司相对小的操作系统团队中找到了工作，团队里有几位 FreeBSD 提交者，他们帮助我成为项目的一员。从那时起，我在几家设备厂商工作过，现在从事自由职业的 FreeBSD 开发工作。我的许多贡献主要是在内核的 bug 修复方面——出于某种奇怪的原因，我喜欢追踪那些晦涩的并发问题。我也做了一些关于 DTrace  Ports 和虚拟内存子系统的工作。
