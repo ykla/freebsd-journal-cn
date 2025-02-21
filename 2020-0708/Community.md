@@ -17,6 +17,10 @@ Verisign 使用 FreeBSD 来处理其关键的互联网名称服务查询。Veris
 
 ## 伯克利的计算机系统研究小组（CSRG）
 
+![](https://github.com/user-attachments/assets/8b9862f2-28c4-4e6e-8906-39c845d49af1)
+
+图片由 Ollivier Robert 提供。
+
 我将从一些历史开始，回到 1970 年代和 1980 年代，当时 BSD 在加利福尼亚大学伯克利分校进行开发。BSD 从 1977 年开始在伯克利启动，最初是 Bill Joy 独自进行的项目（Bill Joy 后来成为了 Sun Microsystems 的创始人之一）。
 
 第一款发行版叫做 BSD 发行版，发布于 1977 年初，包含了 Bill 编写的三个实用程序，这些程序可以运行在 UNIX 上：
