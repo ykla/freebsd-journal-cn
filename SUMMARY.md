@@ -243,7 +243,7 @@
 * [如何在不是程序员的情况下做出贡献——成为 FreeBSD 译者](2020-0910/Programmer.md)
 * [如何成为文档提交者](2020-0910/Committer.md)
 * [谷歌编程之夏](2020-0910/Google.md)
-* [为 FreeBSD Journal 撰写文章](2020-0910/Journal.md)
+* [为 FreeBSD 期刊撰写文章](2020-0910/Journal.md)
 * [你为什么使用 FreeBSD](2020-0910/Why.md)
 * [FreeBSD 的新面孔](2020-0910/Faces.md)
 
