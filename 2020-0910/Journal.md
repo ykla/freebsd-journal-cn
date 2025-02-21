@@ -1,4 +1,4 @@
-# 为 FreeBSD Journal 撰写文章
+# 为 FreeBSD 期刊撰写文章
 
 - 原文链接：[Writing an Article for the FreeBSD Journal](https://freebsdfoundation.org/wp-content/uploads/2020/11/Articles-for-FreeBSD-Journal.pdf)
 - 作者：**ROLLER ANGEL**
