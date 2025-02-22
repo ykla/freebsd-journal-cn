@@ -261,4 +261,4 @@
 * [访谈：Michael W Lucas](2020-0506/Lucas.md)
 * [FreeBSD 桌面发行版](2020-0506/Desktop.md)
 * [使用 Poudriere 进行 Port 批量管理](2020-0506/Port.md)
-* [](2020-0506/Faces.md)
+* [FreeBSD 的新面孔](2020-0506/Faces.md)
