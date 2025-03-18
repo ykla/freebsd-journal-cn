@@ -37,7 +37,7 @@ nameserver 2001:db8::53
 
 ```
 #Configuration Under Management 由配置管理控制
-#Manual Changes Will be Overwritten 手动任何更改都将被覆盖
+#Manual Changes Will be Overwritten 任何任何更改都将被覆盖
 Port 9991
 PasswordAuthentication no
 Subsystem       sftp    /usr/libexec/sftp-server
