@@ -97,7 +97,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           sinceTag: ${{ env.PREVIOUS_TAG }}
           user: FreeBSD-Ask
-          repo: FreeBSD-Ask
+          repo: freebsd-journal-cn
 
       - name: 读取变更日志内容
         id: read_changelog
