@@ -6,7 +6,7 @@
 
 ## TCP 连接设置
 
-传输控制协议（TCP）是一种面向连接的传输协议，提供可靠的双向字节流服务。TCP 连接设置需要交换三个 TCP 段，这被称为三次握手。发起 TCP 连接并发送第一个 TCP 段（SYN 段）的 TCP 端点称为客户端。等待接收第一个 TCP 段的端点称为服务器，服务器响应接收到的 SYN 段并发送一个 SYN ACK 段。当客户端接收到这个 SYN ACK 段时，它通过发送 ACK 段完成握手。
+传输控制协议（TCP）是一种面向连接的传输协议，提供了可靠的双向字节流服务。TCP 连接设置需要交换三个 TCP 段，这被称为三次握手。发起 TCP 连接并发送第一个 TCP 段（SYN 段）的 TCP 端点称为客户端。等待接收第一个 TCP 段的端点称为服务器，服务器响应接收到的 SYN 段并发送一个 SYN ACK 段。当客户端接收到这个 SYN ACK 段时，它通过发送 ACK 段完成握手。
 
 TCP 握手不仅用于同步两个端点之间的状态，包括提供可靠性的初始序列号，还用于通过 TCP 选项协商使用 TCP 扩展。如今的互联网中，在握手过程中（SYN 和 SYN ACK 段中包含）最广泛部署的 TCP 选项是：
 
@@ -69,7 +69,7 @@ TCP SYN 缓存允许服务器端在最小化内存资源的情况下执行完整
 
 `sysctl` 变量 `net.inet.tcp.syncookies_only`（默认值为 0）可以用来禁用 SYN 缓存的使用。在这种情况下，只会使用下一节描述的 SYN cookie。
 
-## SYN Cookies
+## SYN Cookie
 
 为了进一步防范 SYN 洪水攻击，SYN 缓存的实现于 2001 年 12 月进行了增强。在处理接收到的 SYN 段时，服务器不再分配较少的内存，而是将相关信息存储在一个所谓的 SYN cookie 中，并在 SYN ACK 段中发送给客户端。然后，客户端需要在 ACK 段中反射该 SYN cookie。当服务器处理 ACK 段时，所有相关信息都包含在 SYN cookie 和 ACK 段中。因此，服务器可以基于这些信息创建一个 ESTABLISHED 状态的 TCP 端点。通过这种方式，SYN 洪水攻击不会导致内存资源的耗尽。然而，SYN cookie 的生成不能消耗过多的 CPU 资源。如果生成 SYN cookie 的过程过于耗费 CPU，可能会导致另一种拒绝服务攻击：这次攻击的目标不是内存资源，而是 CPU 资源。
 
@@ -109,6 +109,6 @@ MAC 的计算包括本地和远程 IP 地址、客户端的初始序列号、上
 
 ---
 
-**RANDALL STEWART**（[rrs@freebsd.org](mailto:rrs@freebsd.org)）是一位操作系统开发人员，拥有超过 40 年的经验，并自 2006 年起成为 FreeBSD 开发者。他专注于传输协议，包括 TCP 和 SCTP，但也涉足操作系统的其他领域。目前，他是一名独立顾问。
+**RANDALL STEWART**（[rrs@freebsd.org](mailto:rrs@freebsd.org)）是一位操作系统开发人员，拥有 40 余年的经验，并自 2006 年起成为 FreeBSD 开发者。他专注于传输协议，包括 TCP 和 SCTP，但也涉足操作系统的其他领域。目前，他是一名独立顾问。
 
-**MICHAEL TÜXEN**（[tuexen@freebsd.org](https://freebsdfoundation.org/our-work/journal/browser-based-edition/downstreams/the-handling-of-syn-segments-in-freebsd/)）是明斯特应用科技大学的教授，同时也为 Netflix 担任兼职承包商，自 2009 年起成为 FreeBSD 源代码提交者。他的研究重点是传输协议，如 SCTP 和 TCP，以及它们在 IETF 的标准化和在 FreeBSD 中的实现。
+**MICHAEL TÜXEN**（[tuexen@freebsd.org](https://freebsdfoundation.org/our-work/journal/browser-based-edition/downstreams/the-handling-of-syn-segments-in-freebsd/)）是明斯特应用技术大学的教授，同时也担任 Netflix 的兼职承包商，自 2009 年起成为 FreeBSD 源代码提交者。他的研究重点是传输协议，如 SCTP 和 TCP，以及它们在 IETF 的标准化和在 FreeBSD 中的实现。
