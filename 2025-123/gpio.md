@@ -105,7 +105,7 @@ gpioctl -f /dev/gpioc0 -c EMIO_0 OUT
 gpioctl -f /dev/gpioc0 -t EMIO_0
 ```
 
-我等着你。尝试不要站起来跳舞，当灯亮起来时。看看你能否弄明白如何打开其他 LED，然后运行脚本 scripts/blink.sh，并传入参数 2。你应该会看到 LED 按照二进制计数闪烁。
+我会等着。灯光亮起时，请尽量保持坐姿，不要起身跳舞。看看你能否弄明白如何打开其他 LED，然后运行脚本 scripts/blink.sh，并传入参数 2。你应该会看到 LED 按照二进制计数闪烁。
 
 如果你对此有什么问题、评论、反馈和批评，我很乐意听到你的声音。你可通过 [articles@ChrisBowman.com](mailto:articles@ChrisBowman.com) 联系我。
 
