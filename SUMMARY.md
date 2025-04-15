@@ -7,7 +7,7 @@
 
 * [FreeBSD 发布工程：新主管上任](2025-123/release.md)
 * [GhostBSD：从易用到挣扎与重生](2025-123/ghostbsd.md)
-* [BSD 现今与往昔](2025-123/now.md)
+* [BSD Now 与将来](2025-123/now.md)
 * [字符设备驱动教程（第三部分）](2025-123/device.md)
 * [学会走路——连接 GPIO 系统](2025-123/gpio.md)  
 * [FreeBSD 中对 SYN 段的处理](2025-123/syn.md)
