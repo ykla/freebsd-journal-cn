@@ -51,7 +51,7 @@ mappage_mmap(struct cdev *dev, vm_ooffset_t offset, vm_paddr_t *paddr,
 # maprw read /dev/mappage 16 | hexdump
 0000000 0000 0000 0000 0000 0000 0000 0000 0000
 0000010
-# jot -c -s “” 16 ‘A’ | maprw write /dev/mappage 16
+# jot -c -s "" 16 'A' | maprw write /dev/mappage 16
 # maprw read /dev/mappage 16
 ABCDEFGHIJKLMNOP
 ```
@@ -100,7 +100,7 @@ mappage_create(struct cdev **cdevp)
       args.mda_gid = GID_WHEEL;
       args.mda_mode = 0600;
 args.mda_si_drv1 = obj;
-      error = make_dev_s(&args, cdevp, “mappage”);
+      error = make_dev_s(&args, cdevp, "mappage");
       if (error != 0) {
             vm_object_deallocate(obj);
             return (error);
@@ -136,14 +136,14 @@ memfd_open(struct cdev *cdev, int fflag, int devtype, struct thread *td)
       vm_object_t obj;
       int error;
 
-      /* Read-only and write-only opens make no sense. */
+      /* 只读和只写的打开方式没有意义。 */
       if ((fflag & (FREAD | FWRITE)) != (FREAD | FWRITE))
             return (EINVAL);
 
-      /*
-       * Create an anonymous VM object with an initial size of 0 for
-       * each open file descriptor.
-       */
+/*
+ * 为每一个打开的文件描述符创建一个初始大小为 0 的匿名 VM 对象。
+ */
+
       obj = vm_object_allocate_anon(0, NULL, td->td_ucred, 0);
       if (obj == NULL)
             return (ENOMEM);
@@ -177,7 +177,7 @@ memfd_mmap_single(struct cdev *cdev, vm_ooffset_t *offset, vm_size_t size,
             return (error);
       obj = priv;
 
-      /* Grow object if necessary. */
+/* 如有必要，扩展对象。 */
       objsize = OFF_TO_IDX(round_page(*offset + size));
       VM_OBJECT_WLOCK(obj);
       if (objsize > obj->size) {
@@ -293,7 +293,7 @@ mappage_pager_fault(vm_object_t object, vm_ooffset_t offset, int prot,
 
       paddr = pmap_kextract((uintptr_t)sc->page + offset);
 
-      /* See the end of old_dev_pager_fault in device_pager.c. */
+      /* 参见 device_pager.c 中 old_dev_pager_fault 的结尾部分。 */
       if (((*mres)->flags & PG_FICTITIOUS) != 0) {
             page = *mres;
             vm_page_updatefake(page, paddr, VM_MEMATTR_DEFAULT);
