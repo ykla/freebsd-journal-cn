@@ -1,4 +1,4 @@
-# 实用的 Port
+# 基于 Jail 的广告拦截教程
 
 - 原链接：<https://freebsdfoundation.org/wp-content/uploads/2023/08/reuschling_practical_ports.pdf>
 - 作者：BENEDICT REUSCHLING
