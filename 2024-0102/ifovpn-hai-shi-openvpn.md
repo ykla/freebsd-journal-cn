@@ -1,4 +1,4 @@
-# if\_ovpn 还是 OpenVPN
+# if_ovpn 还是 OpenVPN
 
 - 原文链接：[if_ovpn or OpenVPN](https://freebsdfoundation.org/our-work/journal/browser-based-edition/networking-10th-anniversary/if_ovpn-or-openvpn/)
 - 作者：Kristof Provost

@@ -1,4 +1,4 @@
-# 会议报告：C 与 BSD 正如拉丁语与我们——一位神学家参加 BSDCan 2023 的旅行报告
+# 会议报告：C 与 BSD 正如拉丁语与我们
 
 - 原文链接：<https://freebsdfoundation.org/wp-content/uploads/2023/08/stephan_conference_report.pdf>
 - 作者：COREY STEPHAN

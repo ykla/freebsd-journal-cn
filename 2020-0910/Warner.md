@@ -1,4 +1,4 @@
-# 采访：Warner **LOSH**，第 2 部分
+# 采访：Warner Losh，第 2 部分
 
 - 原文链接：[Interview: Warner **LOSH**, Part 2](https://freebsdfoundation.org/wp-content/uploads/2020/11/Warner-**LOSH**.pdf)
 - 作者：BSD Now 第 362 集，复原 2.11 BSD。录制于 2020 年 8 月 5 日。

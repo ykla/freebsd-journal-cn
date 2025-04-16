@@ -1,4 +1,4 @@
-# FreeBSD 和早期的 Unix 社区
+# FreeBSD 和早期的 Unix社区
 
 - 原文：[FreeBSD and the Early Unix Communities](https://freebsdfoundation.org/wp-content/uploads/2023/06/losh_early_unix.pdf)
 
