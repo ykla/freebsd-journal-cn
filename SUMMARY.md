@@ -106,7 +106,7 @@
 * [ZFS 是如何进入 FreeBSD 的呢？](2023-0506/ZFS.md)
 * [我不是来自约克郡的，我保证！](2023-0506/Promise.md)
 * [回忆录：采访 David Greenman Lawrence](2023-0506/Recollections.md)
-* [FreeBSD 和早期的 Unix社区](2023-0506/Unix.md)
+* [FreeBSD 和早期的 Unix 社区](2023-0506/Unix.md)
 * [早期的 FreeBSD 移植](2023-0506/Ports.md)
 * [FreeBSD 30 周年：成功的秘诀](2023-0506/30.md)
 * [FreeBSD 在日本：回忆之旅与今日之实](2023-0506/Japan.md)
