@@ -818,7 +818,7 @@ supervisorctl restart overlord:
 
 下一个需要部署的服务是 CoreDNS。多亏了它，我们可以通过 [Etcd 插件](https://coredns.io/plugins/etcd/) 使用 SkyDNS。
 
-coredns.yml：
+coredns.yml:
 
 ```sh
 kind: directorProject
@@ -1555,7 +1555,7 @@ UUID: e463b1d5-13eb-4f04-9b0a-caf4339a8058
 
 即使在拥有数百台服务器的情况下，部署项目也变得非常容易。然而，这种方式的问题在于资源的浪费，因为客户端很可能只使用了集群资源的不到 5%；或者相反，你可能将项目部署在少数几台你认为"够用"的服务器上，直到某一时刻你发现资源根本不够用，更糟糕的是，这些服务器还可能因各种原因随时宕机。这正是 Overlord 的自动扩展机制能够解决的问题。
 
-hello-http.yml：
+hello-http.yml:
 
 ```yml
 kind: directorProject
@@ -1956,7 +1956,7 @@ datacenter: http://127.0.0.1:8888
 
 多亏了 [AppJail](https://github.com/DtxdF/AppJail)，我们可以从 jail 中获取大量信息。Overlord 有一个特殊的部署方式叫做 **readOnly**，它可以与 **get-info** 命令完美结合。
 
-info.yml：
+info.yml:
 
 ```yml
 kind: readOnly
