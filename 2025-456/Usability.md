@@ -53,7 +53,7 @@
 
 ![](https://freebsdfoundation.org/wp-content/uploads/2025/07/Screenshot_2025-06-04_at_12.40.11%CE%93CPM.png)
 
-我就不再展示其他版本的 Windows 安装过程了。只要加入 Windows 7，就能总结出以下有关安装程序可用性的模式⁶：
+我就不再展示其他版本的 Windows 安装过程了。只要加上 Windows 7，就能总结出以下有关安装程序可用性的模式⁶：
 
 ![](https://freebsdfoundation.org/wp-content/uploads/2025/07/Screenshot_2025-06-04_at_12.40.25%CE%93CPM.png)
 
