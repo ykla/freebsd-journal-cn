@@ -21,7 +21,7 @@
 
 ## 系统基石的转变
 
-我在 2014 年开始着手开发 Update Station，旨在为 GhostBSD 用户带来图形化更新工具。我原本以为这项工作是在之后才开始的，但在回顾 GitHub 后，我发现大约在那个时候，它已开始成型。最初，GhostBSD 依赖于 FreeBSD 的发布源、分发文件和官方包。曾经有一段时间，我们需要开始为像 NetworkMgr 这样的工具提供更新，这促使我们建立了自己的包仓库。我们的自定义包经常与 FreeBSD 的版本升级发生冲突，产生摩擦，要求我们寻求更好的解决方案。此外， 对于 Update Station 的自动化来说，`freebsd-update` 并不容易实现。`freebsd-update` 无法满足我们“图形化优先”目标的需求。于是我们开始关注 TrueOS 的做法。我注意到他们使用了 PkgBase，这引起了我的兴趣。他们由 pkg 驱动的操作系统更新承诺带来了图形化自由。
+我在 2014 年开始着手开发 Update Station，旨在为 GhostBSD 用户带来图形化更新工具。我原本以为这项工作是在之后才开始的，但在回顾 GitHub 后，我发现大约在那个时候，它已开始成型。最初，GhostBSD 依赖于 FreeBSD 的发布源、分发文件和官方包。曾经有一段时间，我们需要开始为像 NetworkMgr 这样的工具提供更新，这促使我们建立了自己的包仓库。我们的自定义包经常与 FreeBSD 的版本升级发生冲突，产生摩擦，要求我们寻求更好的解决方案。此外，对于 Update Station 的自动化来说，`freebsd-update` 并不容易实现。`freebsd-update` 无法满足我们“图形化优先”目标的需求。于是我们开始关注 TrueOS 的做法。我注意到他们使用了 PkgBase，这引起了我的兴趣。他们由 pkg 驱动的操作系统更新承诺带来了图形化自由。
 
 在 2018 年，GhostBSD 18.10 转向 TrueOS，将其作为基石。TrueOS 提供了 PkgBase，让我们可以使用 pkg 工具更新操作系统，并且我们放弃了 `freebsd-update`。TrueOS 还带来了 OpenRC，这是一款现代的服务管理器，非常适合构建用于管理服务的图形化界面，虽然这个目标最终并未实现。转向 TrueOS 使得能从图形界面使用 `Update Station` 升级软件和操作系统。对我们来说，这是一次革命性的变化：让我们的用户能够通过 `Update Station` 升级操作系统。随后，TrueOS 引入了 OS ports，让我们可以使用 poudriere 从 ports 树构建操作系统包，并为更新提供了更精细的控制。
 
