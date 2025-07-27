@@ -266,6 +266,7 @@ projects:
       last_update: 38.01 seconds
       job_id: 16
 ```
+
 ## 部署 FreeBSD 虚拟机
 
 Overlord 能够借助出色的 [vm-bhyve](https://github.com/churchers/vm-bhyve) 项目部署虚拟机。虚拟机可以隔离很多 jail 无法做到的部分，尽管这样会带来一定的开销，但根据你的使用场景，这种开销可能并不是问题。

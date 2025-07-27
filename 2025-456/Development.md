@@ -54,13 +54,13 @@ WiFi 联盟（负责认证的组织）在标准（来自 IEEE）和品牌名之�
 
 要加入网络，站点需要经历一系列与接入点通信的状态。简而言之，它会：
 
-* 扫描（scan）
-* 探测（probe）
-* 接收信标（receive beacons）
-* 认证（authenticate）
-* 关联（associate）
-* 协商加密密钥（negotiate encryption keys）
-* 获取 IP 地址（acquire an IP address）
+- 扫描（scan）
+- 探测（probe）
+- 接收信标（receive beacons）
+- 认证（authenticate）
+- 关联（associate）
+- 协商加密密钥（negotiate encryption keys）
+- 获取 IP 地址（acquire an IP address）
 
 除了最后一步外，其余步骤都是 WiFi 特有的，从某种角度看，这些步骤相当于你找到了网线、接口，并把电脑插入路由器。最后一步发生在 IP 层，使用的工具和有线网络一样。
 
@@ -142,19 +142,19 @@ wlan0: flags=8802<BROADCAST,SIMPLEX,MULTICAST> metric 0 mtu 1500
 
 相比有线设备，`ifconfig` 输出中多了很多参数，我们来看几个关键的：
 
-* `ssid "" channel 1 (2412 MHz 11b)`
+- `ssid "" channel 1 (2412 MHz 11b)`
   作为站点，我们有一个指定的 SSID（这里为空），当前处于信道 1，频率和模式也显示出来了。
 
-* `regdomain FCC country US authmode OPEN privacy OFF txpower 30`
+- `regdomain FCC country US authmode OPEN privacy OFF txpower 30`
   监管域和区域代码默认设置为 FCC 和美国，启动接口后会更新以匹配本地监管域和区域。
 
-* `bmiss 10 scanvalid 60 bgscan bgscanintvl 300 bgscanidle 250`
+- `bmiss 10 scanvalid 60 bgscan bgscanintvl 300 bgscanidle 250`
   驱动相关参数，控制扫描行为、网络切换和多媒体扩展（用于服务质量，不是播放 MP3 那个）。
 
-* `parent interface: iwx0`
+- `parent interface: iwx0`
   父接口，方便管理多个 WiFi 接口。
 
-* `media: IEEE 802.11 Wireless Ethernet autoselect (autoselect)`
+- `media: IEEE 802.11 Wireless Ethernet autoselect (autoselect)`
   当前媒体模式，通常为自动选择，但调试或优化时可以强制设置。
 
 如果看 `rtwn` 接口上创建的 VAP，虽然相似但略有不同，原因是它们的工作模式不同。
