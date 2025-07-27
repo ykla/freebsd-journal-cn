@@ -9,9 +9,9 @@
 
 [AppJail Director](https://github.com/DtxdF/director) 是一款基于 AppJail 的多 jail 环境管理工具，使用简单的 YAML 配置文件定义如何配置组成应用程序的一个或多个 jail。有了 Director 文件，你只需一条命令 **appjail-director up** 即可创建并启动你的应用程序。
 
-Director 是 AppJail “一切皆代码”理念的首次实践。它将 jail 组织成项目，让你以声明式方式创建含有一个或多个 jail 的项目；当你修改了该配置文件或相关文件（例如 Makejail 文件），Director 会检测到变更，并毫不犹豫地销毁并重新创建 jail。听起来有点激进，但用 *The Ephemeral Concept*（流变的概念）来解释最为恰当：
+Director 是 AppJail "一切皆代码"理念的首次实践。它将 jail 组织成项目，让你以声明式方式创建含有一个或多个 jail 的项目；当你修改了该配置文件或相关文件（例如 Makejail 文件），Director 会检测到变更，并毫不犹豫地销毁并重新创建 jail。听起来有点激进，但用 *The Ephemeral Concept*（流变的概念）来解释最为恰当：
 
-Director 将每个 jail 视为“流变”的。这并不意味着 jail 停止或系统重启后数据会丢失，而是意味着 Director 认为销毁 jail 是安全的，因为你已经明确区分了应持久保存的数据和被视为流变的数据。
+Director 将每个 jail 视为"流变"的。这并不意味着 jail 停止或系统重启后数据会丢失，而是意味着 Director 认为销毁 jail 是安全的，因为你已经明确区分了应持久保存的数据和被视为流变的数据。
 
 更多细节见 **appjail-ephemeral(7)** 手册页，原则和上述相同。
 
@@ -21,7 +21,7 @@ AppJail 和 Director 极大简化了我的工作，但有一个问题二者都�
 
 [Overlord](https://github.com/DtxdF/overlord) 是一个面向 GitOps 的快速分布式 FreeBSD jail 编排器。你只需定义一个文件说明集群上运行的服务，部署就能在几秒到几分钟内完成。
 
-幸好 Overlord 诞生时，AppJail 和 Director 已经相当成熟，重用这两个经过充分测试的工具并与 Overlord 结合，是个明智的选择。继承 Director “一切皆代码”的哲学，使得 Overlord 易于使用。另一个设计决策是 Overlord 采用全异步架构。大型服务的部署可能耗时较长，但即使部署很快，声明式发送指令并让 Overlord 处理工作也是更优的体验。本文后续会详细介绍上述内容的诸多细节。
+幸好 Overlord 诞生时，AppJail 和 Director 已经相当成熟，重用这两个经过充分测试的工具并与 Overlord 结合，是个明智的选择。继承 Director "一切皆代码"的哲学，使得 Overlord 易于使用。另一个设计决策是 Overlord 采用全异步架构。大型服务的部署可能耗时较长，但即使部署很快，声明式发送指令并让 Overlord 处理工作也是更优的体验。本文后续会详细介绍上述内容的诸多细节。
 
 ## 架构
 
@@ -270,7 +270,7 @@ projects:
 
 Overlord 能够借助出色的 [vm-bhyve](https://github.com/churchers/vm-bhyve) 项目部署虚拟机。虚拟机可以隔离很多 jail 无法做到的部分，尽管这样会带来一定的开销，但根据你的使用场景，这种开销可能并不是问题。
 
-这个部署过程如下：会创建一个 director 文件（由 Overlord 内部完成），该文件用于进一步创建一个 jail，代表一个必须安装了 [vm-bhyve](https://github.com/churchers/vm-bhyve) 的环境，且需要配置使用 FreeBSD 支持的防火墙，以及配置虚拟机使用的桥接网络。听起来很复杂，但有一个 [Makejail](https://github.com/DtxdF/vm-makejail) 专门完成这些工作，可以查看该项目了解细节。上述 Makejail 会创建一个安装了 [vm-bhyve-devel](https://freshports.org/sysutils/vm-bhyve-devel) 的环境，配置 pf(4) 防火墙，并创建一个带有分配的 IPv4（192.168.8.1/24）的桥接，因此我们必须给虚拟机分配一个该网段内的 IPv4 地址。pf(4) 并未配置进一步隔离连接，因此虚拟机内的应用程序可以“逃逸”访问其他服务，这是否理想取决于应用的具体需求。
+这个部署过程如下：会创建一个 director 文件（由 Overlord 内部完成），该文件用于进一步创建一个 jail，代表一个必须安装了 [vm-bhyve](https://github.com/churchers/vm-bhyve) 的环境，且需要配置使用 FreeBSD 支持的防火墙，以及配置虚拟机使用的桥接网络。听起来很复杂，但有一个 [Makejail](https://github.com/DtxdF/vm-makejail) 专门完成这些工作，可以查看该项目了解细节。上述 Makejail 会创建一个安装了 [vm-bhyve-devel](https://freshports.org/sysutils/vm-bhyve-devel) 的环境，配置 pf(4) 防火墙，并创建一个带有分配的 IPv4（192.168.8.1/24）的桥接，因此我们必须给虚拟机分配一个该网段内的 IPv4 地址。pf(4) 并未配置进一步隔离连接，因此虚拟机内的应用程序可以"逃逸"访问其他服务，这是否理想取决于应用的具体需求。
 
 vm.yml:
 
@@ -620,7 +620,7 @@ datacenter: http://127.0.0.1:8888
              + pkg -c /mnt install -y tailscale
              + head -1 -- /metadata/ts_auth_key
              + ts_auth_key=[REDACTED]
-             + echo '/usr/local/bin/tailscale up --accept-dns=false --auth-key=”[REDACTED]” && rm -f /etc/rc.local'
+             + echo '/usr/local/bin/tailscale up --accept-dns=false --auth-key="[REDACTED]" && rm -f /etc/rc.local'
              + sysrc -f /mnt/etc/rc.conf 'tailscaled_enable=YES'
              + [ -f /metadata/timezone ]
              + head -1 -- /metadata/timezone
@@ -875,7 +875,7 @@ metadata:
   coredns.makejail: |
     OPTION start
     OPTION overwrite=force
-    OPTION healthcheck=”health_cmd:jail:service coredns status” “recover_cmd:jail:service coredns restart”
+    OPTION healthcheck="health_cmd:jail:service coredns status" "recover_cmd:jail:service coredns restart"
 
     INCLUDE gh+DtxdF/efficient-makejail
 
@@ -893,10 +893,10 @@ metadata:
     SERVICE coredns start
   coredns.pkg.conf: |
     FreeBSD: {
-      url: “pkg+https://pkg.FreeBSD.org/${ABI}/latest”,
-      mirror_type: “srv”,
-      signature_type: “fingerprints”,
-      fingerprints: “/usr/share/keys/pkg”,
+      url: "pkg+https://pkg.FreeBSD.org/${ABI}/latest",
+      mirror_type: "srv",
+      signature_type: "fingerprints",
+      fingerprints: "/usr/share/keys/pkg",
       enabled: yes
     }
 ```
@@ -978,7 +978,7 @@ nameserver 100.65.139.52
 nameserver 100.109.0.125
 ```
 
-我们的“弗兰肯斯坦”活过来了！下一步是部署一个服务，并测试所有部分是否如预期般正常工作。
+我们的"弗兰肯斯坦"活过来了！下一步是部署一个服务，并测试所有部分是否如预期般正常工作。
 
 homebox.yml:
 
@@ -1269,7 +1269,7 @@ metadata:
     OPTION copydir=${OVERLORD_METADATA}
     OPTION file=/haproxy.conf
 
-    FROM --entrypoint “${haproxy_ajspec}” haproxy:${haproxy_tag}
+    FROM --entrypoint "${haproxy_ajspec}" haproxy:${haproxy_tag}
 
     INCLUDE gh+DtxdF/efficient-makejail
 
@@ -1286,7 +1286,7 @@ metadata:
 
     RUN daemon \
             -r \
-            -t “Data Plane API” \
+            -t "Data Plane API" \
             -P .master \
             -p .pid \
             -o .log \
@@ -1296,9 +1296,9 @@ metadata:
                     --port=5555 \
                     --spoe-dir=/usr/local/etc/haproxy/spoe \
                     --haproxy-bin=/usr/local/sbin/haproxy \
-                    --reload-cmd=”service haproxy reload” \
-                    --restart-cmd=”service haproxy restart” \
-                    --status-cmd=”service haproxy status” \
+                    --reload-cmd="service haproxy reload" \
+                    --restart-cmd="service haproxy restart" \
+                    --status-cmd="service haproxy status" \
                     --maps-dir=/usr/local/etc/haproxy/maps \
                     --config-file=/haproxy.conf \
                     --ssl-certs-dir=/usr/local/etc/haproxy/ssl \
@@ -1462,7 +1462,7 @@ projectFile: |
         - label: 'overlord.load-balancer.backend:web'
         - label: 'overlord.load-balancer.interface:tailscale0'
         - label: 'overlord.load-balancer.interface.port:9128'
-        - label: 'overlord.load-balancer.set.check:”enabled”'
+        - label: 'overlord.load-balancer.set.check:"enabled"'
       arguments:
         - darkhttpd_tag: 14.2
 ```
@@ -1553,7 +1553,7 @@ UUID: e463b1d5-13eb-4f04-9b0a-caf4339a8058
 
 ## 横向自动扩展
 
-即使在拥有数百台服务器的情况下，部署项目也变得非常容易。然而，这种方式的问题在于资源的浪费，因为客户端很可能只使用了集群资源的不到 5%；或者相反，你可能将项目部署在少数几台你认为“够用”的服务器上，直到某一时刻你发现资源根本不够用，更糟糕的是，这些服务器还可能因各种原因随时宕机。这正是 Overlord 的自动扩展机制能够解决的问题。
+即使在拥有数百台服务器的情况下，部署项目也变得非常容易。然而，这种方式的问题在于资源的浪费，因为客户端很可能只使用了集群资源的不到 5%；或者相反，你可能将项目部署在少数几台你认为"够用"的服务器上，直到某一时刻你发现资源根本不够用，更糟糕的是，这些服务器还可能因各种原因随时宕机。这正是 Overlord 的自动扩展机制能够解决的问题。
 
 hello-http.yml：
 
@@ -1580,7 +1580,7 @@ projectFile: |
         - label: 'overlord.load-balancer.backend:web'
         - label: 'overlord.load-balancer.interface:tailscale0'
         - label: 'overlord.load-balancer.interface.port:9128'
-        - label: 'overlord.load-balancer.set.check:”enabled”'
+        - label: 'overlord.load-balancer.set.check:"enabled"'
       arguments:
         - darkhttpd_tag: 14.2
 autoScale:
@@ -2039,7 +2039,7 @@ datacenter: http://127.0.0.1:8888
         - {'value': 'tailscale0', 'name': 'overlord.skydns.interface'}
         - {'value': 'adguardhome', 'name': 'overlord.skydns.group'}
       nat:
-        - {'rule': 'nat on “jext” from 10.0.0.3 to any -> (“jext:0”)', 'network': 'ajnet'}
+        - {'rule': 'nat on "jext" from 10.0.0.3 to any -> ("jext:0")', 'network': 'ajnet'}
       volumes:
         - {'mountpoint': 'usr/local/etc/AdGuardHome.yaml', 'type': '<pseudofs>', 'uid': None, 'gid': None, 'perm': '644', 'name': 'adguardhome-conf'}
         - {'mountpoint': '/var/db/adguardhome', 'type': '<pseudofs>', 'uid': None, 'gid': None, 'perm': '750', 'name': 'adguardhome-db'}
