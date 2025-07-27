@@ -253,7 +253,7 @@ X-Hmac-Sig: sha256=f634363faff03deed8fbcef8b10952592d43c8abbb6b4a540ef16af0acaff
 {“os”:”freebsd”,”town”:”otutahi”}
 ```
 
-如上所示，签名会为我们生成，并且添加 JSON 键=值对时无需引用和转义。
+如上所示，签名会为我们生成，并且添加 JSON 键 = 值对时无需引用和转义。
 
 返回的响应也为我们进行了美化的格式化：HMAC 已被服务器验证，两个键的值已提取并作为参数传递给我们的 `echo` 命令，结果被捕获并返回在 HTTP 响应体中。
 
@@ -266,7 +266,7 @@ Content-Type : text/plain; charset=utf-8
 freebsd otutahi
 ```
 
-可以在 Port 的 [sample webhook.yaml](https://cgit.freebsd.org/ports/tree/www/webhook/files/webhook.yaml) 和[详细文档](https://github.com/adnanh/webhook/tree/master/docs)中找到更复杂的示例。
+可以在 Port 的 [sample webhook.yaml](https://cgit.freebsd.org/ports/tree/www/webhook/files/webhook.yaml) 和 [详细文档](https://github.com/adnanh/webhook/tree/master/docs) 中找到更复杂的示例。
 
 ## 保护 Webhook 内容
 

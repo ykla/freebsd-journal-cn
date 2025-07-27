@@ -69,9 +69,9 @@ zy7_gpio_probe(device_t dev)
 DTB 中的兼容字符串不是驱动程序所期望的，因此它假设设备不存在。如果你查看 FreeBSD 的启动输出，你会发现内核正在使用 U-boot 提供的 EFI 固件模拟的 DTB。我们可以通过修复 U-boot 提供的内容来更改这一点，但那将需要补丁和重新编译 U-boot。相反，FreeBSD 提供了在内核加载器提示符或使用 `loader.conf` 变量加载 DTB 文件的功能。你可以使用以下 `/boot/loader.conf` 变量从加载器加载 DTB 文件：
 
 ```sh
-# fdt_name="/boot/dtb/zynq-artyz7.dtb"
-# fdt_type="dtb"
-# fdt_load="YES"
+# fdt_name = "/boot/dtb/zynq-artyz7.dtb"
+# fdt_type = "dtb"
+# fdt_load = "YES"
 ```
 
 这可以工作，但还有第三种方法。事实证明，你可以创建 FDT/DTS 叠加文件，这些文件是对 FDT/DTS/DTB 的补丁。我们只需要一个添加正确兼容字符串的 DTS 叠加文件，这样就可以了。以下是我在项目仓库的 dts 目录中包含的 DTS 叠加文件的核心部分，并附带一个 Makefile：

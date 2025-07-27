@@ -22,7 +22,7 @@
 获取能用的核心转储并不难——你需要把系统设置成接收崩溃转储（参见 dumpon(8)），然后进入调试器。通常，系统会主动帮助你进入调试器，让系统陷入 Panic。FreeBSD 提供了一项功能，即使在没有出现问题时也可以让内核陷入 Panic。在测试系统上将 sysctl `debug.kdb.panic` 设置 1，即可进入调试提示符：
 
 ```sh
-# sysctl debug.kdb.panic=1
+# sysctl debug.kdb.panic = 1
 ```
 
 如果你在桌面和云中的重要工作机上运行了这个命令，可能会遇到麻烦（如果是桌面，这篇文章可能已经消失了）。我建议在虚拟机和至少不会引发大麻烦的设备上学习内核调试。
@@ -144,18 +144,18 @@ __curthread () at /usr/src/sys/amd64/include/pcpu_aux.h:57
 ```sh
 (kgdb) bt
 ...
-#10 0xffffffff80b51233 in vpanic (fmt=0xffffffff811f87ca “Assertion %s failed at %s:%d”, ap=ap@entry=0xfffffe0047d2f5f0) at /usr/src/sys/kern/kern_shutdown.c:953
-#11 0xffffffff80b51013 in panic (fmt=0xffffffff81980420 <cnputs_mtx> “\371\023\025\201\377\377\377\377”) at /usr/src/sys/kern/kern_shutdown.c:889
-#12 0xffffffff80d5483b in tcp_discardcb (tp=tp@entry=0xfffff80008584a80) at /usr/src/sys/netinet/tcp_subr.c:2432
-#13 0xffffffff80d60f71 in tcp_usr_detach (so=0xfffff800100b6b40) at /usr/src/sys/netinet/tcp_usrreq.c:215
-#14 0xffffffff80c01357 in sofree (so=0xfffff800100b6b40) at /usr/src/sys/kern/uipc_socket.c:1209
-#15 sorele_locked (so=so@entry=0xfffff800100b6b40) at /usr/src/sys/kern/uipc_socket.c:1236
-#16 0xffffffff80d545b5 in tcp_close (tp=<optimized out>) at /usr/src/sys/netinet/tcp_subr.c:2539
-#17 0xffffffff82e37e0a in tcp_tv_to_usectick (sv=0xfffffe0047d2f698) at /usr/src/sys/netinet/tcp_hpts.h:177
-#18 tcp_get_usecs (tv=0xfffffe0047d2f698) at /usr/src/sys/netinet/tcp_hpts.h:232
+#10 0xffffffff80b51233 in vpanic (fmt = 0xffffffff811f87ca “Assertion %s failed at %s:%d”, ap = ap@entry = 0xfffffe0047d2f5f0) at /usr/src/sys/kern/kern_shutdown.c: 953
+#11 0xffffffff80b51013 in panic (fmt = 0xffffffff81980420 <cnputs_mtx> “\371\023\025\201\377\377\377\377”) at /usr/src/sys/kern/kern_shutdown.c: 889
+#12 0xffffffff80d5483b in tcp_discardcb (tp = tp@entry = 0xfffff80008584a80) at /usr/src/sys/netinet/tcp_subr.c: 2432
+#13 0xffffffff80d60f71 in tcp_usr_detach (so = 0xfffff800100b6b40) at /usr/src/sys/netinet/tcp_usrreq.c: 215
+#14 0xffffffff80c01357 in sofree (so = 0xfffff800100b6b40) at /usr/src/sys/kern/uipc_socket.c: 1209
+#15 sorele_locked (so = so@entry = 0xfffff800100b6b40) at /usr/src/sys/kern/uipc_socket.c: 1236
+#16 0xffffffff80d545b5 in tcp_close (tp = <optimized out>) at /usr/src/sys/netinet/tcp_subr.c: 2539
+#17 0xffffffff82e37e0a in tcp_tv_to_usectick (sv = 0xfffffe0047d2f698) at /usr/src/sys/netinet/tcp_hpts.h: 177
+#18 tcp_get_usecs (tv = 0xfffffe0047d2f698) at /usr/src/sys/netinet/tcp_hpts.h: 232
 ...
 (kgdb) frame 12
-#12 0xffffffff80d5483b in tcp_discardcb (tp=tp@entry=0xfffff80008584a80) at /usr/src/sys/netinet/tcp_subr.c:2432
+#12 0xffffffff80d5483b in tcp_discardcb (tp = tp@entry = 0xfffff80008584a80) at /usr/src/sys/netinet/tcp_subr.c: 2432
 warning: Source file is more recent than executable.
 2432
 (kgdb) list
@@ -221,28 +221,28 @@ Core file '/home/tj/code/scripts/gdb/coredump/vmcore.0' (x86_64) was loaded.
 ```sh
 (lldb) bt
 * thread #1, name = '(pid 1025) tcplog_dumper'
-* frame #0: 0xffffffff80b83d2a kernel.debug`sched_switch(td=0xfffff800174be740, flags=259) at sched_ule.c:2297:26
-frame #1: 0xffffffff80b5e9e3 kernel.debug`mi_switch(flags=259) at kern_synch.c:546:2
-frame #2: 0xffffffff80bb0dc4 kernel.debug`sleepq_switch(wchan=0xffffffff817e1448, pri=0) at subr_sleepqueue.c:607:2
-frame #3: 0xffffffff80bb11a6 kernel.debug`sleepq_catch_signals(wchan=0xffffffff817e1448, pri=0) at subr_sleepqueue.c:523:3
-frame #4: 0xffffffff80bb0ef9 kernel.debug`sleepq_wait_sig(wchan=<unavailable>, pri=<unavailable>) at subr_sleepqueue.c:670:11
-frame #5: 0xffffffff80b5df3c kernel.debug`_sleep(ident=0xffffffff817e1448, lock=0xffffffff817e1428, priority=256, wmesg=”tcplogdev”, sbt=0, pr=0, flags=256) at kern_synch.c:219:10
-frame #6: 0xffffffff8091190e kernel.debug`tcp_log_dev_read(dev=<unavailable>, uio=0xfffffe0079b4ada0, flags=0) at tcp_log_dev.c:303:9
-frame #7: 0xffffffff809d99ce kernel.debug`devfs_read_f(fp=0xfffff80012857870, uio=0xfffffe0079b4ada0, cred=<unavailable>, flags=0, td=0xfffff800174be740) at devfs_vnops.c:1413:10
-frame #8: 0xffffffff80bc9bc6 kernel.debug`dofileread [inlined] fo_read(fp=0xfffff80012857870, uio=0xfffffe0079b4ada0, active_cred=<unavailable>, flags=<unavailable>, td=0xfffff800174be740) at file.h:340:10
-frame #9: 0xffffffff80bc9bb4 kernel.debug`dofileread(td=0xfffff800174be740, fd=3, fp=0xfffff80012857870, auio=0xfffffe0079b4ada0, offset=-1, flags=0) at sys_generic.c:365:15
-frame #10: 0xffffffff80bc9712 kernel.debug`sys_read [inlined] kern_readv(td=0xfffff800174be740, fd=3, auio=0xfffffe0079b4ada0) at sys_generic.c:286:10
-frame #11: 0xffffffff80bc96dc kernel.debug`sys_read(td=0xfffff800174be740, uap=<unavailable>) at sys_generic.c:202:10
-frame #12: 0xffffffff810556a3 kernel.debug`amd64_syscall [inlined] syscallenter(td=0xfffff800174be740) at subr_syscall.c:186:11
-frame #13: 0xffffffff81055581 kernel.debug`amd64_syscall(td=0xfffff800174be740, traced=0) at trap.c:1192:2
-frame #14: 0xffffffff8102781b kernel.debug`fast_syscall_common at exception.S:578
+* frame #0: 0xffffffff80b83d2a kernel.debug`sched_switch(td = 0xfffff800174be740, flags = 259) at sched_ule.c: 2297:26
+frame #1: 0xffffffff80b5e9e3 kernel.debug`mi_switch(flags = 259) at kern_synch.c: 546:2
+frame #2: 0xffffffff80bb0dc4 kernel.debug`sleepq_switch(wchan = 0xffffffff817e1448, pri = 0) at subr_sleepqueue.c: 607:2
+frame #3: 0xffffffff80bb11a6 kernel.debug`sleepq_catch_signals(wchan = 0xffffffff817e1448, pri = 0) at subr_sleepqueue.c: 523:3
+frame #4: 0xffffffff80bb0ef9 kernel.debug`sleepq_wait_sig(wchan =< unavailable >, pri =< unavailable >) at subr_sleepqueue.c: 670:11
+frame #5: 0xffffffff80b5df3c kernel.debug`_sleep(ident = 0xffffffff817e1448, lock = 0xffffffff817e1428, priority = 256, wmesg =”tcplogdev”, sbt = 0, pr = 0, flags = 256) at kern_synch.c: 219:10
+frame #6: 0xffffffff8091190e kernel.debug`tcp_log_dev_read(dev =< unavailable >, uio = 0xfffffe0079b4ada0, flags = 0) at tcp_log_dev.c: 303:9
+frame #7: 0xffffffff809d99ce kernel.debug`devfs_read_f(fp = 0xfffff80012857870, uio = 0xfffffe0079b4ada0, cred =< unavailable >, flags = 0, td = 0xfffff800174be740) at devfs_vnops.c: 1413:10
+frame #8: 0xffffffff80bc9bc6 kernel.debug`dofileread [inlined] fo_read(fp = 0xfffff80012857870, uio = 0xfffffe0079b4ada0, active_cred =< unavailable >, flags =< unavailable >, td = 0xfffff800174be740) at file.h: 340:10
+frame #9: 0xffffffff80bc9bb4 kernel.debug`dofileread(td = 0xfffff800174be740, fd = 3, fp = 0xfffff80012857870, auio = 0xfffffe0079b4ada0, offset =-1, flags = 0) at sys_generic.c: 365:15
+frame #10: 0xffffffff80bc9712 kernel.debug`sys_read [inlined] kern_readv(td = 0xfffff800174be740, fd = 3, auio = 0xfffffe0079b4ada0) at sys_generic.c: 286:10
+frame #11: 0xffffffff80bc96dc kernel.debug`sys_read(td = 0xfffff800174be740, uap =< unavailable >) at sys_generic.c: 202:10
+frame #12: 0xffffffff810556a3 kernel.debug`amd64_syscall [inlined] syscallenter(td = 0xfffff800174be740) at subr_syscall.c: 186:11
+frame #13: 0xffffffff81055581 kernel.debug`amd64_syscall(td = 0xfffff800174be740, traced = 0) at trap.c: 1192:2
+frame #14: 0xffffffff8102781b kernel.debug`fast_syscall_common at exception.S: 578
 ```
 
 我们还可以选择一个感兴趣的 frame 来进一步查看：
 
 ```sh
 (lldb) frame select 12
-frame #12: 0xffffffff810556a3 kernel.debug`amd64_syscall [inlined] syscallenter(td=0xfffff800174be740) at subr_syscall.c:186:11
+frame #12: 0xffffffff810556a3 kernel.debug`amd64_syscall [inlined] syscallenter(td = 0xfffff800174be740) at subr_syscall.c: 186:11
 183 if (!sy_thr_static)
 184 syscall_thread_exit(td, se);
 185 } else {
@@ -263,7 +263,7 @@ lldb 目前还没有类似的启动命令。不过，通过查看“Panic!”信
 ```sh
 (lldb) p *msgbufp
 (msgbuf) {
-msg_ptr = 0xfffff8001ffe8000 “---<<BOOT>>---\nCopyright (c) 1992-2023 The FreeBSD Project.\nCopyright (c) 1979, 1980, 1983, 1986, 1988, 1989, 1991, 1992, 1993, 1994\n\tThe Regents of the University of California. All rights reserved.\nFreeBSD is a registered trademark of The FreeBSD Foundation.\nFreeBSD 15.0-CURRENT #0 main-272a40604: Wed Nov 29 13:42:38 UTC 2023\n tj@vpp:/usr/obj/usr/src/amd64.amd64/sys/GENERIC amd64\nFreeBSD clang version 16.0.6 (https://github.com/llvm/llvm-project.git llvmorg-16.0.6-0-g7cbf1a259152)\nWARNING: WITNESS option enabled, expect reduced performance.\nVT: init without driver.\nCPU: 12th Gen Intel(R) Core(TM) i7-1260P (2500.00-MHz K8-class CPU)\n Origin=\”GenuineIntel\” Id=0x906a3 Family=0x6 Model=0x9a Stepping=3\n Features=0x9f83fbff<FPU,VME,DE,PSE,TSC,MSR,PAE,MCE,CX8,APIC,SEP,MTRR,PGE,MCA,CMOV,PAT,PSE36,MMX,FXSR,SSE,SSE2,SS,HTT,PBE>\n Features2=0xfeda7a17<SSE3,PCLMULQDQ,DTES64,DS_CPL,SSSE3,SDBG,FMA,CX16,xTPR,PCID,SSE4.1,SSE4.2,MOVBE,POPCNT,AESNI,XSAVE,OSXSAVE,AVX,F16C,RDRAND,HV>\n AMD Features=0x2c100800<SYSCALL,”...
+msg_ptr = 0xfffff8001ffe8000 “---<<BOOT>>---\nCopyright (c) 1992-2023 The FreeBSD Project.\nCopyright (c) 1979, 1980, 1983, 1986, 1988, 1989, 1991, 1992, 1993, 1994\n\tThe Regents of the University of California. All rights reserved.\nFreeBSD is a registered trademark of The FreeBSD Foundation.\nFreeBSD 15.0-CURRENT #0 main-272a40604: Wed Nov 29 13:42:38 UTC 2023\n tj@vpp:/usr/obj/usr/src/amd64.amd64/sys/GENERIC amd64\nFreeBSD clang version 16.0.6 (https://github.com/llvm/llvm-project.git llvmorg-16.0.6-0-g7cbf1a259152)\nWARNING: WITNESS option enabled, expect reduced performance.\nVT: init without driver.\nCPU: 12th Gen Intel(R) Core(TM) i7-1260P (2500.00-MHz K8-class CPU)\n Origin =\”GenuineIntel\” Id = 0x906a3 Family = 0x6 Model = 0x9a Stepping = 3\n Features = 0x9f83fbff <FPU,VME,DE,PSE,TSC,MSR,PAE,MCE,CX8,APIC,SEP,MTRR,PGE,MCA,CMOV,PAT,PSE36,MMX,FXSR,SSE,SSE2,SS,HTT,PBE>\n Features2 = 0xfeda7a17 <SSE3,PCLMULQDQ,DTES64,DS_CPL,SSSE3,SDBG,FMA,CX16,xTPR,PCID,SSE4.1,SSE4.2,MOVBE,POPCNT,AESNI,XSAVE,OSXSAVE,AVX,F16C,RDRAND,HV>\n AMD Features = 0x2c100800 < SYSCALL,”...
 msg_magic = 405602
 msg_size = 98232
 msg_wseq = 16777

@@ -92,7 +92,7 @@ cbsd jcreate jconf=<文件路径>
 
 我们不会详细讨论典型的容器工作操作，因为这些内容已经在 [网站](https://www.bsdstore.ru/en/docs.html) 上描述。我们将介绍一些 CBSD 项目的创新，旨在简化在 jail 中引用，特别是与容器模板的工作。模板是容器描述和配置的方法。对于容器来说，它可以被导出为可移植的镜像。容器可以包含一个标准的运行时环境，但在大多数情况下，它们用于服务/应用程序的隔离和通过镜像进行分发。这种方式有其优缺点。容器方法的一些优点包括服务部署的速度、不会影响基本系统环境，以及能够提交依赖项的版本，使得应用程序完全正常运行。
 
-谈到这种方法的缺点，最主要的问题是安全性，特别是当使用没有自包含构建脚本（模板）的容器或镜像时。这使得对容器进行操作性软件更新变得困难（例如，修复 [0-day](<https://en.wikipedia.org/wiki/Zero-day_(computing)>) 漏洞），并且容易出现后门，这些后门可能是图像收集者故意或无意留下的。考虑到安装某些软件的复杂性，通常会发现容器中配置的服务是手动放置的，或者丢失了组装说明。
+谈到这种方法的缺点，最主要的问题是安全性，特别是当使用没有自包含构建脚本（模板）的容器或镜像时。这使得对容器进行操作性软件更新变得困难（例如，修复 [0-day](<https://en.wikipedia.org/wiki/Zero-day_(computing) >) 漏洞），并且容易出现后门，这些后门可能是图像收集者故意或无意留下的。考虑到安装某些软件的复杂性，通常会发现容器中配置的服务是手动放置的，或者丢失了组装说明。
 
 另一个缺点是容器服务配置的复杂性。有些镜像可以通过环境变量配置有限数量的参数，尽管这并不总是足够的。一个例子是动态配置，当需要为 WEB 服务器添加和配置多个虚拟主机（vhost）并在数据库管理系统（DBMS）中设置多个数据库时。对于这样的任务，有一个专门的软件部分，称为配置管理。该类别中最知名的产品包括 [Ansible](https://www.ansible.com/)、[Chef](https://www.chef.io/)、[Puppet](https://puppet.com/)、[Rex](https://www.rexify.org/) 和 [SaltStack](https://saltproject.io/)。然而，它们通常是为了适应经典环境而优化的。CBSD 可以结合配置管理器的全部功能和基于容器的方法，从而获得带有管理服务的容器。CBSD 中使用的模板有两种类型：
 
@@ -194,7 +194,7 @@ cbsd forms module=redis jname=jail1
 让我们保留默认参数，并通过 [COMMIT] 操作选择它们。脚本运行完成可能需要一段时间（取决于互联网连接速度，因为模块从官方仓库 pkg.FreeBSD.org 安装 redis 服务器），因此你需要再次确认容器中的服务已安装并正在运行：
 
 ```sh
-~ # cbsd jexec jname=jail1 sockstat -4l
+~ # cbsd jexec jname = jail1 sockstat -4l
 USER COMMAND PID FD PROTO LOCAL ADDRESS FOREIGN ADDRESS
 redis redis-serv 8910 7 tcp4 172.16.0.13:6379 *:*
 ```
@@ -212,10 +212,10 @@ redis redis-serv 8910 7 tcp4 172.16.0.13:6379 *:*
 应用新参数后，检查状态：
 
 ```sh
-~ # cbsd jexec jname=jail1 sockstat -4l
+~ # cbsd jexec jname = jail1 sockstat -4l
 USER COMMAND PID FD PROTO LOCAL ADDRESS FOREIGN ADDRESS
 redis redis-serv 12587 7 tcp4 172.16.0.13:7777 *:*
-~ # cbsd jexec jname=jail1 grep ^maxmemory /usr/local/etc/redis.conf
+~ # cbsd jexec jname = jail1 grep ^maxmemory /usr/local/etc/redis.conf
 maxmemory 4g
 maxmemory-policy noeviction
 ```
@@ -225,7 +225,7 @@ maxmemory-policy noeviction
 现在我们已经了解了 TUI 界面，让我们转向自动化。cbsd forms 允许通过环境变量接受模板的参数，从而省略交互式对话。为了查看某个特定模板接受哪些变量，可以使用 `vars` 参数并指明所需模块：
 
 ```sh
-~ # cbsd forms module=redis vars
+~ # cbsd forms module = redis vars
 H_BIND H_PORT H_REQUIREPASS H_MAXMEMORY H_MAXMEMORY_POLICY
 H_TCP_KEEPALIVE H_LOG_LEVEL H_SYSLOG_ENABLED H_TIMEOUT H_SLAVE_PRIORITY
 H_SLAVEOF
@@ -338,7 +338,7 @@ TUI 界面提供了类似的选择：
 服务完成并重新配置后，临时的 nullfs 文件系统将被卸载，因为它们已经不再需要。因此，如果我们查看上述示例中的 jail1 容器中已安装的软件，将不会看到 puppet7 包或它依赖的文件。
 
 ```sh
-~ # cbsd jexec jname=jail1 pkg info
+~ # cbsd jexec jname = jail1 pkg info
 pkg-1.17.4 Package manager
 redis-6.2.6 Persistent key-value database
 ```

@@ -102,7 +102,7 @@ Celery 还运行一个可选组件，叫做 Flower。它用于监控 Celery 控�
 我已经在运行一个 nginx web 服务器（SSL 代理），所以我可以重用它来指向我的 paperless-ngx 网站。如果你还没有 web 服务器，Port 也提供了一个现成的配置文件，位于 `/usr/local/share/examples/paperless-ngx/nginx.conf`，你只需将其复制到 `/usr/local/etc/nginx/` 目录即可。这个配置文件还包括 SSL 配置，避免有人窃听流量，获取登录信息并做出其他恶意行为。要创建一个有效期为一年的密钥，可以运行以下较长的 `openssl` 命令（或者通过 `lets-encrypt` 获取密钥）：
 
 ```sh
-# openssl req -x509 -nodes -days 365 -newkey rsa:4096 \
+# openssl req -x509 -nodes -days 365 -newkey rsa: 4096 \
 -keyout /usr/local/etc/nginx/selfsigned.key \
 -out /usr/local/etc/nginx/selfsigned.crt
 ```

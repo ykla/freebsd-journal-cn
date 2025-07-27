@@ -9,20 +9,20 @@
 
 所以，如果我们要构建镜像，我们需要创建分区，再把 U-Boot 和 FreeBSD 安装到 SD 卡上。
 
-构建 U-Boot 相对直接。虽然有许多 U-Boot 的移植版本用于各种板子，但 ARTYZ7 并没有现成的移植版本。我已经创建了一个移植版本，你能在[这里](http://www.chrisbowman.com/crb/ArtyZ7/u-boot_ports/patches.html)找到。虽然我还没有把它纳入 FreeBSD 的 ports 中，但你可以直接将其放入最新的 ports 目录 `/usr/ports/sysutils` 下。 [FreeBSD 手册第 4.5 章](https://docs.freebsd.org/en/books/handbook/ports/#ports-using)提供了非常详细的安装和构建 ports 的说明。你将该 port 添加到你的 ports 中后，在 `sysinstall/u-boot-artyz7` 目录下简单地运行 `make`，应该就能自动下载构建 U-Boot。运行 `make install` 后，文件 `boot.bin` 和 `U-boot.img` 应该会出现在目录 `/usr/local/share/U-boot/U-boot-artyz7` 下。注意：我以前可以使用较大的“`-j`”值来让 `make` 使用多个核心进行构建，但在最新的 ports（2024Q3）中，似乎无法正常工作。
+构建 U-Boot 相对直接。虽然有许多 U-Boot 的移植版本用于各种板子，但 ARTYZ7 并没有现成的移植版本。我已经创建了一个移植版本，你能在 [这里](http://www.chrisbowman.com/crb/ArtyZ7/u-boot_ports/patches.html) 找到。虽然我还没有把它纳入 FreeBSD 的 ports 中，但你可以直接将其放入最新的 ports 目录 `/usr/ports/sysutils` 下。 [FreeBSD 手册第 4.5 章](https://docs.freebsd.org/en/books/handbook/ports/#ports-using) 提供了非常详细的安装和构建 ports 的说明。你将该 port 添加到你的 ports 中后，在 `sysinstall/u-boot-artyz7` 目录下简单地运行 `make`，应该就能自动下载构建 U-Boot。运行 `make install` 后，文件 `boot.bin` 和 `U-boot.img` 应该会出现在目录 `/usr/local/share/U-boot/U-boot-artyz7` 下。注意：我以前可以使用较大的“`-j`”值来让 `make` 使用多个核心进行构建，但在最新的 ports（2024Q3）中，似乎无法正常工作。
 
-从源代码构建也在 FreeBSD 手册中有很好的文档。在[第 26.6 章：从源代码更新 FreeBSD](https://docs.freebsd.org/en/books/handbook/cutting-edge/#makeworld) 中，你将找到有关下载 FreeBSD 源代码和从中构建的详细信息。如果你已经在 `/usr/src` 安装了 FreeBSD 源代码，你可以直接进入该目录并运行以下命令：
+从源代码构建也在 FreeBSD 手册中有很好的文档。在 [第 26.6 章：从源代码更新 FreeBSD](https://docs.freebsd.org/en/books/handbook/cutting-edge/#makeworld) 中，你将找到有关下载 FreeBSD 源代码和从中构建的详细信息。如果你已经在 `/usr/src` 安装了 FreeBSD 源代码，你可以直接进入该目录并运行以下命令：
 
 ```sh
 # make buildworld
-# make buildkernel KERNCONF=ARTYZ7
+# make buildkernel KERNCONF = ARTYZ7
 ```
 
 虽然这些命令应该能在 ARTYZ7 板上正常工作，毕竟它有完整的 FreeBSD 安装，但你应该做好准备，它会花费很长时间。由于 PC 硬件变得非常强大且价格低廉，我使用一台 AMD64 系统来托管所有文件、开发环境，并进行所有构建。FreeBSD 对交叉编译和构建提供了内置支持。在我的 PC 上，我使用以下命令让我的 PC 为基于 ARM 的 ARTYZ7 卡板进行源代码构建：
 
 ```sh
-# make buildworld TARGET=arm TARGET_ARCH=armv7 -j32
-# make buildkernel KERNCONF=ARTYZ7 TARGET=arm \ TARGET_ARCH=armv7 -j32
+# make buildworld TARGET = arm TARGET_ARCH = armv7 -j32
+# make buildkernel KERNCONF = ARTYZ7 TARGET = arm \ TARGET_ARCH = armv7 -j32
 ```
 
 这将从 AMD64 构建一个交叉编译器到 ARMv7，并使用这个编译器来构建所有内容。
@@ -45,14 +45,14 @@
 接下来，我在 `ufs` 目录上进行安装：
 
 ```sh
-# make installworld installkernel TARGET=arm \
+# make installworld installkernel TARGET = arm \
 TARGET_ARCH=armv7 -j32 DESTDIR=ufs
 ```
 
 你还需要运行分发目标，该目标会在 `/etc` 中创建所有默认的配置文件。当你对一个工作系统进行源代码升级时，通常不会运行这个命令，因为它会覆盖你的配置文件，但在从零开始构建系统时，你确实需要默认的配置文件：
 
 ```sh
-# make distribution TARGET=arm \
+# make distribution TARGET = arm \
 TARGET_ARCH=armv7 DESTDIR=ufs -j32
 ```
 
@@ -119,7 +119,7 @@ mkimg -s mbr -f raw -a 1\
 如果我将 SD 卡插入主机，我会看到一个 `/dev/da0` 设备，并使用简单的 [`dd`](https://man.freebsd.org/cgi/man.cgi?query=dd&apropos=0&sektion=0&manpath=FreeBSD+13.2-RELEASE+and+Ports&arch=default&format=html) 命令将镜像复制到 SD 卡：
 
 ```sh
-# dd if=selfbuilt.img of=/dev/da0 bs=1m status=progress
+# dd if = selfbuilt.img of =/dev/da0 bs = 1m status = progress
 ```
 
 到此为止，剩下的工作就是将 SD 卡插入 ARTYZ7 板卡，按下重置（reset）按钮，观察精彩的启动过程。由于我在 `ufs` 分区中的配置，我能够在启动完成后立即通过 `ssh` 登录到我的板卡，并且已经通过 NFS 挂载我的主目录。现在，要么征服世界，要么喝杯啤酒——反正啤酒什么时候都合适。

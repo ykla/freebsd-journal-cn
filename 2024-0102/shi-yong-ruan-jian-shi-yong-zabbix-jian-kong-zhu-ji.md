@@ -28,11 +28,11 @@
 使用 `sysrc` 启动时启用相关服务：
 
 ```sh
-# sysrc zabbix_server_enable=yes
-# sysrc zabbix_agentd_enable=yes
-# sysrc postgresql_enable=yes
-# sysrc nginx_enable=yes
-# sysrc php_fpm_enable=yes
+# sysrc zabbix_server_enable = yes
+# sysrc zabbix_agentd_enable = yes
+# sysrc postgresql_enable = yes
+# sysrc nginx_enable = yes
+# sysrc php_fpm_enable = yes
 ```
 
 在我的配置中，我没有使用 SNMP（以后可能会变），但是 `pkg-message` 里有关于如何启用 SNMP 守护进程的详细信息。如果你需要的话，可以参考。
@@ -114,7 +114,7 @@ StatsAllowedIP=127.0.0.1
 代理程序名为 Zabbix Agentd（经典的 Unix 守护进程），应该在服务器 jail 启动时运行它。可以通过命令 `sysrc` 在 `/etc/rc.conf` 添加启动项，如下所示：
 
 ```sh
-# sysrc zabbix_agentd_enable=yes
+# sysrc zabbix_agentd_enable = yes
 ```
 
 与服务器配置文件相邻的还有代理的配置文件。代理配置文件名为 `zabbix_agentd.conf`，位于 `/usr/local/etc/zabbix64/zabbix_agentd.conf`。在我做了一些自定义修改后，文件内容如下所示：

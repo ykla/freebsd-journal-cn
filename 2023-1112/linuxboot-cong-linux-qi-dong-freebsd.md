@@ -72,7 +72,7 @@ LinuxBoot 提供了一种吸引人的替代方案，因为它位于主板上的�
 
 ## 访问主机资源
 
-原始的 `loader.kboot` 代码访问了一些主机资源，但并不完全。我希望能够从原始设备或通过存储在主机系统文件系统中的内核或引导加载程序进行引导。引导加载程序一直支持多种指定文件来源的方式，但在重构之前，增加新的方式非常困难。通过对现有代码进行的重构，我增加了用 Linux 名称访问所有块设备的功能。例如，“/dev/sda4:/boot/loader”会读取位于 sda 磁盘第四分区上的 `/boot/loader` 文件。此外，“lsdev”现在会列出所有符合条件的 Linux 块设备。引导加载程序能够发现 zpool。例如，“zfs:zroot/kboot-example/boot/kernel”指定了要启动的内核。最后，将内核和/或引导加载程序直接放在 Linux `initrd` 中也很方便。引导加载程序本身使用此功能从 `/sys` 和 `/proc` 文件系统获取必要的数据。任何已挂载的文件系统都可以通过“host:?path-to-file?”访问。因此，你可以通过“host:/freebsd/boot/kernel”引导；还可使用“more host:/proc/iomem”查看 Linux 内存使用情况。引导加载程序还支持将前缀“/sys/”和“/proc/”映射到主机的文件系统 `/sys` 和 `/proc`，无论活动设备如何。
+原始的 `loader.kboot` 代码访问了一些主机资源，但并不完全。我希望能够从原始设备或通过存储在主机系统文件系统中的内核或引导加载程序进行引导。引导加载程序一直支持多种指定文件来源的方式，但在重构之前，增加新的方式非常困难。通过对现有代码进行的重构，我增加了用 Linux 名称访问所有块设备的功能。例如，“/dev/sda4:/boot/loader”会读取位于 sda 磁盘第四分区上的 `/boot/loader` 文件。此外，“lsdev”现在会列出所有符合条件的 Linux 块设备。引导加载程序能够发现 zpool。例如，“zfs: zroot/kboot-example/boot/kernel”指定了要启动的内核。最后，将内核和/或引导加载程序直接放在 Linux `initrd` 中也很方便。引导加载程序本身使用此功能从 `/sys` 和 `/proc` 文件系统获取必要的数据。任何已挂载的文件系统都可以通过“host:?path-to-file?”访问。因此，你可以通过“host:/freebsd/boot/kernel”引导；还可使用“more host:/proc/iomem”查看 Linux 内存使用情况。引导加载程序还支持将前缀“/sys/”和“/proc/”映射到主机的文件系统 `/sys` 和 `/proc`，无论活动设备如何。
 
 `loader.kboot` 能替代 Linux `initrd` 中的 `/sbin/init`。首个运行的程序是 `init` ，并且 `init` 必须做一些额外的步骤来准备系统。当 `loader.kboot` 作为 `init` 运行时，它会执行这些额外的步骤，包括：挂载所有初始文件系统（`/dev`、`/sys`、`/proc`、`/tmp`、`/var`），创建一系列预期的符号链接，打开标准输入、标准输出和标准错误。引导加载程序可以在这种环境下运行，或作为从标准 Linux 启动脚本启动的进程运行。目前，`loader.kboot` 无法创建新进程来执行 Linux 命令。
 

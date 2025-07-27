@@ -52,7 +52,7 @@ target iqn.dns-name-of-initiator:nvme {
 在服务器重启后，iSCSI 发起器应该再次启动，因此我在 /etc/rc.conf 中加入了 `ctld_enable="YES"`：
 
 ```sh
-# sysrc ctld_enable=yes
+# sysrc ctld_enable = yes
 ```
 
 为了启动发起器，我启动了服务：

@@ -23,7 +23,7 @@ FreeBSD 15 支持通过主机内核驱动程序访问远程命名空间，以及
 
 ## 主机
 
-FreeBSD 中的 Fabrics 主机内置了新的 [nvmecontrol(8)](https://man.freebsd.org/nvmecontrol/8) 命令和内核驱动程序 [nvmf(4)](https://man.freebsd.org/nvmf/4) 。内核驱动程序将远程控制器暴露为类似于 PCIe NVMe 控制器的新总线设备 nvmeX。远程命名空间通过磁盘设备 [nda(4)](https://man.freebsd.org/nda/4) 以 CAM 暴露。与 PCIe 的驱动程序 [nvme(4)](https://man.freebsd.org/nvme/4)不同，Fabrics 主机驱动程序不支持磁盘驱动程序 [nvd(4)](https://man.freebsd.org/nvd/4)。所有新的 nvmecontrol(8) 命令都使用从主机 UUID 生成的主机 NQN，除非显式指定主机 NQN。
+FreeBSD 中的 Fabrics 主机内置了新的 [nvmecontrol(8)](https://man.freebsd.org/nvmecontrol/8) 命令和内核驱动程序 [nvmf(4)](https://man.freebsd.org/nvmf/4) 。内核驱动程序将远程控制器暴露为类似于 PCIe NVMe 控制器的新总线设备 nvmeX。远程命名空间通过磁盘设备 [nda(4)](https://man.freebsd.org/nda/4) 以 CAM 暴露。与 PCIe 的驱动程序 [nvme(4)](https://man.freebsd.org/nvme/4) 不同，Fabrics 主机驱动程序不支持磁盘驱动程序 [nvd(4)](https://man.freebsd.org/nvd/4)。所有新的 nvmecontrol(8) 命令都使用从主机 UUID 生成的主机 NQN，除非显式指定主机 NQN。
 
 
 ### 发现服务
@@ -33,7 +33,7 @@ FreeBSD 中的 Fabrics 主机内置了新的 [nvmecontrol(8)](https://man.freebs
 **示例 1：来自 Linux 控制器的发现日志页面**
 
 ```sh
-# nvmecontrol discover ubuntu:4420
+# nvmecontrol discover ubuntu: 4420
 Discovery
 =========
 Entry 01
@@ -60,7 +60,7 @@ Subsystem type:        NVMe
 
 ```sh
 # kldload nvmf nvmf_tcp
-# nvmecontrol connect ubuntu:4420 nvme-test-target
+# nvmecontrol connect ubuntu: 4420 nvme-test-target
 ```
 
 建立关联后，内核会将图 1 中的文本输出到系统控制台和系统信息缓冲区。设备 `nvmeX` 在设备描述中包括远程子系统 NQN，每个远程命名空间都列举为外设 `ndaX`。
@@ -120,7 +120,7 @@ Disconnect of I/O Queues:    Not Supported
 **示例 5：重新连接到远程 I/O 控制器**
 
 ```sh
-# nvmecontrol reconnect nvme0 ubuntu:4420
+# nvmecontrol reconnect nvme0 ubuntu: 4420
 ```
 
 ## 控制器
@@ -131,7 +131,7 @@ FreeBSD 上的 Fabrics 控制器将本地块设备作为 NVMe 命名空间暴露
 
 ```sh
 # kldload nvmft nvmf_tcp
-# ctladm create -b block -o file=/dev/zvol/pool/lun0
+# ctladm create -b block -o file =/dev/zvol/pool/lun0
 LUN created successfully
 backend:        block
 device type:   0
@@ -140,7 +140,7 @@ blocksize      512 bytes
 LUN ID:        0
 Serial Number: MYSERIAL0000
 Device ID:     MYDEVID0000
-# nvmfd -F -p 4420 -n nqn.2001-03.com.chelsio:frodo0 -K
+# nvmfd -F -p 4420 -n nqn.2001-03.com.chelsio: frodo0 -K
 ```
 
 每当远程主机连接到 I/O 控制器时，内核都会记录一条日志，列出远程主机的 NQN（如图 2 所示）。

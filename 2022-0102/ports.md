@@ -244,7 +244,7 @@ Poudriere 的设置可以在 FreeBSD Porter’s Handbook 的“测试 Port”章
 
 FreeBSD Bugzilla 是贡献者上传补丁并建议更改的服务：[https://bugs.freebsd.org](https://bugs.freebsd.org)。整个过程相当简单。首先，你需要创建一个账户并登录。然后通过点击顶部导航栏中的“New”来打开一个新的问题报告（PR）。记得在摘要前加上“graphics/xpdf4”作为前缀，这样 port 的维护者就会收到关于 PR 的通知（更多关于如何撰写好 PR 的建议可以参考这里：[https://wiki.freebsd.org/Bugzilla/DosAndDonts](https://wiki.freebsd.org/Bugzilla/DosAndDonts)）。有时候，除了在 Bugzilla 上打开 PR，人们还会将补丁提交到 Phabricator。这项服务有更好的界面用于代码审查。
 
-哦，顺便说一下，Xpdf 图标缺失的问题确实是基于真实的故事。我已经在 Bugzilla 上报告了这个 Xpdf 的问题（[https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=261376](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=261376)），并将我的补丁发布到 Phabricator（[https://reviews.freebsd.org/D33984](https://reviews.freebsd.org/D33984)）。Xpdf 的维护者审查了我的补丁并批准了提交更改。由于我是一个 ports 提交者，我自己提交了这个更改。
+哦，顺便说一下，Xpdf 图标缺失的问题确实是基于真实的故事。我已经在 Bugzilla 上报告了这个 Xpdf 的问题（[https://bugs.freebsd.org/bugzilla/show_bug.cgi?id = 261376](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=261376)），并将我的补丁发布到 Phabricator（[https://reviews.freebsd.org/D33984](https://reviews.freebsd.org/D33984)）。Xpdf 的维护者审查了我的补丁并批准了提交更改。由于我是一个 ports 提交者，我自己提交了这个更改。
 
 ## 获取帮助
 

@@ -5,13 +5,13 @@
 
 传统上，NFS 提供的安全性非常有限，主要基于客户端的 IP 地址/DNS 主机名，使用 exports(5) 配置。这种方式可以通过 IP 地址欺骗来绕过，且对于没有固定、众所周知的 IP 地址或 DNS 主机名的移动客户端来说根本无法使用。此外，所有数据通常以明文在网络上传输，因此容易被嗅探。
 
-RFC2203 于 1997 年 9 月发布，提供了一种机制，通过使用 GSSAPI 和 Kerberos 机制（通常称为 Kerberized NFS）来缓解至少部分上述问题。当通过“sec=krb5p”（KerberosV 带隐私）使用时，RPC 消息的参数和结果会在网络上传输时进行加密。Kerberos 在用户认证方面表现良好，但在机器认证方面不太方便。与 NFSv3 不同，NFSv4 需要一个“系统主体”，用于维护服务器上的 Open/Byte_range 锁定状态。Kerberos 有一个基于主机的 Kerberos 主体，格式为“host/@REALM”，可以为此创建一个密钥表条目并将其复制到客户端，作为“系统主体”使用。此“实例”应当保护密钥表条目不被另一个客户端使用（如果该条目被泄露）。然而，这使得这种 Kerberos 主体对于没有固定、众所周知的 DNS 主机名的移动客户端来说变得毫无用处。此外，对于“sec=krb5p”，只有 RPC 的数据负载部分是加密的，RPC 头部仍然暴露，导致将加解密工作卸载到专用硬件上变得不切实际。总之，考虑到实施 Kerberos 环境所涉及的管理工作，"sec=krb5p" 并未被广泛采用，并且对于没有固定、众所周知的 DNS 主机名的移动客户端效果不佳。
+RFC2203 于 1997 年 9 月发布，提供了一种机制，通过使用 GSSAPI 和 Kerberos 机制（通常称为 Kerberized NFS）来缓解至少部分上述问题。当通过“sec = krb5p”（KerberosV 带隐私）使用时，RPC 消息的参数和结果会在网络上传输时进行加密。Kerberos 在用户认证方面表现良好，但在机器认证方面不太方便。与 NFSv3 不同，NFSv4 需要一个“系统主体”，用于维护服务器上的 Open/Byte_range 锁定状态。Kerberos 有一个基于主机的 Kerberos 主体，格式为“host/@REALM”，可以为此创建一个密钥表条目并将其复制到客户端，作为“系统主体”使用。此“实例”应当保护密钥表条目不被另一个客户端使用（如果该条目被泄露）。然而，这使得这种 Kerberos 主体对于没有固定、众所周知的 DNS 主机名的移动客户端来说变得毫无用处。此外，对于“sec = krb5p”，只有 RPC 的数据负载部分是加密的，RPC 头部仍然暴露，导致将加解密工作卸载到专用硬件上变得不切实际。总之，考虑到实施 Kerberos 环境所涉及的管理工作，"sec = krb5p" 并未被广泛采用，并且对于没有固定、众所周知的 DNS 主机名的移动客户端效果不佳。
 
 为了改善 NFS 的安全性，已撰写了一份名为“Towards Remote Procedure Call Encryption By Default”的互联网草案，描述了使用传输层安全性（TLS）来加密网络上的 RPC 消息流量，并使用 X.509 证书进行机器认证。由于 TLS 已被广泛采用，已经有了专用的硬件卸载解决方案，更不用说高效的软件实现了。本文描述了 FreeBSD 13 中的 NFS over TLS 实现，并展示了一个针对移动客户端（如笔记本电脑）的示例使用案例。
 
 ## 实现
 
-虽然我将其称为 NFS over TLS，但更准确的说法是 Sun RPC over TLS，因为实现是在内核的 RPC（krpc）中完成的，并且对 NFS 层几乎是透明的。OpenSSL 的库提供了 TLS 和 X.509 证书在用户空间中的全面实现。然而，NFS 是在内核中实现的，将所有 NFS RPC 消息传递到用户地址空间以便由 OpenSSL 库处理似乎不切实际。幸运的是，FreeBSD 13 的内核添加了内核 TLS（KTLS）[TLS Offload in the Kernel，John Baldwin，FreeBSD Journal，2020 年 5 月/6 月 https://issue.freebsdfoundation.org/publication/?m=33057&i=667002&p=12&ver=html5]，它在内核中的网络栈内高效地处理 TLS 应用数据记录，包括加密/解密。
+虽然我将其称为 NFS over TLS，但更准确的说法是 Sun RPC over TLS，因为实现是在内核的 RPC（krpc）中完成的，并且对 NFS 层几乎是透明的。OpenSSL 的库提供了 TLS 和 X.509 证书在用户空间中的全面实现。然而，NFS 是在内核中实现的，将所有 NFS RPC 消息传递到用户地址空间以便由 OpenSSL 库处理似乎不切实际。幸运的是，FreeBSD 13 的内核添加了内核 TLS（KTLS）[TLS Offload in the Kernel，John Baldwin，FreeBSD Journal，2020 年 5 月/6 月 https://issue.freebsdfoundation.org/publication/?m = 33057&i = 667002&p = 12&ver = html5]，它在内核中的网络栈内高效地处理 TLS 应用数据记录，包括加密/解密。
 
 这为在 TLS 应用数据记录中封装/加密 RPC 消息并在接收端解密/解封装这些 RPC 消息提供了基本机制。然而，它并不处理非应用数据记录，例如用于 TLS 握手的记录。为了处理非应用数据记录，分别在用户空间实现了 rpc.tlsclntd(8) 和 rpc.tlsservd(8) 用于客户端和服务器。这些守护进程通过自定义的 RPC 从内核接收上行调用，使用 AF_LOCAL 套接字上的 krpc，以类似 gssd(8) 守护进程为 Kerberized NFS 所做的方式来工作。为了处理这些上行调用，守护进程执行 OpenSSL 库调用，承担处理非应用数据记录的重任，包括处理 TLS 握手。守护进程还使用自定义系统调用向内核中的 krpc 注册，以及处理需要将文件描述符与内核中已经存在的套接字关联的特殊情况。
 
@@ -66,7 +66,7 @@ rpc.tlsservd 还有一个命令行选项，指定守护进程要求客户端 IP 
   - 向 rpc.tlsclntd 执行握手上行调用。为了处理握手，rpc.tlsclntd 中的操作为：  
     - 为 TCP 套接字获取文件描述符。此时 krpc 已经拥有客户端的 NFS 连接的 TCP 套接字，但没有该套接字的文件描述符引用。通过守护进程的自定义系统调用来完成这项操作，类似于 rpc.tlsservd。  
     - 调用 SSL_set_fd() 将套接字与 SSL 上下文关联。  
-    - 如果守护进程是使用 -m/--mutualverf 命令行选项启动的，则调用 SSL_[ctx_]use_certificate_file()/SSL_[ctx_]use_PrivateKey_file() 在握手期间提供证书。上行调用的参数可以覆盖证书/密钥文件的默认名称。默认名称为“cert.pem”和“certkey.pem”，但可以通过“tlscertname”挂载选项在每个挂载上进行覆盖，以防不同的 NFS 服务器需要不同的证书。  
+    - 如果守护进程是使用 -m/--mutualverf 命令行选项启动的，则调用 SSL_[ctx_] use_certificate_file()/SSL_[ctx_] use_PrivateKey_file() 在握手期间提供证书。上行调用的参数可以覆盖证书/密钥文件的默认名称。默认名称为“cert.pem”和“certkey.pem”，但可以通过“tlscertname”挂载选项在每个挂载上进行覆盖，以防不同的 NFS 服务器需要不同的证书。  
     - 调用 SSL_connect() 执行实际的握手。  
     - 如果握手成功，调用 BIO_get_ktls_send() 和 BIO_get_ktls_recv() 检查 KTLS 是否已在套接字上启用。如果其中任何一个返回零，则认为握手失败。如果握手成功：  
       - 向套接字文件描述符的链表中添加一个结构，使用唯一的 64 位引用号作为键。  
@@ -85,7 +85,7 @@ rpc.tlsservd 还有一个命令行选项，指定守护进程要求客户端 IP 
 可以使用带有隐私保护的 Kerberized NFS 从 FreeBSD 笔记本电脑进行挂载。笔记本电脑用户需要执行以下命令：
 
 ```sh
-# sysctl vfs.usermount=1 - 以 su/root 身份执行
+# sysctl vfs.usermount = 1 - 以 su/root 身份执行
 # service gssd onestart - 以 su/root 身份执行
 % kinit - 获取用户的 TGT
 % mount -t nfs -o sec=krb5p,nfsv4,minorversion=1 nfsv4-server.uoguelph.ca:/ /mnt
@@ -94,7 +94,7 @@ rpc.tlsservd 还有一个命令行选项，指定守护进程要求客户端 IP 
 % umount /mnt
 ```
 
-通过使用挂载选项“sec=krb5p”，但不使用“gssname”挂载选项，FreeBSD 客户端将使用“用户主体”作为“系统主体”。如果用户的 TGT 在“umount”之前过期，挂载将会失败。
+通过使用挂载选项“sec = krb5p”，但不使用“gssname”挂载选项，FreeBSD 客户端将使用“用户主体”作为“系统主体”。如果用户的 TGT 在“umount”之前过期，挂载将会失败。
 
 据我所知，这种方法并未广泛采用，可能是因为安装 Kerberos 和维护一个可以从互联网上任何地方访问的 KDC 所需的工作量。
 
@@ -104,7 +104,7 @@ rpc.tlsservd 还有一个命令行选项，指定守护进程要求客户端 IP 
 
   ```sh
   # openssl genrsa -aes256 -out certkey.pem
-  # openssl req -new -key certkey.pem -addext "subjectAltName=otherName:1.3.6.1.4.1.2238.1.1.1;UTF8:rmacklem@uoguelph.ca" -out req.pem
+  # openssl req -new -key certkey.pem -addext "subjectAltName = otherName: 1.3.6.1.4.1.2238.1.1.1; UTF8: rmacklem@uoguelph.ca" -out req.pem
   # openssl ca -in req.pem -out cert.pem
   ```
 
@@ -132,7 +132,7 @@ rpc.tlsservd 还有一个命令行选项，指定守护进程要求客户端 IP 
 - 待笔记本电脑连接到互联网，就可以以 su/root 身份执行挂载：
 
   ```sh
-  # mount -t nfs -o nfsv4,minorversion=1,tls nfsv4-server.uoguelph.ca:/ /mnt
+  # mount -t nfs -o nfsv4, minorversion = 1, tls nfsv4-server.uoguelph.ca:/ /mnt
   ```
 
 由于客户端提供了由站点本地 CA 签名的证书，服务器可以合理地确认客户端拥有由站点本地 CA 管理员创建的证书。创建客户端私钥时使用的“-aes256”选项迫使 rpc.tlsclntd 在启动时询问输入密码短语。这可以防止笔记本电脑被盗或证书/密钥文件被复制到另一个客户端后轻易的泄露。如果证书要在未经授权的客户端上使用，必须通过某种方式捕获或破解密码短语。

@@ -45,8 +45,8 @@ pkg install openntpd vm-bhyve bhyve-firmware
 使用 vm-bhyve 为机器引导并做好准备非常简单，但需要注意一些 ZFS 选项，以确保客户在底层存储上能够保持良好的性能，特别是对于一般工作负载：
 
 ```sh
-# zfs create -o mountpoint=/vm -o recordsize=64k zroot/vm
-# cat <<EOF >> /etc/rc.conf
+# zfs create -o mountpoint =/vm -o recordsize = 64k zroot/vm
+# cat <<EOF > > /etc/rc.conf
 vm_enable=”YES”
 vm_dir=”zfs:zroot/vm”
 vm_list=””

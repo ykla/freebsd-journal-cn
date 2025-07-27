@@ -24,7 +24,7 @@ Chaos Communication Camp（CCCamp）是由 Chaos Computer Club（CCC，混沌计
 
 ## 主题内容
 
-演讲和研讨会按照主题分为五个地区的村庄：Bits und Baeume、Digital Courage、Milliways、N:O:R:T:X，以及 Marktplatz。Bits und Baeume 主持关于数字化、技术和环境的演讲和研讨会，位于砖厂的半路处，有一座通风的帐篷。Digital Courage 主持以德语呈现的数字权利内容，而 Milliways 则专注于安全相关内容和有关硬件的研讨会。
+演讲和研讨会按照主题分为五个地区的村庄：Bits und Baeume、Digital Courage、Milliways、N: O: R: T: X，以及 Marktplatz。Bits und Baeume 主持关于数字化、技术和环境的演讲和研讨会，位于砖厂的半路处，有一座通风的帐篷。Digital Courage 主持以德语呈现的数字权利内容，而 Milliways 则专注于安全相关内容和有关硬件的研讨会。
 
 ![](https://freebsdfoundation.org/wp-content/uploads/2023/11/cccamp_image3.jpg)
 

@@ -65,7 +65,7 @@ Waiting for clients.
 为了测试设置，我们可以手动触发一个 panic，并告诉内核转储核心。
 
 ```sh
-# sysctl debug.kdb.panic=1
+# sysctl debug.kdb.panic = 1
 debug.kdb.panic: 0panic: kdb_sysctl_panic
 cpuid = 1
 time = 1655412790
@@ -120,7 +120,7 @@ Completed dump from client devvm [10.0.1.157]
 netdump 的一个限制是需要在 panic 之前进行配置。从 FreeBSD 13.0 开始，可以在 panic 后通过 DDB（内核调试器）配置 netdump。通过使用 DDB 的 `netdump` 命令，可以在 panic 后进行配置：
 
 ```sh
-# sysctl debug.kdb.panic=1
+# sysctl debug.kdb.panic = 1
 ...
 Stopped at kdb_enter+0x32: movq $0,0x1279963(%rip)
 db> netdump -s 10.0.1.236

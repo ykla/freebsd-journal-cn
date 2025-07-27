@@ -151,8 +151,8 @@ FreeBSD 的安全补丁可以使用以下命令下载和安装：
 安装后，我们还建议启用 ASLR（地址空间布局随机化），它会在每次运行进程时改变其内存布局，使得应用程序更难被利用。要在 FreeBSD 系统上启用 ASLR（**译者注：14.0 后就默认启用了**），可以运行以下命令：
 
 ```sh
-# sysctl kern.elf64.aslr.enable=1
-# sysctl kern.elf32.aslr.enable=1
+# sysctl kern.elf64.aslr.enable = 1
+# sysctl kern.elf32.aslr.enable = 1
 ```
 
 用户还可以将这些条目添加到文件 `/boot/loader.conf` 中，以便在启动时启用它们。

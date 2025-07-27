@@ -24,7 +24,7 @@ zfs_enable=”YES”
 在设置 ZFS 之前，识别与系统关联的磁盘设备名称。一种比较快的方法是使用以下命令：
 
 ```sh
-# egrep "da[0-9]|cd[0-9]" /var/run/dmesg.boot
+# egrep "da [0-9]|cd [0-9]" /var/run/dmesg.boot
 ```
 
 输出应该会识别设备名称，本文指南中的示例将使用默认的 SCSI 名称：`da0`、`da1` 和 `da2`。如果硬件不同，请确保使用正确的设备名称。
@@ -55,13 +55,13 @@ zfs_enable=”YES”
 
 ```sh
 # zfs create example/compressed
-# zfs set compression=on example/compressed
+# zfs set compression = on example/compressed
 ```
 
 现在，数据集 `example/compressed` 是一个 ZFS 压缩文件系统。要禁用压缩，可以使用：
 
 ```sh
-# zfs set compression=off example/compressed
+# zfs set compression = off example/compressed
 ```
 
 要卸载文件系统，使用 `zfs umount`，然后使用 `df` 验证：
@@ -194,7 +194,7 @@ errors: No known data errors
 # zpool offline storage da1
 ```
 
-现在关闭计算机并更换`da1`。启动计算机后，将 `da1` 重新加入池中：  
+现在关闭计算机并更换 `da1`。启动计算机后，将 `da1` 重新加入池中：  
 
 ```sh
 # zpool replace storage da1

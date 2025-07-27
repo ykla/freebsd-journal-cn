@@ -98,7 +98,7 @@ notify 0 {
 
 ```sh
 # pkg install carp
-# ucarp --interface=eth0 --srcip=192.168.1.157 --vhid=1 --pass=randompass
+# ucarp --interface = eth0 --srcip = 192.168.1.157 --vhid = 1 --pass = randompass
 --addr=192.168.1.50 --upscript=up.sh --downscript=down.sh
 ```
 
@@ -124,7 +124,7 @@ CARP 是一款简单但功能强大的工具，能够为我们的网络提供高
   [https://docs.freebsd.org/en/books/handbook/advanced-networking/#carp](https://docs.freebsd.org/en/books/handbook/advanced-networking/#carp)
   
 - **CARP FreeBSD man page**  
-  [https://www.freebsd.org/cgi/man.cgi?query=carp&sektion=4](https://www.freebsd.org/cgi/man.cgi?query=carp&sektion=4)
+  [https://www.freebsd.org/cgi/man.cgi?query = carp&sektion = 4](https://www.freebsd.org/cgi/man.cgi?query=carp&sektion=4)
 
 
 ## 致谢

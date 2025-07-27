@@ -51,7 +51,7 @@ Kyuafile 中未显式提及测试用例（test cases），因为测试用例是�
 
 ```sh
 # cd /usr/tests/sys/kern
-# kyua test unix_dgram:basic
+# kyua test unix_dgram: basic
 ```
 
 每个测试用例都可以包含可选的元数据属性，以键/值对的形式存在，用于修改 Kyua 针对该特定测试用例的行为。上面的 Kyuafile 示例展示了如何将相同的元数据应用于测试程序中的所有测试用例。示例中包含的属性如下：
@@ -66,7 +66,7 @@ Kyuafile 中未显式提及测试用例（test cases），因为测试用例是�
 Kyua 可以通过配置实现测试用例的并行运行。默认情况下，`parallelism` 设置为 1，这意味着测试是按顺序运行的。该设置可以在 [`kyua.conf(5)`](https://man.freebsd.org/cgi/man.cgi?query=kyua.conf&sektion=5) 文件中调整，或作为选项指定：  
 
 ```sh
-# kyua -v parallelism=8 test
+# kyua -v parallelism = 8 test
 ```
 
 测试用例需要独占访问共享资源时，应标记为 `is_exclusive="true"`，以便 Kyua 知道不与其他测试并行运行。Kyua 的操作分为两个阶段。第一阶段运行所有非独占的测试用例，如果配置了并行性设置，这些测试可以并行执行。第二阶段顺序运行所有独占的测试用例。为了保持测试套件的高效性，最好避免添加新的独占测试，并尽量创建非独占的替代版本，否则测试套件可能会耗费过多时间来执行。
@@ -113,7 +113,7 @@ security.jail.children.max: 999999
 显然，上述内容指的是层级中的最高 jail，称为 `prison0`。根据当前值和最大值，系统最多可以创建近百万个 jail。当使用 [`jail(8)`](https://man.freebsd.org/cgi/man.cgi?query=jail&sektion=8) 创建新 jail 时，会应用以下默认配置：
 
 ```sh
-# jail -c command=sysctl security.jail.children
+# jail -c command = sysctl security.jail.children
 security.jail.children.cur: 0
 security.jail.children.max: 0
 ```
@@ -153,7 +153,7 @@ unprivileged_user = tests
 这个变量可以通过 [`kyua.conf(5)`](https://man.freebsd.org/cgi/man.cgi?query=kyua.conf&sektion=5) 进行操作，也可以作为 [`kyua(1)`](https://man.freebsd.org/cgi/man.cgi?query=kyua&sektion=1) 命令行工具的选项来指定。例如，以下命令将仅执行基于主机的测试，并跳过所有其他测试：
 
 ```sh
-# kyua -v execenvs=host test
+# kyua -v execenvs = host test
 ```
 
 如果系统在构建时没有启用 jail 支持，则仅会提供默认的主机执行环境。因此，任何需要 jail 执行环境的测试都将被跳过。

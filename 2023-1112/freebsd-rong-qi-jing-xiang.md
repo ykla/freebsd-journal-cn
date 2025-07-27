@@ -3,7 +3,7 @@
 - 原文链接：[FreeBSD Container Images](https://freebsdfoundation.org/our-work/journal/browser-based-edition/freebsd-14-0/freebsd-container-images/)
 - 作者：Doug Rabson
 
-OCI 容器引擎，比如 [containerd](https://containerd.io/) 和 [podman](https://podman.io/)，需要容器镜像。容器镜像是个只读目录树，通常包含一款应用程序及其支持文件和库。容器镜像在容器引擎上运行时，会创建该镜像的可写副本，并在某种隔离环境（如 jail）中执行该应用程序。通过注册中心分发容器镜像。注册中心存储镜像数据，提供了一个简单的 REST API 来访问镜像及其元数据。由[开放容器标准](https://opencontainers.org/)对注册中心的 API、镜像格式和元数据进行标准化，基本上取代了早期的 Docker 格式。
+OCI 容器引擎，比如 [containerd](https://containerd.io/) 和 [podman](https://podman.io/)，需要容器镜像。容器镜像是个只读目录树，通常包含一款应用程序及其支持文件和库。容器镜像在容器引擎上运行时，会创建该镜像的可写副本，并在某种隔离环境（如 jail）中执行该应用程序。通过注册中心分发容器镜像。注册中心存储镜像数据，提供了一个简单的 REST API 来访问镜像及其元数据。由 [开放容器标准](https://opencontainers.org/) 对注册中心的 API、镜像格式和元数据进行标准化，基本上取代了早期的 Docker 格式。
 
 ## OCI 镜像
 
@@ -100,7 +100,7 @@ OCI 镜像规范还支持多架构镜像，它们只是清单的列表：
 - “minimal”：在“base”基础上，增加了 FreeBSD-runtime 包和包管理功能。
 - “small”：在“minimal”基础上，增加了 FreeBSD-utilities，能支持更多基于 shell 的应用程序。
 
-为了支持多种 FreeBSD 版本，我将版本号嵌入镜像名称中，例如，“freebsd13.2-minimal:latest”包括来自最新版本的 releng/13.2 分支的包，而“freebsd13-minimal:latest”则是从 stable/13 构建的。我为 amd64 和 arm64 架构构建了所有这些镜像，容器引擎可自动从清单列表中选择正确的镜像。
+为了支持多种 FreeBSD 版本，我将版本号嵌入镜像名称中，例如，“freebsd13.2-minimal: latest”包括来自最新版本的 releng/13.2 分支的包，而“freebsd13-minimal: latest”则是从 stable/13 构建的。我为 amd64 和 arm64 架构构建了所有这些镜像，容器引擎可自动从清单列表中选择正确的镜像。
 
 ## 安全性
 

@@ -293,7 +293,7 @@ ctrl_interface_group=wheel
 
 interface=wlan1
 
-# hw_mode=g
+# hw_mode = g
 channel=8
 ieee80211d=0
 ieee80211n=0
@@ -301,7 +301,7 @@ wmm_enabled=0
 
 # the name of the AP
 ssid=”Closed Network”
-# 1=wpa, 2=wep, 3=both
+# 1 = wpa, 2 = wep, 3 = both
 auth_algs=1
 wpa=2
 wpa_key_mgmt=WPA-PSK

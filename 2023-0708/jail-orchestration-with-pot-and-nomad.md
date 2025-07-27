@@ -91,7 +91,7 @@ Minipot 对于测试是个很有用的配置，但不适用于专业安装，因
 
 特别是，它将安装和配置 consul、traefik 和 nomad。Nomad 将作为客户端和服务器运行，扮演管理者和执行者的双重角色。
 
-在 [Klara 网站](https://klarasystems.com/articles/cluster-provisioning-with-nomad-and-pot-on-freebsd/)上有一篇关于如何安装 minipot 的详细指南。
+在 [Klara 网站](https://klarasystems.com/articles/cluster-provisioning-with-nomad-and-pot-on-freebsd/) 上有一篇关于如何安装 minipot 的详细指南。
 
 ## 调度任务
 
@@ -147,13 +147,13 @@ minipot 初始化后，并且所有服务正在运行，我们就可以使用下
 
 上述任务段落说明了 nomad 调度任务所需的所有细节。
 
-任务“nginx-minipot” (第 1 行) 有一个组名“group1” (4),它有一个任务叫做“www1” (9)。
+任务“nginx-minipot” (第 1 行) 有一个组名“group1” (4), 它有一个任务叫做“www1” (9)。
 
-任务“www1”是一个 pot 容器 (10),注册镜像是 potluck(23),pot 镜像是 nginx(24)，版本是 1.1.13 (25)。规定任务是基于 pot 驱动，管理器将在 pot 支持的客户端调度这个任务。在我们的例子中，服务器和客户端都是相同的机器。
+任务“www1”是一个 pot 容器 (10), 注册镜像是 potluck(23), pot 镜像是 nginx(24)，版本是 1.1.13 (25)。规定任务是基于 pot 驱动，管理器将在 pot 支持的客户端调度这个任务。在我们的例子中，服务器和客户端都是相同的机器。
 
-与通常使用的使用 rc 脚本引导的 Jail 相比，我们将直接执行 nginx(26),不需要任何额外的服务。变量参数 (27) 是重要的，允许 nomad 服务恰当地遵循容器生命周期并捕捉日志。Pot 将负责初始化网络和任何需要的事情。
+与通常使用的使用 rc 脚本引导的 Jail 相比，我们将直接执行 nginx(26), 不需要任何额外的服务。变量参数 (27) 是重要的，允许 nomad 服务恰当地遵循容器生命周期并捕捉日志。Pot 将负责初始化网络和任何需要的事情。
 
-port_map 段 (28) 和网络段 (6) 告诉 nginx 在 jail 中监听 80 端口，但 nomad 客户端将使用另一端口 (“http”),被 nomad 服务器动态指派。
+port_map 段 (28) 和网络段 (6) 告诉 nginx 在 jail 中监听 80 端口，但 nomad 客户端将使用另一端口 (“http”), 被 nomad 服务器动态指派。
 
 服务段 (11) 提供 nomad 服务将注册服务到 consul 的信息。在我们的例子中，任务“www1”实现了服务“hello-web” (11)，它将使用 nomad 服务器分配的端口“http”(14) 注册到 consul。对于 IP 地址，nomad 服务器将使用在调度期间定义的 nomad 客户端 IP 地址。
 
@@ -196,7 +196,7 @@ IPv6 地址是 nomad 客户端地址。
 $ sudo pot show
 ```
 
-作为命令行的另一种选择，nomad 服务器也被配置为提供一个强大的 web UI，可以通过 **localhost:4646** 访问，我们可以看到“nginx-minipot”任务，导航到有关的集群，配置，客户端等等所有信息。
+作为命令行的另一种选择，nomad 服务器也被配置为提供一个强大的 web UI，可以通过 **localhost: 4646** 访问，我们可以看到“nginx-minipot”任务，导航到有关的集群，配置，客户端等等所有信息。
 
 通过 nomad，我们能直接看到所有容器的状态。
 
@@ -214,7 +214,7 @@ localhost:8500
 
 ### 检查 traefik
 
-代理 traefix 被配置到交换机的 8080 端口，提供 web-ui 在 9200 端口（**localhost:9200**）监控状态。Traefik 被配置为从 consul 同步服务目录。
+代理 traefix 被配置到交换机的 8080 端口，提供 web-ui 在 9200 端口（**localhost: 9200**）监控状态。Traefik 被配置为从 consul 同步服务目录。
 
 通过选择了 http 服务，我们查看“hello-web”服务（标记为 **hello-web@consulcatalog**）。
 
@@ -258,7 +258,7 @@ $ nomad run nginx.job
 
 - 跟踪其它容器的日志 (**$ nomad alloc logs -f allocation2**)
 
-- 在入口执行 curl(**$ curl -H Host:hello-web.minipot http://127.0.0.1:8080**)
+- 在入口执行 curl(**$ curl -H Host: hello-web.minipot http://127.0.0.1:8080**)
 
 在每次执行 curl 时，代理都会在容器之间分发请求，这可以从容器的日志中看出来。
 
@@ -294,7 +294,7 @@ Nomad 或 consul 服务器可以在 Linux 或 Solaris 上运行，允许你重�
 
 ## 鸣谢
 
-我想强调实现这一点所需要的社区的努力，从第一个 nomad-pot-driver 开发人员 Esteban Barrios 到 Michael Gmelin（grembo@），他们的确为提高该解决方案的可靠性和稳定性提供了提供很多帮助。我还想提及 Stephan Lichtenauer 和 Bretton Vine，他们参与了 Potluck，公共镜像注册，以及许多其它项目，如 Ansible 剧本和[博客文章](https://honeyguide.eu/tags/pot)，致力于 pot 和 nomad 使用实例。
+我想强调实现这一点所需要的社区的努力，从第一个 nomad-pot-driver 开发人员 Esteban Barrios 到 Michael Gmelin（grembo@），他们的确为提高该解决方案的可靠性和稳定性提供了提供很多帮助。我还想提及 Stephan Lichtenauer 和 Bretton Vine，他们参与了 Potluck，公共镜像注册，以及许多其它项目，如 Ansible 剧本和 [博客文章](https://honeyguide.eu/tags/pot)，致力于 pot 和 nomad 使用实例。
 
 ---
 

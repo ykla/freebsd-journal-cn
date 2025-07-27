@@ -35,10 +35,10 @@ Avahi 能在本地网络上以简单的方式发现时间机器服务。时间�
 我们还设置了一些 zfs 选项，以防它们尚未在池级别上设置。
 
 ```sh
-# zfs set atime=off backup/timemachine
-# zfs set refquota=1T backup/timemachine
-# zfs set refreservation=1T backup/timemachine
-# zfs set compression=zstd backup/timemachine
+# zfs set atime = off backup/timemachine
+# zfs set refquota = 1T backup/timemachine
+# zfs set refreservation = 1T backup/timemachine
+# zfs set compression = zstd backup/timemachine
 ```
 
 第一个选项禁用了文件系统访问时间，而这是我们运行时间机器时不需要的。`refquota` 和 `reservation` 选项确保为备份分配的池存储空间为 1 TB，但无论池中非时间机器文件占用多少空间，这部分空间都会得到保障。根据你的池大小和需求调整这一设置。不过，不要设置得太低，否则你将无法备份太多内容，而且旧的备份会被更频繁地删除。最后一个选项启用数据集压缩。请注意最后选项中设置的压缩算法。你的 ARM 板可能无法提供足够的 CPU 功率来进行压缩，因此可以更改为其他算法或完全禁用压缩。在我的时间机器上，压缩比率较低（目前为 1.01x），但这可能取决于你从 Mac 备份的文件类型以及它们的压缩效果。
@@ -54,7 +54,7 @@ Avahi 能在本地网络上以简单的方式发现时间机器服务。时间�
 
 ```sh
 # zfs create backup/timemachine/bcr
-# chown bcr:timemachinists /backup/timemachine/bcr
+# chown bcr: timemachinists /backup/timemachine/bcr
 # chmod 0700 /backup/timemachine/bcr
 # chmod 0777 /backup/timemachine
 ```
@@ -118,7 +118,7 @@ valid users = @timemachinists
 ```sh
 # pw groumod timemachinists -m susan
 # zfs create backup/timemachine/susan
-# chown susan:timemachinists /backup/timemachine/susan
+# chown susan: timemachinists /backup/timemachine/susan
 # chmod 0700 /backup/timemachine/susan
 ```
 

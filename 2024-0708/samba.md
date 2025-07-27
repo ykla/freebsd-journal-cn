@@ -29,14 +29,14 @@
 接下来，我们为 ZFS 配置备份存储。在我的例子中，我有一个专门的池，命名为 `backup`，并挂载在目录 `/backup`。我为时间机器创建了一个单独的数据集，并设置了配额和保留空间，因为我还在其中存储其他数据，并且希望为这些文件保留一定的空间。
 
 ```sh
-# zfs create -o quota=1.5T -o reservation=1.5T backup/timemachine
+# zfs create -o quota = 1.5T -o reservation = 1.5T backup/timemachine
 ```
 
 我知道会有两个用户（Tammy 和 Tim；Alice 和 Bob 在度假）将他们的 Mac 备份到该位置。我平等地对待他们，因此我为两者设置了相同的空间保留和配额。请记住，数据集上的配额和保留空间也会应用于其下的所有数据集。1.5 TB 也将应用于他们的数据集，已对其进行了限制。但每人 500GB 是足够的，因此我为每个数据集分别设置了 `refquota` 和 `refreservation`。
 
 ```sh
-# zfs create -o refquota=500g -o refreservation=500g backup/timemachine/tammy
-# zfs create -o refquota=500g -o refreservation=500g backup/timemachine/tim
+# zfs create -o refquota = 500g -o refreservation = 500g backup/timemachine/tammy
+# zfs create -o refquota = 500g -o refreservation = 500g backup/timemachine/tim
 ```
 
 他们两人都永远无法登录到我的备份服务器（他们也不在乎），但他们仍然需要在系统上拥有一个用户来挂载时间机器的存储。我为他们两人都运行了 `adduser`，不给他们家目录（`/var/empty`），也不给他们 shell 访问权限（`/usr/sbin/nologin`）。

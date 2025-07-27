@@ -89,7 +89,7 @@ desktop$ rsync -azO --del --no-o --no-g ~/work/ws/dev root@builder:/ws/src/
 builder# kldload -n filemon
 builder# sysrc kld_list+=”filemon”
 
-builder# mkdir -p $WSDIR/src $WSDIR/obj $WSDIR/sysroot
+builder# mkdir -p $WSDIR/src $ WSDIR/obj $WSDIR/sysroot
 builder# mkdir -p /ws/src /ws/obj /ws/sysroot
 
 builder# cat $WSDIR/src/src-env.conf
@@ -117,8 +117,8 @@ WITHOUT_REPRODUCIBLE_BUILD=”YES”
 
    ```sh
    builder# echo '192.168.200.1 vmhost' >> /etc/hosts
-   builder# sysrc cloned_interfaces="bridge0"
-   builder# sysrc ifconfig_bridge0="inet vmhost/24 up"
+   builder# sysrc cloned_interfaces = "bridge0"
+   builder# sysrc ifconfig_bridge0 = "inet vmhost/24 up"
    builder# service netif start bridge0
    ```
 
@@ -132,14 +132,14 @@ WITHOUT_REPRODUCIBLE_BUILD=”YES”
    scrub in
    nat on $ext_if inet from !($ext_if) -> ($ext_if)
    pass out
-   builder# sysrc pf_enable="YES"
-   builder# sysrc gateway_enable="YES"
+   builder# sysrc pf_enable = "YES"
+   builder# sysrc gateway_enable = "YES"
    ```
 
 3. 在主机上启动 ntpd 服务，DHCP 服务器将把自己作为 ntp 服务器提供给虚拟机。
 
    ```sh
-   builder# sysrc ntpd_enable="YES"
+   builder# sysrc ntpd_enable = "YES"
    builder# service ntpd start
    ```
 
@@ -163,7 +163,7 @@ WITHOUT_REPRODUCIBLE_BUILD=”YES”
    将其添加为本地 `resolv.conf` 文件中的第一个名称服务器。`dnsmasq` 解析器仅为内部网络和构建机的回环接口提供服务。
 
    ```sh
-   builder# sysrc dnsmasq_enable="YES"
+   builder# sysrc dnsmasq_enable = "YES"
    builder# service dnsmasq start
    builder# head /etc/resolv.conf
    search corp-net.example.com
@@ -176,8 +176,8 @@ WITHOUT_REPRODUCIBLE_BUILD=”YES”
       ```sh
       builder# cat /etc/exports
       /ws/ws -ro -mapall=root -network 192.168.200.0/24
-      builder# sysrc nfs_server_enable="YES"
-      builder# sysrc nfsv4_server_only="YES"
+      builder# sysrc nfs_server_enable = "YES"
+      builder# sysrc nfsv4_server_only = "YES"
       builder# service nfsd start
       ```
 
@@ -193,9 +193,9 @@ builder# kldload -n nmdm
 builder# sysrc kld_list+=”vmm nmdm”
 builder# pkg install vm-bhyve
 builder# zfs create rpool/vm
-builder# sysrc vm_dir=”zfs:rpool/vm”
+builder# sysrc vm_dir =”zfs: rpool/vm”
 builder# vm init
-builder# sysrc vm_enable=”YES”
+builder# sysrc vm_enable =”YES”
 builder# service vm start
 ```
 
@@ -203,7 +203,7 @@ builder# service vm start
 
 ```sh
 builder# pkg install tmux
-builder# vm set console=tmux
+builder# vm set console = tmux
 ```
 
 将之前创建的桥接接口添加为 vm-bhyve 的交换机。
@@ -248,9 +248,9 @@ disk0_name=”disk0.img”
 
 ```sh
 # cd /usr/src
-# make -j1C KERNCONF=GENERIC-NODEBUG buildworld buildkernel
-# make -j1C -C release WITH_VMIMAGES=1 clean obj
-# make -j1C -C release WITHOUT_KERNEL_SYMBOLS=1 WITHOUT_DEBUG_FILES=1 \
+# make -j1C KERNCONF = GENERIC-NODEBUG buildworld buildkernel
+# make -j1C -C release WITH_VMIMAGES = 1 clean obj
+# make -j1C -C release WITHOUT_KERNEL_SYMBOLS = 1 WITHOUT_DEBUG_FILES = 1 \
 NOPORTS=1 NOSRC=1 WITH_VMIMAGES=1 VMFORMATS=raw VMSIZE=4g SWAPSIZE=2g \
 KERNCONF=GENERIC-NODEBUG vm-image
 
@@ -276,9 +276,9 @@ md0
 ```sh
 # sysrc -R /mnt -x hostname
 # sysrc -R /mnt -x ifconfig_DEFAULT
-# sysrc -R /mnt ifconfig_vtnet0=”SYNCDHCP”
-# sysrc -R /mnt ntpd_enable=”YES”
-# sysrc -R /mnt ntpd_sync_on_start=”YES”
+# sysrc -R /mnt ifconfig_vtnet0 =”SYNCDHCP”
+# sysrc -R /mnt ntpd_enable =”YES”
+# sysrc -R /mnt ntpd_sync_on_start =”YES”
 # sysrc -R /mnt kld_list+=”filemon”
 ```
 
@@ -289,7 +289,7 @@ md0
 # cp -a .../vm-root-dotssh /mnt/root/.ssh
 # vim /mnt/etc/sshd_config
 PermitRootLogin yes
-# sysrc -R /mnt sshd_enable=”YES”
+# sysrc -R /mnt sshd_enable =”YES”
 ```
 
 将第一个串口配置为潜在控制台，将第二个串口配置为远程内核调试端口。
@@ -330,7 +330,7 @@ vmhost:/ /ws nfs ro,nfsv4 0 0
 ```sh
 builder# vm create vm0
 builder# vm info vm0 | grep fixed-mac-address
-builder# echo ‘vm0,58:9c:fc:03:40:dc,192.168.200.10’ >> /ws/vm-dhcp.conf
+builder# echo ‘vm0,58:9c: fc: 03:40: dc,192.168.200.10’ >> /ws/vm-dhcp.conf
 builder# service dnsmasq reload
 ```
 
@@ -468,8 +468,8 @@ desktop$ rsync -azO --del --no-o --no-g ~/work/ws/dev root@builder:/ws/src/
 ### 构建
 
 ```sh
-builder# alias wsmake=’__MAKE_CONF=${WSDIR}/src/make.conf SRC_ENV_CONF=${WSDIR}/src/src-env.conf SRCCONF=${WSDIR}/src/src.conf make -j1C’
-builder# alias wsmake=’__MAKE_CONF=/ws/src/make.conf SRC_ENV_CONF=/ws/src/src-env.conf SRCCONF=/ws/src/src.conf make -j1C’
+builder# alias wsmake =’__MAKE_CONF = ${WSDIR}/src/make.conf SRC_ENV_CONF=${WSDIR}/src/src-env.conf SRCCONF =${WSDIR}/src/src.conf make -j1C’
+builder# alias wsmake =’__MAKE_CONF =/ws/src/make.conf SRC_ENV_CONF =/ws/src/src-env.conf SRCCONF =/ws/src/src.conf make -j1C’
 
 builder# cd ${WSDIR}/src/${WS}
 builder# cd /ws/src/dev
@@ -482,8 +482,8 @@ builder# wsmake buildkernel
 1. 将内核安装到虚拟机中。`INSTKERNNAME` 在 `make.conf` 中设置，因此 `/boot/${INSTKERNNAME}` 中的测试内核不会与 `/boot/kernel` 中的原始内核冲突，后者是发生问题时的安全回退。亦可在命令行中显式指定。
 
    ```sh
-   vm0# alias wsmake='__MAKE_CONF=${WSDIR}/src/make.conf SRC_ENV_CONF=${WSDIR}/src/src-env.conf SRCCONF=${WSDIR}/src/src.conf make -j1C'
-   vm0# alias wsmake='__MAKE_CONF=/ws/src/make.conf SRC_ENV_CONF=/ws/src/src-env.conf SRCCONF=/ws/src/src.conf make -j1C'
+   vm0# alias wsmake ='__MAKE_CONF = ${WSDIR}/src/make.conf SRC_ENV_CONF=${WSDIR}/src/src-env.conf SRCCONF =${WSDIR}/src/src.conf make -j1C'
+   vm0# alias wsmake ='__MAKE_CONF =/ws/src/make.conf SRC_ENV_CONF =/ws/src/src-env.conf SRCCONF =/ws/src/src.conf make -j1C'
 
    vm0# cd ${WSDIR}/src/${WS}
    vm0# cd /ws/src/dev
@@ -494,7 +494,7 @@ builder# wsmake buildkernel
 
    ```sh
    builder# cd /ws/src/dev
-   builder# wsmake installkernel DESTDIR=/ws/sysroot
+   builder# wsmake installkernel DESTDIR =/ws/sysroot
    ```
 
 ### 测试
@@ -506,8 +506,8 @@ vm0# nextboot -k ${WS}
 vm0# nextboot -k dev
 vm0# shutdown -r now
 
-vm0# sysrc -f /boot/loader.conf kernel=”${WS}”
-vm0# sysrc -f /boot/loader.conf kernel=”dev”
+vm0# sysrc -f /boot/loader.conf kernel =”${WS}”
+vm0# sysrc -f /boot/loader.conf kernel =”dev”
 vm0# shutdown -r now
 ```
 
@@ -532,8 +532,8 @@ kern.bootfile: /boot/dev/kernel
 vm0# sysctl debug.kdb.available
 vm0# sysctl debug.kdb.current
 
-vm0# sysctl debug.kdb.current=ddb
-vm0# sysctl debug.kdb.current=gdb
+vm0# sysctl debug.kdb.current = ddb
+vm0# sysctl debug.kdb.current = gdb
 ```
 
 ### 进入调试器
@@ -547,13 +547,13 @@ vm0# sysctl debug.kdb.current=gdb
 2. 手动：从虚拟机内部进入。
 
    ```sh
-   vm0# sysctl debug.kdb.enter=1
+   vm0# sysctl debug.kdb.enter = 1
    ```
 
 3. 手动：从物理机进入。如果虚拟机卡住且无响应，可以向虚拟机注入一个 NMI。
 
    ```sh
-   builder# bhyvectl --vm=vm0 --inject-nmi
+   builder# bhyvectl --vm = vm0 --inject-nmi
    ```
 
 ### 源代码级调试与 gdb
@@ -565,7 +565,7 @@ vm0# sysctl debug.kdb.current=gdb
 确保调试后端设置为 gdb。如果虚拟机已经通过 ddb 后端进入调试器，可以通过交互方式切换到 gdb 后端。
 
 ```sh
-vm0# sysctl debug.kdb.current=gdb
+vm0# sysctl debug.kdb.current = gdb
 
 db> gdb
 ```

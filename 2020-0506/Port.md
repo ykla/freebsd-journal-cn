@@ -83,7 +83,7 @@ Poudriere 执行批量功能时需要设置 FreeBSD jail。可以使用以下命
 
 ```sh
 # cd poudriere.d
-# echo WITH_PKGNG=YES >> 91x64-make.conf
+# echo WITH_PKGNG = YES >> 91x64-make.conf
 ```
 
 接下来的步骤是为 Poudriere 创建一个 Port 列表以进行编译和维护；FreeBSD Ports 中有各种各样的 Port，Poudriere 可以用来管理它们。首先，运行：

@@ -31,11 +31,11 @@ monitor# pkg update
 
 ```sh
 monitor# zfs create -p mypool/var/db/postgres/data
-monitor# zfs set atime=off mypool/var/db
-monitor# zfs set compression=zstd mypool/var/db
-monitor# zfs set recordsize=8k mypool/var/db/postgres
-monitor# zfs set logbias=throughput mypool/var/db/postgres
-monitor# zfs set mountpoint=/var/db/postgres mypool/var/db/postgres
+monitor# zfs set atime = off mypool/var/db
+monitor# zfs set compression = zstd mypool/var/db
+monitor# zfs set recordsize = 8k mypool/var/db/postgres
+monitor# zfs set logbias = throughput mypool/var/db/postgres
+monitor# zfs set mountpoint =/var/db/postgres mypool/var/db/postgres
 ```
 
 现在是安装所需软件包的时候了。使用 `pkg install` 很容易完成，包括自动解决依赖问题：
@@ -50,9 +50,9 @@ ImageMagick7-nox11 php74-pecl-imagick-im7
 其中一些服务需要在 `/etc/rc.conf` 中添加相应的条目，以确保系统启动时自动运行。包括以下服务：
 
 ```sh
-monitor# sysrc sshd_enable=yes
-monitor# sysrc icinga2_enable=yes
-monitor# sysrc postgresql_enable=yes
+monitor# sysrc sshd_enable = yes
+monitor# sysrc icinga2_enable = yes
+monitor# sysrc postgresql_enable = yes
 ```
 
 请注意，这些服务尚未启动，因为在此之前还需要进行一些配置。  
@@ -60,7 +60,7 @@ monitor# sysrc postgresql_enable=yes
 与 `postgres` 软件包一起安装的还有同名的系统用户和用户组，因此现在可以对 `/var/db/postgres` 设置权限。
 
 ```sh
-monitor# chown -R postgres:postgres /var/db/postgres
+monitor# chown -R postgres: postgres /var/db/postgres
 ```
 
 接下来，通过 `postgres` 用户运行 `initdb` 来初始化 PostgreSQL 数据库集群，并使用 UTF-8 作为编码。请注意，这些命令需要由 `postgres` 用户执行，尽管现在也可以通过 `service` 命令来完成（有时候我还是习惯老方法）。
@@ -106,7 +106,7 @@ monitor# icinga2 feature enable ido-pgsql
 在某些情况下，并非所有文件和目录都归 Icinga 系统用户所有。通过对主 icinga2 目录运行 `chown`，可以确保权限被正确设置。
 
 ```sh
-monitor# chown -R icinga:icinga /usr/local/etc/icinga2
+monitor# chown -R icinga: icinga /usr/local/etc/icinga2
 ```
 
 这部分设置完成后，我们将继续进行 Web 服务器的配置。尽管这里使用的是 nginx，但也可以使用其他 Web 服务器，如 Apache2。Icinga 文档中也有相关的配置步骤。  
@@ -117,11 +117,11 @@ Icinga 的 Web 界面（被恰当地命名为 Icingaweb2，因为它是版本 2�
 
 ```sh
 monitor# cd /usr/local/etc/php-fpm.d
-monitor# sed -i "" 's/^;listen = 127.0.0.1:9000/listen = /var/run/php5-fpm.sock/’
+monitor# sed -i "" 's/^; listen = 127.0.0.1:9000/listen = /var/run/php5-fpm.sock/’
 www.conf
-monitor# sed -i "" 's/^;listen.owner/listen.owner/' www.conf
-monitor# sed -i "" 's/^;listen.group/listen.group/' www.conf
-monitor# sed -i "" 's/^;listen.mode/listen.mode/' www.conf
+monitor# sed -i "" 's/^; listen.owner/listen.owner/' www.conf
+monitor# sed -i "" 's/^; listen.group/listen.group/' www.conf
+monitor# sed -i "" 's/^; listen.mode/listen.mode/' www.conf
 ```
 
 这基本上是取消注释文件中已经存在的行，以激活它们，并将 `listen` 指令替换为使用本地 php5 套接字，而不是为其在主机上打开端口。  
@@ -156,7 +156,7 @@ monitor# cp /usr/local/etc/php.ini-production /usr/local/etc/php.ini
 
 ```sh
 monitor# cd /usr/local/etc
-monitor# sed -i "" s,;date.timezone =,date.timezone = Europe/Berlin, php.ini
+monitor# sed -i "" s,; date.timezone =, date.timezone = Europe/Berlin, php.ini
 ```
 
 我们在这里将常规的 `sed` 分隔符 `/` 替换为逗号，以避免与地区和城市之间的分隔符混淆。看，我在我的教程中也偷偷加入了一些 `sed` 技巧，稍后感谢我吧...哦，顺便说一下，基本上，这就是提供 icingaweb2 给终端用户所需的一切。接下来，我们将把注意力集中在 Icinga 配置上。
@@ -305,7 +305,7 @@ ignore where service.name == "agent-health"
 }
 ```
 
-我们可以看到 Icinga 在使用其领域特定语言时的灵活性，利用诸如"apply"这样的常见元素与占位符（如 Host、Service 或 Dependency）一起定义监控的内容和方式。当检测到状态不是 OK（例如"FAILED"或"UNREACHABLE"）时，代理健康检查将被触发。为了不为每个主机单独定义这一点，并且不会忘记稍后添加的新主机，我们再次使用 `assign` 关键字将其应用于所有定义为端点的主机。
+我们可以看到 Icinga 在使用其领域特定语言时的灵活性，利用诸如 "apply" 这样的常见元素与占位符（如 Host、Service 或 Dependency）一起定义监控的内容和方式。当检测到状态不是 OK（例如 "FAILED" 或 "UNREACHABLE"）时，代理健康检查将被触发。为了不为每个主机单独定义这一点，并且不会忘记稍后添加的新主机，我们再次使用 `assign` 关键字将其应用于所有定义为端点的主机。
 
 主机或服务的组帮助我们保持对具有共同任务或标准的系统的概览，比如 Web 服务器、数据库服务器、前端主机、防火墙等。这就是 `groups.conf` 所定义的内容，但在监控的基础设施较小或过于多样化以至于没有任何共同点时，这是可选的。
 
@@ -316,7 +316,7 @@ assign where host.vars.os == "FreeBSD"
 }
 ```
 
-记得上面在 `hosts.conf` 中定义的主机对象"monitor.example.com"吗？我们定义了一个本地变量 `vars.os`。现在，我们可以使用"assign where"语句根据该变量的值进行过滤。自动为基础设施中新主机添加条目的工具也可能包含有关使用的操作系统（以及其他信息），因此 Icinga 会在 Icingaweb2 显示中将这些系统分组。服务组（ServiceGroups）类似地定义。通过这种方式，报告可能会包含定期检查特定服务的系统数量。Web 服务器可能会运行与数据库服务器不同的检查，但作为服务组，它很容易将这些检查整体应用于新主机，或者定义两者的混合来形成一个全新的监控目标。
+记得上面在 `hosts.conf` 中定义的主机对象 "monitor.example.com" 吗？我们定义了一个本地变量 `vars.os`。现在，我们可以使用 "assign where" 语句根据该变量的值进行过滤。自动为基础设施中新主机添加条目的工具也可能包含有关使用的操作系统（以及其他信息），因此 Icinga 会在 Icingaweb2 显示中将这些系统分组。服务组（ServiceGroups）类似地定义。通过这种方式，报告可能会包含定期检查特定服务的系统数量。Web 服务器可能会运行与数据库服务器不同的检查，但作为服务组，它很容易将这些检查整体应用于新主机，或者定义两者的混合来形成一个全新的监控目标。
 
 我想展示的最后一个文件是 `users.conf` 文件，其中包含所有 Icinga 能理解的用户信息，当某些检查失败时会通知他们。一个基本的定义可能如下所示：
 
@@ -353,8 +353,8 @@ monitor# service icinga2 restart
 Icingaweb2 服务通过 web 浏览器进行配置，为此需要一个令牌，因为我们不希望一个路过的陌生人偶然访问我们的新安装的监控系统并将其误配置。令牌是通过以下命令生成并发出的：
 
 ```sh
-monitor# icingacli setup token create --config=/usr/local/etc/icingaweb2
-monitor# chown -R www:www /usr/local/etc/icingaweb2
+monitor# icingacli setup token create --config =/usr/local/etc/icingaweb2
+monitor# chown -R www: www /usr/local/etc/icingaweb2
 ```
 
 令牌现在可以从浏览器中读取，当粘贴到网页表单中后，可以进行 Icingaweb2 的其余设置步骤。填写我们创建的数据库用户等详细信息，以及管理员用户和密码等其他信息。最后，Icingaweb2 登录界面将呈现，你可以从这个中央位置访问所有被监控的主机和服务。
@@ -374,17 +374,17 @@ client# pkg install icinga2
 
 ```sh
 client# mkdir /var/lib/icinga2/certs
-client# chown icinga:icinga !$
-client# chown -R icinga:icinga /usr/local/etc/icinga2
+client# chown icinga: icinga !$
+client# chown -R icinga: icinga /usr/local/etc/icinga2
 ```
 
 接下来，我们启用 icinga2 服务，使其在系统启动时自动启动。
 
 ```sh
-client# sysrc icinga2_enable=yes
+client# sysrc icinga2_enable = yes
 ```
 
-接下来，使用"icinga2 pki"子命令生成客户端证书。虽然这个命令是交互式的，但我们也可以直接在命令行提供所有必要的参数，以便在以后添加数百个主机时简化自动化。请注意，这必须在中央监控实例上运行。
+接下来，使用 "icinga2 pki" 子命令生成客户端证书。虽然这个命令是交互式的，但我们也可以直接在命令行提供所有必要的参数，以便在以后添加数百个主机时简化自动化。请注意，这必须在中央监控实例上运行。
 
 ```sh
 monitor# icinga2 pki new-cert --cn client.example.org \

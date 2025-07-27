@@ -69,12 +69,12 @@ Hurricane Electric 是一家总部位于加利福尼亚的互联网服务提供�
 # ifconfig gif0 create
 # ifconfig gif0 inet tunnel IPV4-CLIENT IPV4-SERVER
 # ifconfig gif0 up
-# ping6 ff02::1%gif0
+# ping6 ff02:: 1%gif0
 (按 Ctrl-C)
 # ifconfig gif0 inet6 IPV6-CLIENT IPV6-SERVER prefixlen 128
 # route -n add -inet6 default IPV6-SERVER
 # ifconfig bge0 inet6 ROUTED-IPV6-PREFIX/64
-# sysctl net.inet6.ip6.forwarding=1
+# sysctl net.inet6.ip6.forwarding = 1
 ```
 
 同样地，一个具有相同传输协议的 IPv6 数据包由三部分组成，不同之处在于第一部分。
@@ -96,7 +96,7 @@ Hurricane Electric 是一家总部位于加利福尼亚的互联网服务提供�
 # ifconfig gif0 create
 # ifconfig gif0 tunnel IPV4-CLIENT IPV4-SERVER
 # ifconfig gif0 up
-# ping6 ff02::1%gif0
+# ping6 ff02:: 1%gif0
 PING6(56=40+8+8 bytes) fe80::80c8:4a75:123a:8a32%gif0 --> ff02::1%gif0
 16 bytes from fe80::80c8:4a75:123a:8a32%gif0, icmp_seq=0 hlim=64 time=0.084 ms
 16 bytes from fe80::4a52:2e06%gif0, icmp_seq=0 hlim=64 time=4.765 ms(DUP!)
@@ -117,7 +117,7 @@ round-trip min/avg/max/std-dev = 0.081/1.917/4.765/1.970 ms
 ```sh
 # route -n add -inet6 default IPV6-SERVER
 # ifconfig bge0 inet6 ROUTED-IPV6-PREFIX/64
-# sysctl net.inet6.ip6.forwarding=1
+# sysctl net.inet6.ip6.forwarding = 1
 ```
 
 该配置假设面向局域网 (LAN) 的接口为 bge0。**ROUTED-IPV6-PREFIX** 是 HE 服务分配给你的前缀，你应该同时拥有 /64 和 /48。你可以在同一接口上配置两者，也可以分配到不同的接口。
@@ -150,7 +150,7 @@ ifconfig_bge0="inet6 ROUTED-IPV6-PREFIX/64"
 ```sh
 # service routing start
 # service netif restart gif0
-# ping6 ff02::1%gif0
+# ping6 ff02:: 1%gif0
 # ping6 IPV6-SERVER
 ```
 
@@ -171,7 +171,7 @@ ifconfig_bge0="inet6 ROUTED-IPV6-PREFIX/64"
 
 第一期专栏以 **OpenSSH** 为示例，让我们看看需要做哪些更改。  
 
-**sshd(8) 守护进程**的配置存储在 **/etc/ssh/sshd_config** 文件中。你可以直接编辑该文件，但使用命令行参数修改配置可以保持默认的配置文件不变。例如，可以将以下行添加到 **/etc/rc.conf** 以部分修改配置：
+**sshd(8) 守护进程** 的配置存储在 **/etc/ssh/sshd_config** 文件中。你可以直接编辑该文件，但使用命令行参数修改配置可以保持默认的配置文件不变。例如，可以将以下行添加到 **/etc/rc.conf** 以部分修改配置：
 
 ```sh
 sshd_enable="YES"
@@ -204,7 +204,7 @@ sshd_flags=" \
 "
 ```
 
-尽管在配置文件中，IPv6 地址应按照 **RFC 5952**⁶ 推荐的格式书写，但几乎所有软件都接受冗余表示，例如 `2001:0db8:0000:0000:0000:0000:0000:0001`。此外，如果使用的是 LLA（链路本地地址），必须添加 `%zoneid` 部分。  
+尽管在配置文件中，IPv6 地址应按照 **RFC 5952** ⁶ 推荐的格式书写，但几乎所有软件都接受冗余表示，例如 `2001:0db8:0000:0000:0000:0000:0000:0001`。此外，如果使用的是 LLA（链路本地地址），必须添加 `%zoneid` 部分。  
 
 然而，一些软件不会直接使用原始的 IPv6 地址，因为这样会破坏与 IPv4 的向后兼容性。以 **syslogd(8)** 为例：
 
@@ -261,7 +261,7 @@ nameserver fe80::ffff:1:35%bge0
 /a/ftproot -to -alldirs -maproot=nobody:nobody -network fe80::%lagg0/10
 ```
 
-请注意，NFS 并不完全支持 LLA，因为 RPC 库在处理 IPv6 地址时不会包含 zone ID。尽管第二行可以被指定，并且其语法是正确的，但实际上并不起作用⁸。IPv6 GUA 则可以正常工作。因此，目前应避免在 NFS 中使用 LLA，该问题预计会在 FreeBSD 14 中得到修复。  
+请注意，NFS 并不完全支持 LLA，因为 RPC 库在处理 IPv6 地址时不会包含 zone ID。尽管第二行可以被指定，并且其语法是正确的，但实际上并不起作用 ⁸。IPv6 GUA 则可以正常工作。因此，目前应避免在 NFS 中使用 LLA，该问题预计会在 FreeBSD 14 中得到修复。  
 
 ### Sendmail  
 
@@ -279,7 +279,7 @@ sendmail_flags="-L sm-mta -bd -q30m \
 "
 ```
 
-你可以安全地同时使用具有单个 IPv4 和单个 IPv6 地址的主机名，因为可以使用“Family=”关键字进行指定。  
+你可以安全地同时使用具有单个 IPv4 和单个 IPv6 地址的主机名，因为可以使用“Family =”关键字进行指定。  
 
 MSA⁹ 使用的传输配置由 **/etc/mail/FreeBSD.submit.mc** 文件中的以下行处理：
 
