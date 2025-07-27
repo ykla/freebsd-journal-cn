@@ -3,6 +3,16 @@
 * [FreeBSD 中文期刊](README.md)
 * [编辑日志](CHANGELOG.md)
 
+## 2025-456 网络
+
+* [采访 Kajetan Staszkiewicz](Staszkiewicz.md)
+* [使安装程序易于使用](Usability.md)
+* [Overlord：让部署 Jail 像编程一样快](Code.md)
+* [Netgraph 大众教程](Us.md)
+* [FreeBSD WiFi 开发](Development.md)
+* [嵌入式 FreeBSD：自定义硬件](Hardware.md)
+* [TCP/IP 探险记：静态 Pacing](Pacing.md)
+
 ## 2025-123 下游项目
 
 * [FreeBSD 发布工程：新主管上任](2025-123/release.md)
