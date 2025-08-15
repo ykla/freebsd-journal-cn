@@ -3,7 +3,7 @@
 - 原文链接：[TLS Offload in the Kernel](https://freebsdfoundation.org/wp-content/uploads/2020/07/TLS-Offload-in-the-Kernel.pdf)
 - 作者：**JOHN BALDWIN**
 
-FreeBSD 13.0 增加了对传输层安全性（TLS）套接字内核卸载的支持。TLS 卸载允许内核通过 TLS 发送和接收数据，其中 TLS 的封装和加密在内核中执行，而非用户空间。内核 TLS（KTLS）需要对用户空间的 SSL 库、内核的网络栈，以及在某些情况下的设备驱动程序进行修改。  
+FreeBSD 13.0 增加了对传输层安全性（TLS）套接字内核卸载的支持。TLS 卸载能让内核通过 TLS 发送和接收数据，其中 TLS 的封装和加密在内核中执行，而非用户空间。内核 TLS（KTLS）需要对用户空间的 SSL 库、内核的网络栈，以及在某些情况下的设备驱动程序进行修改。  
 
 ## 传输层安全性  
 
