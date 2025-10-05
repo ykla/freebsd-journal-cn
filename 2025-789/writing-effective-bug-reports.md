@@ -135,4 +135,4 @@ Bug 被分配到团队需要时间，这是正常现象。你也可以主动联�
 
 ---
 
-**Tom Jones**，FreeBSD committer，对保持网络栈高性能充满兴趣。
+**Tom Jones**，FreeBSD 提交者，对保持网络栈高性能充满兴趣。
