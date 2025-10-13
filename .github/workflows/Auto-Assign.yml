@@ -1,0 +1,30 @@
+name: 🔗 自动分配 issue & PR
+
+on:
+  issues:
+    types: [opened]
+  pull_request:
+    types: [opened, ready_for_review]
+  repository_dispatch:
+  workflow_dispatch:
+
+jobs:
+  assign-issue:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'issues'
+    steps:
+      - uses: pozil/auto-assign-issue@v2.2.0
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          assignees: ykla
+          numOfAssignee: 1
+
+  assign-pr:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Auto Assign PR
+        uses: kentaro-m/auto-assign-action@v2.0.0
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          configuration-path: '.github/auto_assign.yml'
