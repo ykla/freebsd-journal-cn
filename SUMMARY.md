@@ -3,6 +3,10 @@
 * [FreeBSD 中文期刊](README.md)
 * [编辑日志](CHANGELOG.md)
 
+***
+
+* [目录](mu-lu.md)
+
 ## 2025-789 嵌入式
 
 * [开启 FreeBSD 开发之路 —— 专访 Igor Ostapenko](2025-789/interview-with-igor-ostapenko.md)
