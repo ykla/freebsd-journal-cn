@@ -1,9 +1,7 @@
-name: 🔗 创建并发布 PDF & EPUB
+name: 🔗 创建并发布 PDF
 
 on:
-  schedule:
-    - cron: '30 15 * * 0'  # 每周日 UTC 时间 15:30 运行
-  workflow_dispatch:  # 可手动触发
+  workflow_dispatch:  # 允许手动触发
 
 jobs:
   build:
@@ -22,10 +20,10 @@ jobs:
           timedatectl
 
       # ================= 仓库检出部分 =================
-      - name: 检出 FreeBSD-Ask 主仓库
+      - name: 检出 freebsd-journal-cn 主仓库
         uses: actions/checkout@v5
         with:
-          path: FreeBSD-Ask
+          path: freebsd-journal-cn
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
@@ -66,7 +64,7 @@ jobs:
       - name: 生成 PDF 文档
         run: |
           cd pdf-generator
-          python mdconv.py ../FreeBSD-Ask
+          python mdconv.py ../freebsd-journal-cn
           mv build/final.pdf build/$(date +'%Y.%m.%d').pdf
           mv build/final.epub build/$(date +'%Y.%m.%d').epub
         env:
