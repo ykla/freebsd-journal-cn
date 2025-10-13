@@ -18,9 +18,8 @@
 .nfs*
 
 ### Node ###
-
-yarn.lock
 package.json
+yarn.lock
 # Logs
 logs
 *.log
