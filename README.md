@@ -6,12 +6,11 @@
 >
 >本项目目前处于低维护状态，主要维护者因精力所限仅处理 PR 或新的期刊。欢迎社区通过 PR 贡献力量。
 
-
-FreeBSD 期刊原文位于：<https://freebsdfoundation.org/our-work/journal/>
+FreeBSD 期刊原文位于：<https://freebsdfoundation.org/our-work/journal>
 
 基金会书信、读者来信、日历等均不译。
 
-本书部署网站：<https://book.bsdcn.org/>
+本书部署网站：<https://book.bsdcn.org>
 
 
 ## PDF 文档
