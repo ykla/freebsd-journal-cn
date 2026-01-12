@@ -7,6 +7,13 @@
 
 * [目录](mu-lu.md)
 
+## 2025-101112 FreeBSD 15.0
+
+* [FreeBSD 15.0：改进与特性](2025-101112/freebsd-15-0-fixes-and-features.md)
+* [FreeBSD 上的通用闪存存储（UFS）](2025-101112/universal-flash-storage-on-freebsd.md)
+* [Vox FreeBSD：如何让音频工作](2025-101112/vox-freebsd-how-sound-works.md)
+* [printf("Hello, srcmgr\n");](2025-101112/printfhello-srcmgrn.md)
+
 ## 2025-789 嵌入式
 
 * [开启 FreeBSD 开发之路 —— 专访 Igor Ostapenko](2025-789/interview-with-igor-ostapenko.md)
