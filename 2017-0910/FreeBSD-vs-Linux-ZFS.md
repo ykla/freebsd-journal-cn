@@ -79,7 +79,7 @@ ZFS 的主要设计考虑是数据的安全性。每个写入文件系统的块�
 
 ALLAN JUDE 是 ScaleEngine Inc. 的运营副总裁，该公司是一家视频流内容分发网络，他在 FreeBSD 上广泛使用 ZFS。Allan 是 FreeBSD 源码和文档的 committer，并于 2016 年夏被选入 FreeBSD 核心团队。他还是每周视频播客 BSDNow.tv（与 Benedict Reuschling 合作）的主持人，并与 Michael W Lucas 合著了《FreeBSD Mastery: ZFS》和《FreeBSD Mastery: Advanced ZFS》。
 
-1 本文不构成法律建议，你不能也不应将其视作法律依据。
-2 [https://www.fsf.org/licensing/zfs-and-linux](https://www.fsf.org/licensing/zfs-and-linux)
-3 [https://insights.ubuntu.com/2016/02/18/zfs-licensing-and-linux/](https://insights.ubuntu.com/2016/02/18/zfs-licensing-and-linux/)
-4 [https://sfconservancy.org/blog/2016/feb/25/zfs-and-linux/](https://sfconservancy.org/blog/2016/feb/25/zfs-and-linux/)
+- 1 本文不构成法律建议，你不能也不应将其视作法律依据。
+- 2 [https://www.fsf.org/licensing/zfs-and-linux](https://www.fsf.org/licensing/zfs-and-linux)
+- 3 [https://insights.ubuntu.com/2016/02/18/zfs-licensing-and-linux/](https://insights.ubuntu.com/2016/02/18/zfs-licensing-and-linux/)
+- 4 [https://sfconservancy.org/blog/2016/feb/25/zfs-and-linux/](https://sfconservancy.org/blog/2016/feb/25/zfs-and-linux/)
