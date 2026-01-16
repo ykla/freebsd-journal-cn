@@ -318,3 +318,4 @@
 ## 既往精选
 
 * [由 FreeBSD 驱动的中国 LCD 广告显示屏](other/FreeBSD-Powered-LCD-Advertising-Displays.md)
+* [创建一家 BSD 用户组](other/Starting-a-BSD-User-Group.md)
