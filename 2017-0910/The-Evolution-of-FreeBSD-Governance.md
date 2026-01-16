@@ -45,7 +45,7 @@ Warner Losh 与 Poul-Henning Kamp、Wes Peters 等人一起起草了一套章程
 
 项目协作最初通过单一邮件列表来处理。随着时间推移，该单一列表上的流量不断增长，直到有必要将其拆分为多个邮件列表，每个邮件列表聚焦于特定主题领域，例如 networking、file systems、Ports、documentation、announcements 以及 general questions。最终，邮件列表数量的激增使得处理那些跨越多个领域的问题变得困难。一些协作是通过 Bug 跟踪来完成的，最初使用 GNATS，后来使用 Bugzilla，但在审查较大规模的变更时，尤其是涉及 FreeBSD 之外开发者的变更，这些工具显得力不从心。 
 
-2014 年，部署了 Phabricator 实例，这是一款由 Facebook 编写并发布的开源协作工具，用于支持对较大变更进行详细的 pre-commit 审查。Phabricator 在一定程度上以类似于 GitHub “PR” 的方式，促进对拟议变更的详细审查和讨论。Phabricator 为 非 committers 提出了一个更为便捷的渠道，使其能够向 FreeBSD 提出变更建议，因为他们可以创建自己的 Phabricator 账号，发布其推荐的修改内容，并由 Phabricator 自动建议审查者，或以其他方式通知相应的 FreeBSD 开发者某项变更需要审查。
+2014 年，部署了 Phabricator 实例，这是一款由 Facebook 编写并发布的开源协作工具，用于支持对较大变更进行详细的 pre-commit 审查。Phabricator 在一定程度上以类似于 GitHub “PR” 的方式，促进对拟议变更的详细审查和讨论。Phabricator 为非 committers 提供了一个更为便捷的渠道，使其能够向 FreeBSD 提出变更建议，因为他们可以创建自己的 Phabricator 账号，发布其推荐的修改内容，并由 Phabricator 自动建议审查者，或以其他方式通知相应的 FreeBSD 开发者某项变更需要审查。
 
 ## FreeBSD 源代码控制
 
