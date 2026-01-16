@@ -15,7 +15,7 @@ NYC\*BUG 用户组的发展历程充满了其他技术用户组都会遇到的�
 尤其是当地的 Unix 用户组，他们认为我们在成立 BSD 用户组前应该先征求他们的意见。但我们既不寻求许可，也不求原谅。
 
 更有趣的是，在 BoF 之前，2004 年 1 月 13 日，NetBSD NYC 区域邮件列表上有人发表了如下评论，轻蔑地对待我们：
-[http://http://mail-index.netbsd.org/regional-nyc/2004/01/13/0003.html](http://http://mail-index.netbsd.org/regional-nyc/2004/01/13/0003.html)
+[http://mail-index.netbsd.org/regional-nyc/2004/01/13/0003.html](http://mail-index.netbsd.org/regional-nyc/2004/01/13/0003.html)
 
 * “我想知道会不会有啤酒？帖子里没有提到。”
 * “他们只是在做 Linux 用户组做的事……大概还是同一批人。”
