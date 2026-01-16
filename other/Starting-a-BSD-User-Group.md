@@ -137,5 +137,5 @@ BUGs 能以调查无法做到的方式，提供生产环境中 BSD 使用的真�
 
 ---
 
-**GEORGE ROSAMOND** 是纽约市 BSD 用户组（NYC\*BUG）的创始成员。职业上，他是一名系统管理员，同时运营一家面向技术客户的小型托管公司。此外，他还参与多个大型和小型 BSD 项目，尤其专注于隐私增强技术。近两年来，他的核心工作集中于 Tor BSD 多样性项目（[https://torbsd.github.io/](https://torbsd.github.io/) ，旨在将 BSD 系统的使用扩展到 Tor 公共匿名网络（[https://www.torproject.org](https://www.torproject.org)。
+**GEORGE ROSAMOND** 是纽约市 BSD 用户组（NYC\*BUG）的创始成员。职业上，他是一名系统管理员，同时运营一家面向技术客户的小型托管公司。此外，他还参与多个大型和小型 BSD 项目，尤其专注于隐私增强技术。近两年来，他的核心工作集中于 Tor BSD 多样性项目（[https://torbsd.github.io/](https://torbsd.github.io/)），旨在将 BSD 系统的使用扩展到 Tor 公共匿名网络（[https://www.torproject.org](https://www.torproject.org)）。
 
