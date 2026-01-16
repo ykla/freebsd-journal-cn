@@ -3,7 +3,7 @@
 - 原文：[FreeBSD is Not a LINUX DISTRO](https://freebsdfoundation.org/wp-content/uploads/2017/10/FreeBSD-is-Not-a-Linux-Distro.pdf)
 - 作者：GEORGE V. NEVILLE-NEIL
 
-本文经由多次讲座整理而成，在讲座中 FreeBSD 社区的多位成员将 FreeBSD 同 Linux 区别开来。由于 Linux 仍然是更为广为人知的系统，它可以作为对照，用来向技术性读者说明 FreeBSD 是什么、能做什么，以及如何应用它来构建需要操作系统的各种系统。
+本文经由多次讲座整理而成，在讲座中 FreeBSD 社区的多位成员将 FreeBSD 同 Linux 区别开来。由于 Linux 仍然是更加广为人知的系统，它可以作为对照，用来向技术性读者说明 FreeBSD 是什么、能做什么，以及如何应用它来构建需要操作系统的各种系统。
 
 由于本文载于《FreeBSD 期刊》，我假设读者已对 FreeBSD 有所了解，因此我将文章组织为一系列要素，便于在向同事或公司管理层解释 FreeBSD 时作为参考。
 
