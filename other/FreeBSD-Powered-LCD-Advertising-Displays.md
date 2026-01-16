@@ -108,7 +108,7 @@ wxWidgets [14] 已被收录在 FreeBSD Ports 中，默认是基于 GTK 2 编译�
 # 编译 C++ 源文件
 ~/wxWidgets-2.8.12/wx-config --cxxflags
 # 链接 object 文件
-~/wxWidgets-2.8.12/wx-config –-libs
+~/wxWidgets-2.8.12/wx-config --libs
 ~/wxWidgets-2.8.12/wx-config --gl_libs
 ```
 
