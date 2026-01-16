@@ -70,7 +70,7 @@ Provos 等人将 SSH 服务器进程拆分为：
 
 ### Linux: seccomp(2)
 
-自 2005 年起，Linux 引入了名为“安全计算模式”（secure computing mode，简称 seccomp(2)）的特性 [Cor09]。seccomp(2) 的最初版本提供了一个强大且易于理解的安全策略：处于“安全计算模式”的进程可以使用 read(2) 和 write(2) 系统调用操作它们之前打开（或被委托）的文件，使用 sigreturn(2) 支持信号传递，并通过 exit(2) 系统调用终止进程。进程进入 seccomp 模式非常简单，如图 2（简化版3 本节示例的完整源代码可在以下网址获取：[https://github.com/trombonehero/sandbox-examples](https://github.com/trombonehero/sandbox-examples)）所示。
+自 2005 年起，Linux 引入了名为“安全计算模式”（secure computing mode，简称 seccomp(2)）的特性 [Cor09]。seccomp(2) 的最初版本提供了一个强大且易于理解的安全策略：处于“安全计算模式”的进程可以使用 read(2) 和 write(2) 系统调用操作它们之前打开（或被委托）的文件，使用 sigreturn(2) 支持信号传递，并通过 exit(2) 系统调用终止进程。进程进入 seccomp 模式非常简单，如图 2（简化版）3 所示，本节示例的完整源代码可在以下网址获取：[https://github.com/trombonehero/sandbox-examples](https://github.com/trombonehero/sandbox-examples)。
 
 该策略的优点在于清晰，并允许进程作为过滤器执行纯计算任务，但很少有应用程序能在如此严格的沙箱中执行有意义的工作。例如，我们之前发现，Chrome 使用“纯” seccomp(2) 模式时，需要超过一千行安全关键的汇编代码，将系统调用从沙箱进程转发到受信任进程，由后者代为执行 [WALK10]。
 
