@@ -314,3 +314,7 @@
 * [FreeBSD vs Linux: ZFS](2017-0910/FreeBSD-vs-Linux-ZFS.md)
 * [Unix 沙箱技术比较](2017-0910/A-Comparison-of-Unix-Sandboxing-Techniques.md)
 * [FreeBSD 管理架构的演变](2017-0910/The-Evolution-of-FreeBSD-Governance.md)
+
+## 既往精选
+
+* [由 FreeBSD 驱动的中国 LCD 广告显示屏](other/FreeBSD-Powered-LCD-Advertising-Displays.md)
