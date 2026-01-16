@@ -211,7 +211,7 @@ Capsicum 允许应用程序作者以最低限度的工作量对其应用程序�
 
 [WALK10] Watson, R. N. M.; Anderson, J.; Laurie, B.; Kennaway, K. “Capsicum: practical capabilities for UNIX”，发表于第 19 届 USENIX 安全研讨会论文集，2010，网址：[https://www.usenix.org/legacy/events/sec10/tech/full_papers/Watson.pdf](https://www.usenix.org/legacy/events/sec10/tech/full_papers/Watson.pdf)
 
-[WCM+02] Write, C.; Cowan, C.; Morris, J. 等. “Linux Security Modules: General Security Support for the Linux Kernel”，发表于第 11 届 USENIX 安全研讨会论文集，2002，网址：[https://www.usenix.org/legacy/event/sec02/full_papers/wright/wright.pdf](https://www.usenix.org/legacy/event/sec02/full_papers/wright/wright.pdf)
+[WCM+02] Wright, C.; Cowan, C.; Morris, J. 等. “Linux Security Modules: General Security Support for the Linux Kernel”，发表于第 11 届 USENIX 安全研讨会论文集，2002，网址：[https://www.usenix.org/legacy/event/sec02/full_papers/wright/wright.pdf](https://www.usenix.org/legacy/event/sec02/full_papers/wright/wright.pdf)
 
 [WFMV03] Watson, R.; Feldman, B.; Migus, A.; Vance, C. “Design and implementation of the Trusted BSD MAC framework”，发表于 2003 年 DARPA Information Survivability Conference and Exposition (DISCEX '03)，2003，DOI: 10.1109/DISCEX.2003.1194871
 
