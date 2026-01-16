@@ -1,6 +1,7 @@
 # 由 FreeBSD 驱动的中国 LCD 广告显示屏
 
-- [FreeBSD-powered LCD Advertising Displays](https://freebsdfoundation.org/wp-content/uploads/2017/03/FreeBSD-Powered-LCD-Advertising-Displays.pdf)
+- 原文：[FreeBSD-powered LCD Advertising Displays](https://freebsdfoundation.org/wp-content/uploads/2017/03/FreeBSD-Powered-LCD-Advertising-Displays.pdf)
+- 作者：李潇
 
 2011 年，在上海至徐州的高速铁路沿线 11 个候车室中安装了 101 台独立式 LCD 广告显示屏。 2013 年，在沈阳至大连的高速铁路沿线 4 个候车室中安装了 7 座 LCD 广告显示塔。在这些设备中，运行的是定制的 FreeBSD 镜像，配合 Xorg，在 Intel CPU 和闪存上工作。 FreeBSD 强健而稳定的体系结构，确保广告图片和视频能够稳定播放，并且在广告程序的控制下，显示塔中的电机能够正确运行。
 
@@ -185,7 +186,7 @@ SSH 还可以作为 rsync(1) 的安全传输机制，用于传输大体量文件
 
 ---
 
-Li, Xiao 是一名居住在中国的软件与硬件工程师。他在北京经营着自己的小型公司。他是一位经验丰富的 FreeBSD 开发者。2006 年，他参与了 LaTeX-CJK 以及 Linux 兼容性的 ports 工作。他积极参与中国的 FreeBSD 社区。他对印刷电路板设计以及跨平台软件开发感兴趣。
+李潇是一名居住在中国的软件与硬件工程师。他在北京经营着自己的小型公司。他是一位经验丰富的 FreeBSD 开发者。2006 年，他参与了 LaTeX-CJK 以及 Linux 兼容性的 ports 工作。他积极参与中国的 FreeBSD 社区。他对印刷电路板设计以及跨平台软件开发感兴趣。
 
 ## 参考文献
 
