@@ -9,7 +9,7 @@
 
 ## FreeBSD 项目成立
 
-伯克利的最后的 BSD 发行版是一个开源版本，名为 Networking Release 2，后来重新发布为 4.4BSD-Lite。该发行版缺少六个仍包含 AT&T 专有代码的内核文件。比尔·乔利茨（Bill Jolitz）为这六个缺失文件编写了替代版本，并发布了一个名为 386BSD 的系统，可在普通 PC 硬件上运行。由于对 Bill 的 386BSD 开发进度感到不满，一些开发者从 386BSD 分支出来，创立了 FreeBSD 项目。
+伯克利发布的最后一个 BSD 发行版是一个开源版本，名为 Networking Release 2，后来重新发布为 4.4BSD-Lite。该发行版缺少六个仍包含 AT&T 专有代码的内核文件。比尔·乔利茨（Bill Jolitz）为这六个缺失文件编写了替代版本，并发布了一个名为 386BSD 的系统，可在普通 PC 硬件上运行。由于对 Bill 的 386BSD 开发进度感到不满，一些开发者从 386BSD 分支出来，创立了 FreeBSD 项目。
 
 遵循 CSRG 模型，FreeBSD 项目使用 CVS 源代码仓库管理代码。早期版本的唯一分发方式是极慢的 14.4K 拨号调制解调器。随着 FreeBSD 1.0 发布临近，开发者希望能更快地将系统推广到更大用户群。乔丹·哈伯德（Jordan Hubbard）联系了 Walnut Creek CD-ROM，该公司以创建开源软件 CD-ROM 发行版并销售为商业模式。FreeBSD 开发者扩大发行的目标与 Walnut Creek CD-ROM 的商业模式高度契合，因此 Walnut Creek CD-ROM 乐于将 FreeBSD 纳入其发行列表。Walnut Creek CD-ROM 为 FreeBSD 开发者提供了高性能开发机器，用于托管 CVS 仓库并管理其销售的发行版的发布工程。随着 FreeBSD 的受欢迎程度提升，Walnut Creek CD-ROM 还聘请了多名 FreeBSD 开发者全职从事 FreeBSD 工作。
 
