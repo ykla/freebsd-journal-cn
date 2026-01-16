@@ -1,4 +1,4 @@
-# 目录
+# Table of contents
 
 * [FreeBSD 中文期刊](README.md)
 * [编辑日志](CHANGELOG.md)
@@ -12,6 +12,7 @@
 * [FreeBSD 15.0：改进与特性](2025-101112/freebsd-15-0-fixes-and-features.md)
 * [FreeBSD 上的通用闪存存储（UFS）](2025-101112/universal-flash-storage-on-freebsd.md)
 * [Vox FreeBSD：如何让音频工作](2025-101112/vox-freebsd-how-sound-works.md)
+* [使用 mdo(1) 与 mac_do(4) 进行凭证转换](2025-101112/credentials-transitions-with-mdo1-and-mac_do4.md)
 * [printf("Hello, srcmgr\n");](2025-101112/printfhello-srcmgrn.md)
 
 ## 2025-789 嵌入式
