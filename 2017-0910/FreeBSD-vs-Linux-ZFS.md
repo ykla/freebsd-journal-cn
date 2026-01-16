@@ -3,7 +3,7 @@
 - 原文：[FreeBSD vs Linux: ZFS](https://freebsdfoundation.org/wp-content/uploads/2017/10/FreeBSD-vs.-Linux-ZFS.pdf)
 - 作者：ALLAN JUDE
 
-OpenZFS 可在多种平台上使用，包括 FreeBSD、Solaris 衍生系统（如 IllumOS）、Mac OS X 以及 Linux。然而，在后者平台上，并非所有功能都可用。FreeBSD 项目已全面采用 ZFS，投入大量精力将其与系统及管理工具集成，使 ZFS 成为操作系统的无缝组成部分，而非附加组件。在 FreeBSD 上，OpenZFS 的集成度、监控能力和文档完善程度均优于各类 Linux 发行版。
+OpenZFS 可在多种平台上使用，包括 FreeBSD、Solaris 衍生系统（如 illumos）、Mac OS X 以及 Linux。然而，在后者平台上，并非所有功能都可用。FreeBSD 项目已全面采用 ZFS，投入大量精力将其与系统及管理工具集成，使 ZFS 成为操作系统的无缝组成部分，而非附加组件。在 FreeBSD 上，OpenZFS 的集成度、监控能力和文档完善程度均优于各类 Linux 发行版。
 
 ## 为何使用 ZFS
 
