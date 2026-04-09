@@ -1,4 +1,4 @@
-# # 让休眠的 CPU 安睡 — S0ix
+# 让休眠的 CPU 安睡 — S0ix
 
 - 原文：[Let Sleeping CPUs Lie — S0ix](https://freebsdfoundation.org/our-work/journal/browser-based-edition/laptop-desktop/let-sleeping-cpus-lie-s0ix/)
 - 作者：Aymeric Wibo
