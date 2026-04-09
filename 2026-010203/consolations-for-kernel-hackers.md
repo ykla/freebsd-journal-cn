@@ -3,7 +3,6 @@
 - 原文：[Consolations for Kernel Hackers](https://freebsdfoundation.org/our-work/journal/browser-based-edition/laptop-desktop/consolations-for-kernel-hackers/)
 - 作者：**Tom Jones**
 
-
 打开机器，它嗡嗡作响，发出一声鸣响。显示屏跳转到一个明亮但黑屏的界面，这是第一个迹象，表明这些声音不仅仅是遥远的运动。来自 Phoenix 或 American 的一些文本滚动而过，然后你看到了 FreeBSD 启动提示符的奇迹。10 秒后，倒计时和文本开始滚动。对一些人来说，这是一台原始的机器，但对我们许多人来说，这是最好的部分。在开始时接近硬件。
 
 内核消息开始滚动，从项目版权开始，接着是设备被发现和连接的过程，直到内核将控制权交给用户空间。文本的外观变化表明了这一点，我们开始看到服务启动。所有内核黑客都曾坐下来看着这些文本滚动，寻找他们添加到新驱动程序或旧代码中的消息，这些代码的行为与我们所有人的预期不符。我们等待着我们的 printf 被调用，证明我们已经构建并运行了带有我们更改的内核，证明我们终于驯服了构建过程，可以开始真正的工作。
@@ -291,6 +290,7 @@ early_putc = NULL;
 CONSOLE\_DRIVER 宏采用要添加到链接器集的控制台名称，并根据名称处理所有回调的创建：
 
 CONSOLE\_DRIVER 位于 sys/sys/cons.h
+
 ```c
 #define CONSOLE_DEVICE(name, ops, arg)                                  \
 static struct consdev name = {                      \
@@ -339,6 +339,7 @@ cn\_init 由 cninit 为选定的控制台设备调用（如果我们使用 RB\_M
 加载器由平台固件或二级加载器启动。在大多数部署中，加载器在 EFI 环境中运行（在 arm64、arm32、amd64 和 riscv 上）。这个环境为加载器提供了很多早期服务，使其工作更容易，可移植性更直接。由于加载器在许多环境中运行并支持 2 个脚本环境（Lua 和 Forth，是的，2026 年的 Forth），它提供了一些自己的抽象，使核心服务更易于使用。加载器也有控制台驱动程序，它们看起来与内核的非常相似。
 
 stand/common/bootstrap.h：
+
 ```c
 /*
 * 模块化控制台支持。
@@ -455,6 +456,7 @@ env_setenv("print_delay", EV_VOLATILE, "", setprint_delay, env_nounset);
 一旦选择了控制台，它们就会以类似于内核控制台的方式插入到 printf 中。
 
 common/console.c：
+
 ```c
 void
 putchar(int c)
