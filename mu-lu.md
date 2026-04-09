@@ -1,4 +1,4 @@
-# 目录
+# Table of contents
 
 * [FreeBSD 中文期刊](README.md)
 * [编辑日志](CHANGELOG.md)
@@ -6,6 +6,14 @@
 ***
 
 * [目录](mu-lu.md)
+
+## 2026-010203 笔记本与密码
+
+* [内核黑客的慰藉](2026-010203/consolations-for-kernel-hackers.md)
+* [让休眠的 CPU 安睡 — S0ix](2026-010203/let-sleeping-cpus-lie-s0ix.md)
+* [基金会的笔记本电脑支持与可用性项目是如何形成的](2026-010203/how-the-foundations-laptop-support-usability-project-came-together.md)
+* [TCP/IP 历险记：改进 TCP 对重排序的响应](2026-010203/adventures-in-tcp-ip-improving-tcps-responses-to-reordering.md)
+* [复制你的系统：使用 duplicity 备份你的 FreeBSD 桌面](2026-010203/duplicating-your-system.md)
 
 ## 2025-101112 FreeBSD 15.0
 
