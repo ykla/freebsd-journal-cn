@@ -1,4 +1,4 @@
-# 目录
+# Table of contents
 
 * [FreeBSD 中文期刊](README.md)
 * [编辑日志](CHANGELOG.md)
@@ -7,7 +7,7 @@
 
 * [目录](mu-lu.md)
 
-## 2026-010203 笔记本与密码
+## 2026-010203 笔记本与桌面
 
 * [内核黑客的慰藉](2026-010203/consolations-for-kernel-hackers.md)
 * [让休眠的 CPU 安睡 — S0ix](2026-010203/let-sleeping-cpus-lie-s0ix.md)
