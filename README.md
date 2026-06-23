@@ -6,6 +6,10 @@
 >
 >本项目目前处于低维护状态，主要维护者因精力所限仅处理 PR 或新的期刊。欢迎社区通过 PR 贡献力量。
 
+本作品仅为教学之目的。如认为本作品存在侵权情形，请通过电子邮件联系 ykla <yklaxds@gmail.com>。
+
+本翻译项目遵循 BSD 2 条款许可。
+
 FreeBSD 期刊原文位于：<https://freebsdfoundation.org/our-work/journal>
 
 基金会书信、读者来信、日历等均不译。
