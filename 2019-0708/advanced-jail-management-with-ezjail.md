@@ -30,7 +30,7 @@ ezjail_jailzfs="dozer/jails"
 
 注意：`-m` 标志会在 Jail 里安装手册页，因为没有什么比查不到 `ln` 的参数顺序更让人抓狂的了。
 
-这会为 basejail 和 newjail 创建数据集。basejail 数据集通过 nullfs 挂载到每个 Jail 里，提供基础系统，并允许通过简单替换 basejail 的内容来轻松更新。newjail 数据集会复制到每个新建的 Jail 里，以提供完整可用的系统。有了这些，我们可以创建第一个 Jail：
+这会为 basejail 和 newjail 创建数据集。basejail 数据集通过 nullfs 挂载到每个 Jail 里，提供基本系统，并允许通过简单替换 basejail 的内容来轻松更新。newjail 数据集会复制到每个新建的 Jail 里，以提供完整可用的系统。有了这些，我们可以创建第一个 Jail：
 
 ```sh
 # ezjail-admin create myjail.example.com 10.0.0.1
@@ -124,7 +124,7 @@ Jail 是 FreeBSD 最传奇的功能：以强大著称，难以精通，并笼罩
 束缚你的软件！
 
 - 理解 Jail 如何实现轻量级虚拟化
-- 理解基础系统的 Jail 工具和 iocage 工具包
+- 理解基本系统的 Jail 工具和 iocage 工具包
 - 优化配置硬件
 - 从宿主机和 Jail 内部管理 Jail
 - 优化磁盘空间以支持数千个 Jail

@@ -3,7 +3,7 @@
 - 原文链接：[FreeBSD Friday](<https://freebsdfoundation.org/wp-> content/uploads/2020/09/FreeBSD- Friday.pdf)
 - 作者：**DEB GOODKIN**
 
-这是几场入门讲座和 101 课程中的第一场，旨在帮助您入门 FreeBSD。本系列由 Deb Goodkin 主讲的《FreeBSD 简介》拉开序幕。
+这是几场入门讲座和 101 课程中的第一场，旨在帮助你入门 FreeBSD。本系列由 Deb Goodkin 主讲的《FreeBSD 简介》拉开序幕。
 
 我是 Deb Goodkin，FreeBSD 基金会的执行董事。欢迎来到我们的 FreeBSD Friday 讲座，这是后续几个月内我们将涵盖的众多入门主题中的第一场。
 
@@ -11,9 +11,9 @@
 
 我自己也在不断学习 FreeBSD，所以我会观看这些讲座，并与你们一起学习。感谢你们和我一起踏上这段旅程。
 
-今天的讲座是对 FreeBSD 的一个非常基础的介绍。接下来的两场 FreeBSD Friday 讲座将专注于 FreeBSD 入门，包括由 Roller Angel 主讲的“安装章节”（Installfest）第 1 和第 2 部分。您可以观看他一小时的演示，该内容将被录制。之后，当您准备在自己的系统上安装 FreeBSD 时，可以随时访问这些课程，并按照自己的节奏学习。
+今天的讲座是对 FreeBSD 的一个非常基础的介绍。接下来的两场 FreeBSD Friday 讲座将专注于 FreeBSD 入门，包括由 Roller Angel 主讲的“安装章节”（Installfest）第 1 和第 2 部分。你可以观看他一小时的演示，该内容将被录制。之后，当你准备在自己的系统上安装 FreeBSD 时，可以随时访问这些课程，并按照自己的节奏学习。
 
-在 Roller Angel 的课程之后，我们将迎来 Dr. Marshall Kirk McKusick（《BSD 快速文件系统的历史》）。大多数人认识他是因为他创造了 Fast Filesystem。这将是一场录播讲座，但 Kirk McKusick 会在最后进行问答互动。然后，我们计划的最后一场讲座是 Dan Langille 主讲的《ZFS 简介》。您可能不仅在社区中认识 Dan，还知道他是 BSDCan 的组织者。
+在 Roller Angel 的课程之后，我们将迎来 Dr. Marshall Kirk McKusick（《BSD 快速文件系统的历史》）。大多数人认识他是因为他创造了 Fast Filesystem。这将是一场录播讲座，但 Kirk McKusick 会在最后进行问答互动。然后，我们计划的最后一场讲座是 Dan Langille 主讲的《ZFS 简介》。你可能不仅在社区中认识 Dan，还知道他是 BSDCan 的组织者。
 
 我建议大家关注基金会的网页，我们将陆续推出更多 FreeBSD 101 级别的讲座，帮助大家了解 FreeBSD 的各个领域。
 
@@ -41,7 +41,7 @@ UNIX 在 1969 年诞生后，大多数主要的计算机公司都采用了它，
 
 FreeBSD 还因其优秀的文档而受到高度认可。这不仅仅是因为可以随时获取这些文档，还因为你可以在一个地方找到几乎所有的相关信息，包括完整的手册页，甚至可以直接安装 FreeBSD 手册。这完全取决于你的需求。
 
-此外，FreeBSD 的基础系统非常小巧，你可以按需安装自己需要的软件包。所有的软件包都保持最新版本，并且来自官方的统一软件仓库。如果我想安装 Firefox，我不需要去 Firefox 的官方网站下载，它已经在 FreeBSD 自己的基础设施上提供了官方的软件包。
+此外，FreeBSD 的基本系统非常小巧，你可以按需安装自己需要的软件包。所有的软件包都保持最新版本，并且来自官方的统一软件仓库。如果我想安装 Firefox，我不需要去 Firefox 的官方网站下载，它已经在 FreeBSD 自己的基础设施上提供了官方的软件包。
 
 正如我之前提到的，FreeBSD 还支持多种 CPU 架构，并且采用了 BSD 许可证。如果你只是一个普通的桌面用户，像我一样在自己的电脑上安装 FreeBSD，可能不会太在意 BSD 许可证。但对于许多开发者和商业用户，这却是一个至关重要的因素。此外，FreeBSD 以其稳定性、安全性和可靠的性能而闻名。
 
