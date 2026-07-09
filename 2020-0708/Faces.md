@@ -15,7 +15,7 @@ FreeBSD 项目核心团队的选举在今年早些时候举行，结果公布于
 
 ## Ed Maste，Git 过渡工作组及安全团队联络员
 
-![](https://github.com/user-attachments/assets/2eebcbce-e366-46d2-8498-d2ed244a4dad)
+![Ed Maste 照片](../png/2020-0708/Faces-01.png)
 
 我从大约 2003 年开始使用 FreeBSD。当时我在一家网络硬件公司工作，他们开始开发一款基于 FreeBSD 的新产品。我从事的是 TCP/IP 协议栈的工作，那时 FreeBSD 项目正在进行精细锁定的改进。我们的产品对网络协议栈提出了一些特殊要求，因此我们经常遇到之前未曾出现过的问题。我与 FreeBSD 开发者合作，诊断并报告错误，测试修复。这项工作让我在 2005 年成为了一名提交者。之后我继续在同一家公司工作，直到 2012 年左右转为咨询角色，此后我便开始与 FreeBSD 基金会合作，管理项目的开发工作。
 
@@ -31,7 +31,7 @@ FreeBSD 项目核心团队的选举在今年早些时候举行，结果公布于
 
 ## George V. Neville-Neil，基金会联络员
 
-![](https://github.com/user-attachments/assets/3ac1de7e-d4e4-4c38-ae07-0c93e9c1c32d)
+![George V. Neville-Neil 照片](../png/2020-0708/Faces-02.png)
 
 我在成为提交者之前就开始处理 FreeBSD 代码，1990 年代末期将 FreeBSD 的网络协议栈移植到 VxWorks。我自 2004 年起成为 FreeBSD 提交者，并且此后曾多次担任核心团队成员。我的主要工作领域是网络，从驱动程序到所有协议，最近则是 DTrace。
 
@@ -41,7 +41,7 @@ FreeBSD 项目核心团队的选举在今年早些时候举行，结果公布于
 
 ## 佐藤広生，行为准则委员会联络员
 
-![J](https://github.com/user-attachments/assets/690f7ba0-5d5f-411a-a6bb-523b69152f42)
+![佐藤広生 照片](../png/2020-0708/Faces-03.png)
 
 我在东京工业大学担任助理教授。在 FreeBSD 项目中，我是发布工程团队和文档工程团队的成员，并且是 FreeBSD 基金会的董事会成员。
 
@@ -55,7 +55,7 @@ FreeBSD 项目核心团队的选举在今年早些时候举行，结果公布于
 
 ## Kyle Evans，Portmgr 团队联络员
 
-![](https://github.com/user-attachments/assets/c2e0b278-defc-4696-8aa9-3ca027709baf)
+![Kyle Evans 照片](../png/2020-0708/Faces-04.png)
 
 我算是比较新的成员，加入项目仅约四年。我的大部分工作集中在用户空间和 lualoader 上。FreeBSD 对我来说大多是一个爱好——我在工作中部署了一小批 FreeBSD/arm 板子，用于各种目的，但它们非常稳定，几乎不需要对 FreeBSD 做什么工作。我通常被项目吸引，是因为它有一些有趣的挑战需要解决，当然，我留下来也是因为“山羊”
 
@@ -69,7 +69,7 @@ FreeBSD 项目核心团队的选举在今年早些时候举行，结果公布于
 
 ## Mark Johnston，Bugmeister 和 CI 团队联络员
 
-![](https://github.com/user-attachments/assets/05aace88-f2da-4826-a9a0-54042d9b5cd0)
+![Mark Johnston 照片](../png/2020-0708/Faces-05.png)
 
 我因为在一家使用 FreeBSD 构建网络设备的公司做学生实习而接触了 FreeBSD。当时，我非常想参与开源项目，并对操作系统感兴趣，幸运的是，我设法在这家公司相对小的操作系统团队中找到了工作，团队里有几位 FreeBSD 提交者，他们帮助我成为项目的一员。从那时起，我在几家设备厂商工作过，现在从事自由职业的 FreeBSD 开发工作。我的许多贡献主要是在内核的 bug 修复方面——出于某种奇怪的原因，我喜欢追踪那些晦涩的并发问题。我也做了一些关于 DTrace  Ports 和虚拟内存子系统的工作。
 

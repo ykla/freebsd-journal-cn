@@ -3,25 +3,27 @@
 - 原文：[FreeBSD WiFi Development Part 2: Working on a Driver](https://freebsdfoundation.org/our-work/journal/browser-based-edition/embedded-2/freebsd-wifi-development-part-2-working-on-a-driver/)
 - 作者：Tom Jones
 
+![WiFi 开发](../png/2025-789/freebsd-wifi-development-part-2-working-on-a-driver-01.png)
+
 这是 FreeBSD 上 WiFi 开发系列的第二篇文章。在[第一篇文章](https://freebsdfoundation.org/our-work/journal/browser-based-edition/networking-3/freebsd-wifi-development/)中，我们介绍了 WiFi/80211 网络的一些术语，简要讲解了典型的网络架构，并展示了如何使用 `ifconfig` 和一些无线网卡创建 station、host ap 和 monitor 模式的 WLAN 接口。我们还介绍了实现 WiFi 子系统的两个不同内核层 —— **驱动** 和 **net80211**。
 
 **驱动**：如 iwx、rtwn 和 ath，通过 USB 或 PCIe 等物理总线与无线网卡通信，通常通过固件接口实现。
 
-**net80211**：加入网络、发送数据包以及执行其他复杂操作所需的抽象状态机，在许多驱动中是通用的。
+**net80211**：加入网络、发送数据包和执行其他复杂操作所需的抽象状态机，在许多驱动中是通用的。
 
-为了在硬件需求上保持灵活性，**net80211** 层本身能实现 IEEE 802.11 状态机的大多数部分。这种架构使我们能够用一个标准接口与整个网络栈集成，屏蔽不同网卡支持能力的差异。同时，它还能支持纯软件的 WLAN 适配器，这在测试环境中非常有用。
+为了在硬件需求上保持灵活性，**net80211** 层本身能实现 IEEE 802.11 状态机的大多数部分。这种架构使我们能够用标准接口与整个网络栈集成，屏蔽不同网卡支持能力的差异。同时，它还能支持纯软件的 WLAN 适配器，这在测试环境中非常有用。
 
-网卡对功能的支持程度不同，范围从 **FullMAC 接口**（几乎所有处理都在网卡上直接完成），到几乎完全依赖 **net80211** 堆栈，仅由网卡管理射频。在 FullMAC 卡中，固件会为操作系统驱动暴露一个配置接口，所有的数据包收发和管理操作（如切换信道、扫描）都由固件完成。OpenBSD 和 NetBSD 中的 **bwfm Broadcom 驱动**就是一个 FullMAC 驱动的例子。
+网卡对功能的支持程度不同，范围从 **FullMAC 接口**（几乎所有处理都在网卡上直接完成），到几乎完全依赖 **net80211** 堆栈，仅由网卡管理射频。在 FullMAC 卡中，固件会为操作系统驱动暴露配置接口，所有的数据包收发和管理操作（如切换信道、扫描）都由固件完成。OpenBSD 和 NetBSD 中的 **bwfm Broadcom 驱动**就是 FullMAC 驱动的例子。
 
 其他网卡需要 **net80211** 堆栈提供多种服务以支持驱动的运行。一些设备（如 iwx）提供扫描和加入网络等管理接口，但大多数操作仍由 **net80211** 完成。
 
 较老的驱动则必须自己实现更多的 **net80211** 状态机逻辑，而不是重复大量类似的代码。
 
-实际上，所有 WiFi 驱动都处在这样一个范围内：一端是固件几乎完成所有工作，另一端是操作系统管理大部分射频和传输。要实际了解其运行方式，最好的方法就是直接看一个驱动。
+实际上，所有 WiFi 驱动都处在这样一个范围内：一端是固件几乎完成所有工作，另一端是操作系统管理大部分射频和传输。要实际了解其运行方式，最好的方法就是直接看驱动。
 
-接下来我们先看看驱动是如何附加并出现在 `net.wlan.devices` 列表中的，然后再看一个数据包是如何从 **net80211** 堆栈发往 WiFi 射频的。
+接下来我们先看看驱动是如何附加并出现在 `net.wlan.devices` 列表中的，然后再看数据包是如何从 **net80211** 堆栈发往 WiFi 射频的。
 
-本文将主要关注 **if_iwx** 驱动，原因有两点：第一，我对它非常熟悉，因为我曾将该驱动从 Future Crew 的源码引入 FreeBSD 树；第二，作为一个新驱动，它还有很多“低垂的果实”（容易改进的地方）。
+本文将主要关注 `if_iwx` 驱动，原因有两点：第一，我对它非常熟悉，因为我曾将该驱动从 Future Crew 的源码引入 FreeBSD 树；第二，作为新驱动，它还有很多“低垂的果实”（容易改进的地方）。
 
 ## 将驱动连接到硬件
 
@@ -52,13 +54,13 @@ static device_method_t iwx_pci_methods[] = {
 };
 ```
 
-`if_iwx` 注册了 probe、attach 和 detach 方法，以及 suspend 和 resume 方法，这些方法都会在需要时被调用。
+`if_iwx` 注册了 probe、attach 和 detach 方法，和 suspend 和 resume 方法，这些方法都会在需要时被调用。
 
 ## Probe
 
 WiFi 设备通常由一颗芯片组和一些辅助硬件组成。芯片组由 Realtek 或 Intel 这样的公司制造，但实际设备则是由另一家公司基于芯片组生产的。这种模式意味着我们会得到基于 rtwn 的设备，但它们可能由 TP-Link 这样的公司制造。围绕芯片组构建设备的公司会提供驱动和配置信息，从而使少量驱动可以支持更多的设备 ID。
 
-这也意味着，FreeBSD 新贡献者常见的首个补丁，就是为某些尚未覆盖的设备添加设备 ID（我自己的第一个补丁就是在一台 MIPS 路由器中添加了一颗闪存芯片 ID！）。
+这也意味着，FreeBSD 新贡献者常见的首个补丁，就是为某些尚未覆盖的设备添加设备 ID（我自己的第一个补丁就是在 MIPS 路由器中添加了一颗闪存芯片 ID！）。
 
 在 FreeBSD WiFi 中，你的第一个改动也可能很直接：买一台你认为应该能用的设备并测试它（按照本系列第一篇文章中的说明操作）。
 
@@ -69,7 +71,7 @@ WiFi 设备通常由一颗芯片组和一些辅助硬件组成。芯片组由 Re
 ```c
 diff --git a/sys/dev/usb/wlan/if_run.c b/sys/dev/usb/wlan/if_run.c
 index 00e005fd7d4d..97c790dd5b81 100644
- a/sys/dev/usb/wlan/if_run.c
+--- a/sys/dev/usb/wlan/if_run.c
 +++ b/sys/dev/usb/wlan/if_run.c
 @@ -324,6 +324,7 @@ static const STRUCT_USB_HOST_ID run_devs[] = {
      RUN_DEV(SITECOMEU,         RT2870_3),
@@ -85,13 +87,13 @@ index 00e005fd7d4d..97c790dd5b81 100644
 
 ## 连接到 net80211
 
-WiFi 驱动所需的状态存储在驱动 softc 中的一个 `ieee80211com` 变量里（通常命名为 `ic`）。
+WiFi 驱动所需的状态存储在驱动 softc 中的 `ieee80211com` 变量里（通常命名为 `ic`）。
 
 驱动使用 `ic` 来设置能力标志，并通过覆盖函数指针来挂接或替换 **net80211** 栈提供的默认功能。
 
-在本系列的上一篇文章中，我展示了如何通过 `ifconfig` 命令在一个驱动之上创建虚拟 WLAN 接口（VAP）。VAP 允许我们在同一块网卡上创建多个接口，并让它们在不同模式下运行，例如 **sta**、**host ap**、**monitor** 等。驱动通过 `ic_caps` 位字段来管理这些模式的可用性。
+在本系列的上一篇文章中，我展示了如何通过 `ifconfig` 命令在驱动之上创建虚拟 WLAN 接口（VAP）。VAP 允许我们在同一块网卡上创建多个接口，并让它们在不同模式下运行，例如 **sta**、**host ap**、**monitor** 等。驱动通过 `ic_caps` 位字段来管理这些模式的可用性。
 
-这些字段的值会在驱动的 attach 过程中设置。下面是 `if_iwx` 驱动中 `iwx_attach` 函数的一个示例：
+这些字段的值会在驱动的 attach 过程中设置。下面是 `if_iwx` 驱动中 `iwx_attach` 函数的示例：
 
 ```c
 ...
@@ -115,13 +117,13 @@ ic->ic_caps =
 
 [来自 `if_iwx` 的 attach](https://cgit.freebsd.org/src/tree/sys/dev/iwx/if_iwx.c#n10127)
 
-这段代码位于 `if_iwx` 的 attach 方法末尾。前面的 attach 代码则负责执行驱动的初始化工作，例如识别具体的 PCIe 设备，以及确定该网卡的具体 Intel Wireless 型号。
+这段代码位于 `if_iwx` 的 attach 方法末尾。前面的 attach 代码则负责执行驱动的初始化工作，例如识别具体的 PCIe 设备，和确定该网卡的具体 Intel Wireless 型号。
 
 `if_iwx` 驱动支持 **station 模式**（`IEEE80211_C_STA`）和 **monitor 模式**（`IEEE80211_C_MONITOR`）；如果它支持 **host AP 模式**（像 rtwn 那样），那么在能力位掩码中就会额外包含 `IEEE80211_C_HOSTAP` 标志。
 
-除了模式以外，iwx 还支持：WPA 加密（`IEEE80211_C_WPA`）、差分服务的多媒体扩展（`IEEE80211_C_WME`）、电源管理（`IEEE80211_C_PMGT`）、短时隙（`IEEE80211_C_SHSLOT`）、短前导码（`IEEE80211_C_SHPREAMBLE`）以及后台扫描（`IEEE80211_C_BGSCAN`）。
+除了模式以外，iwx 还支持：WPA 加密（`IEEE80211_C_WPA`）、差分服务的多媒体扩展（`IEEE80211_C_WME`）、电源管理（`IEEE80211_C_PMGT`）、短时隙（`IEEE80211_C_SHSLOT`）、短前导码（`IEEE80211_C_SHPREAMBLE`）和后台扫描（`IEEE80211_C_BGSCAN`）。
 
-完整的能力标志列表在 **ieee80211.h** 头文件中。驱动能声明哪些能力，既取决于硬件特性，也取决于驱动是否实现。在驱动开发阶段，某些功能（例如 WPA 硬件卸载）可能尚未实现，因此缺少某个标志并不意味着硬件不支持该特性。
+完整的能力标志列表在 `ieee80211.h` 头文件中。驱动能声明哪些能力，既取决于硬件特性，也取决于驱动是否实现。在驱动开发阶段，某些功能（例如 WPA 硬件卸载）可能尚未实现，因此缺少某个标志并不意味着硬件不支持该特性。
 
 驱动在 attach 阶段执行的第二个任务，是接管或实现 **net80211** 的功能，这通过 `iwx_attach_hook` 配置回调完成。在这里，驱动会覆盖 `ic_caps` 位字段所声明的大量特性的函数指针。
 
@@ -174,7 +176,7 @@ ieee80211_announce(ic);
 
 ## 实现 station 模式
 
-在第一篇文章中，我们为示例创建了一个 station 模式的 VAP。我们运行的命令是：
+在第一篇文章中，我们为示例创建了 station 模式的 VAP。我们运行的命令是：
 
 ```sh
 ifconfig wlan create wlandev iwx0
@@ -237,7 +239,7 @@ iwx_vap_create(struct ieee80211com *ic, const char name[IFNAMSIZ], int unit,
 
 `iwx_vap_create` 会做一些内务处理来管理内存，并建立 net80211 系统需要使用的回调。对于 `iwx`，它会建立特定于驱动的状态（`IWX_DEFAULT_MACID` 和 `IWX_DEFAULT_COLOR` 值），用于与固件协调，确定默认使用哪个 station。
 
-对于 `iwx_vap_create` 所挂接的一些函数，我们保留默认方法，但会拦截对它的调用。例如，我们覆盖了 `iv_newstate` 回调，并通过 `iwx_newstate` 进行过滤。
+对于 `iwx_vap_create` 所挂接的一些函数，我们保留默认方法，但会拦截对它的调用。例如，我们覆盖了 `iv_newstate` 回调，并通过 `iwx_newstate` 过滤。
 
 `iwx` 的固件自身管理了大量状态；例如在 **探测 (probe)** 时，可以请求硬件在受支持的信道上发送探测报文，而我们无法直接自己构造并发送这些报文。
 
@@ -247,7 +249,7 @@ iwx_vap_create(struct ieee80211com *ic, const char name[IFNAMSIZ], int unit,
 
 到目前为止，我们已经覆盖了足够的驱动部分，可以用 `ifconfig` 启动接口，并让操作系统开始发送数据包。
 
-在测试接口时，我们可能会使用 ifconfig 按如下流程操作：
+在测试接口时，我们可能会使用 `ifconfig` 按如下流程操作：
 
 ```sh
 # ifconfig wlan0 ssid open-network up
@@ -257,7 +259,7 @@ iwx_vap_create(struct ieee80211com *ic, const char name[IFNAMSIZ], int unit,
 
 接下来看看这一系列命令会映射到哪些驱动方法。
 
-在我们的 attach 钩子中，为 **net80211** 层设置了两个用于发送数据包的回调：`ic_transmit` 和 `ic_raw_transmit`，以及一个用于控制接口状态的回调：`ic_parent`。
+在我们的 attach 钩子中，为 **net80211** 层设置了两个用于发送数据包的回调：`ic_transmit` 和 `ic_raw_transmit`，和一个用于控制接口状态的回调：`ic_parent`。
 
 ```c
 ic->ic_raw_xmit = iwx_raw_xmit;
@@ -268,7 +270,7 @@ ic->ic_transmit = iwx_transmit;
 
 `ifconfig` 命令中的 `up` 部分最终会调用 `ic_parent` 回调。对于 iwx，这个回调是 `iwx_parent`：
 
-```sh
+```c
 static void
 iwx_parent(struct ieee80211com *ic)
 {
@@ -288,11 +290,11 @@ iwx_parent(struct ieee80211com *ic)
 
 `iwx_parent` 会直接控制硬件：如果正在运行，就调用 `iwx_stop` 来清除所有硬件状态；如果尚未运行，就调用 `iwx_init` 让硬件完成初始配置。只要硬件准备就绪，我们就调用 `ieee80211_start_all` 通知 net80211 栈可以开始工作了。
 
-看似简单的 `ifconfig up` 动作，实际上会导致 `iwx` 驱动修改大量硬件状态。这也是为什么“把接口关掉再打开”常常被当作解决网络问题的“魔法修复”的原因之一。
+看似简单的 `ifconfig up` 动作，实际上会导致 `iwx` 驱动修改大量硬件状态。这也是为什么“把接口关掉再打开”常常被当作解决网络问题的“魔法修复”的原因。
 
 `ifconfig` 命令的第二部分让 net80211 栈执行更多操作。通过向 `ifconfig` 传入 `ssid open-network`，我们请求 net80211 子系统去发现并加入名为 `open-network` 的网络。
 
-加入一个 IEEE 802.11 网络的过程分为几个步骤：
+加入 IEEE 802.11 网络的过程分为几个步骤：
 
 * **探测 (probe)** 网络
 * **认证 (authenticate)** 到网络
@@ -310,13 +312,13 @@ iwx_parent(struct ieee80211com *ic)
 
 ## 总结
 
-本文介绍了驱动如何进行探测、附加以及发送首批数据包。通过使用现有驱动，我们可以很快覆盖驱动的大量逻辑。不过，如果你查看源码，就会发现 `if_iwx.c` 长达一万多行，这远远超出了本文的范围。
+本文介绍了驱动如何探测、附加和发送首批数据包。通过使用现有驱动，我们可以很快覆盖驱动的大量逻辑。不过，如果你查看源码，就会发现 `if_iwx.c` 长达一万多行，这远远超出了本文的范围。
 
-这篇文章作为 Wi-Fi 驱动入门，省略了许多细节。要真正加入一个网络，我们必须能够从接口既发送又接收数据包。
+这篇文章作为 Wi-Fi 驱动入门，省略了许多细节。要真正加入网络，我们必须能够从接口既发送又接收数据包。
 
 如果收不到任何数据包，我们能如何调试？系统提供了哪些工具？
 
-在本系列的第三部分，我们将介绍 **net80211 栈的内置调试功能**，以及它们是如何与驱动结合，用于开发、测试和故障排查的。
+在本系列的第三部分，我们将介绍 **net80211 栈的内置调试功能**，和它们是如何与驱动结合，用于开发、测试和故障排查的。
 
 ---
 

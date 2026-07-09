@@ -11,7 +11,7 @@
 
 **图 1. Razer Ornata V2**
 
-![](https://github.com/user-attachments/assets/c6a18da9-a020-47de-b791-6291330b18fe)
+![Razer Ornata V2 键盘](../png/2021-0910/usb-01.png)
 
 ## 收集信息
 
@@ -25,7 +25,7 @@
 
 ## OpenRazer
 
-为了获得有关驱动程序所需的上下文，我们将尝试查找用于与键盘通信的包结构，因为这可以帮助我们理解来自 USB 嗅探的转储数据。可以在 <https://github.com/openrazer/openrazer> 上找到 openrazer 的源代码。在文件 `driver/razercommon.h` 中，我们将找到一个 `razer_report` 结构，这是驱动程序的主要结构。它在该产品的所有设备中都有使用。该结构如清单 1 所示。
+为了获得有关驱动程序所需的上下文，我们将尝试查找用于与键盘通信的包结构，因为这可以帮助我们理解来自 USB 嗅探的转储数据。可以在 <https://github.com/openrazer/openrazer> 上找到 openrazer 的源代码。在文件 **driver/razercommon.h** 中，我们将找到一个 `razer_report` 结构，这是驱动程序的主要结构。它在该产品的所有设备中都有使用。该结构如清单 1 所示。
 
 **清单 1. openrazer 定义的 `razer_report` 结构体**
 
@@ -46,13 +46,13 @@ struct razer_report {
 
 ## 嗅探 Windows 驱动程序
 
-要嗅探 Windows USB 驱动程序，我们可以使用工具 usbpcap（<https://desowin.org/usbpcap/）。它是一款命令行工具，非常易于使用（在清单> 2 中，我们提供了一个示例）。当我们运行该命令工具时，它会显示可用的设备；接下来，它会询问我们选择要嗅探的设备以及保存 pcap 文件的位置。生成的 pcap 文件可以使用 Wireshark 轻松查看。
+要嗅探 Windows USB 驱动程序，我们可以使用工具 usbpcap（<https://desowin.org/usbpcap/>）。它是一款命令行工具，非常易于使用（在清单 2 中，我们提供了一个示例）。当我们运行该命令工具时，它会显示可用的设备；接下来，它会询问我们选择要嗅探的设备以及保存 pcap 文件的位置。生成的 pcap 文件可以使用 Wireshark 轻松查看。
 
 我们将针对 Razer Windows 驱动程序。在 Windows 上，Razer Synapse 工具允许你自定义键盘的背光颜色。让我们尝试在 usbpcap 运行时设置键盘的不同颜色。通过这个工具，我们将记录发送到键盘的所有请求（Razer Synapse 如图 2 所示）。此时，我们将整个键盘设置为红色方案。
 
 以下可用的过滤控制设备：
 
-```
+```sh
 1 \\.\USBPcap1
  \??\USB#ROOT_HUB20#4&19d0fd2a&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8}
    [Port 1] Generic USB Hub
@@ -83,23 +83,27 @@ Output file name (.pcap): t1.pcap
 
 **图 2. Razer Synapse 工具。该工具用于配置背光颜色。**
 
-![](https://github.com/user-attachments/assets/dd601b4c-a292-403b-b851-30d1555bc00a)
+![Razer Synapse 工具截图](../png/2021-0910/usb-02.png)
 
 **表 1. 来自 USB 文档的设置数据格式，以及转储中的值**
 
-![](https://github.com/user-attachments/assets/ebf0e691-eb81-4a9d-8529-47ed23bd16bf)
+![USB 设置数据格式表](../png/2021-0910/usb-03.png)
 
 在设置数据之后，我们有专门针对 Razer 驱动程序的数据。在图 4 中，我们将 pcap 数据与 openrazer 项目中的 razer_report 结构结合起来。接下来，我们可以轻松地看到一些关于参数的更多信息。首先，我们有 2 个字节设置为 0，我们可以假设它们是保留字段。接下来，我们有一个字节设置为 1。当我们查看 pcap 时，可以看到许多类似的数据包，在此位置，值的范围从 0 到 5。我们稍后可以验证这一点，但实际上，它似乎是键盘上的行号。然后，我们有一个值 0x15（21），它实际上是每行的键数。最后，有一个重复了 21 次的值 0xff0000，似乎指的是我们在 RGB 中设置的红色（R: 255, G: 0, B: 0）。
 
 **图 3. 使用 usbpcap 在 Wireshark 下生成的 pcap。设置数据包被高亮显示**
 
-![](https://github.com/user-attachments/assets/059d3241-e726-49ba-9773-8e87d89a880f)
+![Wireshark 中的 pcap 数据包](../png/2021-0910/usb-04.png)
+
+![openrazer 结构与设置数据结合](../png/2021-0910/usb-05.png)
 
 **图 4. 使用 openrazer 获取的结构与设置数据结合**
 
-![](https://github.com/user-attachments/assets/5e2ce1cf-0fbc-427c-924d-d801b7c5f603)
+Razer Synapse 使用的数据包似乎允许我们为每个键设置不同的颜色。每个数据包对应键盘上的一行。在不深入了解 USB 和 Razer 协议细节的情况下，这应该足以实现我们可能想要的任何背光效果。
 
-**图 4. 使用 openrazer 获取的结构与设置数据结合**
+最后，我们需要找到供应商和产品标识符，以便找到正确的 USB 设备。为此，我们可以在 FreeBSD 上使用 `usbconfig(8)` 工具。该工具有一个特殊选项 `dump_device_desc`，可以打印连接到主机的所有 USB 设备的详细信息。使用示例如清单 3 所示。
+
+**清单 3. 使用 `usbconfig(8)` 工具识别供应商和产品 ID**
 
 ```sh
 # usbconfig dump_device_desc
@@ -127,9 +131,9 @@ pwr=ON (500mA)
 
 libusb 是一款用于 USB 设备的跨平台库，因此我们可以在 FreeBSD、Linux、OpenBSD 甚至 Windows 上看到它的移植。为了进一步简化任务，我们可以不使用 C 语言编写驱动，而是通过 Python 实现，这要感谢 PyUSB 模块。PyUSB 提供了对主机 USB 系统的简便访问。我们可以使用 pkg(8) 工具简单地安装 pyusb（例如：`pkg install py38-pyusb`）。
 
-首先，我们需要找到一个有效的设备。为此，我们使用函数 `usb.core.find` 。为了识别正确的设备，我们可以提供通过 `usbconfig(8)` 获取的产品和供应商 ID，如 Listing 4 所示。
+首先，我们需要找到一个有效的设备。为此，我们使用函数 `usb.core.find` 。为了识别正确的设备，我们可以提供通过 `usbconfig(8)` 获取的产品和供应商 ID，如清单 4 所示。
 
-**Listing 4. 使用 PyUSB 查找设备**
+**清单 4. 使用 PyUSB 查找设备**
 
 ```python
 # python
@@ -140,9 +144,9 @@ Python 3.8.10 (default, Jul 6 2021, 01:34:57)
 'Razer Ornata V2'
 ```
 
-要发送一个 Setup 数据包，我们使用 `ctrl_transfer` 函数。该函数的接口与 Setup 数据包中描述的参数相对应。这里最简单的做法是复制所有嗅探到的参数。最后一步是重新构建数据包。在我们的驱动中，我们假设颜色是硬编码的。除了颜色、行和 CRC 字段之外，我们将从嗅探到的部分复制所有数据（整个过程如 Listing 5 所示）。最后，我们还需要重新计算 CRC 字段。
+要发送一个 Setup 数据包，我们使用 `ctrl_transfer` 函数。该函数的接口与 Setup 数据包中描述的参数相对应。这里最简单的做法是复制所有嗅探到的参数。最后一步是重新构建数据包。在我们的驱动中，我们假设颜色是硬编码的。除了颜色、行和 CRC 字段之外，我们将从嗅探到的部分复制所有数据（整个过程如清单 5 所示）。最后，我们还需要重新计算 CRC 字段。
 
-**Listing 5. 使用 PyUSB 发送请求更改颜色。**
+**清单 5. 使用 PyUSB 发送请求更改颜色。**
 
 ```python
 import usb.core
@@ -198,9 +202,9 @@ for line in range(6):
 
 ### 编译内核模块
 
-首先，我们需要知道如何编译内核模块。最简单的方法是使用 Makefile，并包含 bsd.kmod.mk 文件。通过这种方式，它将自动生成所有其他所需的文件和头文件。我们还需要记住包括一些文件，比如 `opt_usb.h`、`buf_if.h` 和 `device_if.h`，这些文件对于所有内核模块来说都是通用的。在 KMOD 调试工具中，我们提供编译后驱动程序的名称。Makefile 的示例如 Listing 6 所示。
+首先，我们需要知道如何编译内核模块。最简单的方法是使用 Makefile，并包含 bsd.kmod.mk 文件。通过这种方式，它将自动生成所有其他所需的文件和头文件。我们还需要记住包括一些文件，比如 `opt_usb.h`、`buf_if.h` 和 `device_if.h`，这些文件对于所有内核模块来说都是通用的。在 KMOD 变量中，我们提供编译后驱动程序的名称。Makefile 的示例如清单 6 所示。
 
-**Listing 6. 在 FreeBSD 中构建内核模块的 Makefile。**
+**清单 6. 在 FreeBSD 中构建内核模块的 Makefile。**
 
 ```c
 SRCS=ornata.c
@@ -211,9 +215,9 @@ KMOD=ornata
 
 几乎所有驱动程序都必须实现的三种标准方法是 probe、attach 和 detach。还有一些额外的方法，如 suspend 和 resume，但我们不在这里讨论它们。
 
-probe 方法首先执行，用于检查设备并决定是否支持该驱动程序。在这里，我们可以使用 VendorID 和 ProductID 来决定是否是我们要找的设备。我们可以通过使用函数 `usbd_lookup_id_by_uaa` 来实现，它将遍历给定的厂商和产品数组，找到匹配的对。我们还需要检查设备是否处于主机模式（USB_MODE_HOST），因为这对于启动数据传输是必要的。接下来，我们要确保该设备确实是一个键盘。probe 方法的代码如 Listing 7 所示。
+probe 方法首先执行，用于检查设备并决定是否支持该驱动程序。在这里，我们可以使用 VendorID 和 ProductID 来决定是否是我们要找的设备。我们可以通过使用函数 `usbd_lookup_id_by_uaa` 来实现，它将遍历给定的厂商和产品数组，找到匹配的对。我们还需要检查设备是否处于主机模式（USB_MODE_HOST），因为这对于启动数据传输是必要的。接下来，我们要确保该设备确实是一个键盘。probe 方法的代码如清单 7 所示。
 
-**Listing 7. USB probe 函数**
+**清单 7. USB probe 函数**
 
 ```c
 static const STRUCT_USB_HOST_ID ornata_devs[] = {
@@ -235,9 +239,9 @@ return (usbd_lookup_id_by_uaa(ornata_devs, sizeof(ornata_devs), uaa));
 
 另两个有用的方法是 attach 和 detach。attach 函数在 probe 阶段完成并且 probe 函数返回成功时被调用。它是一个入口点，允许驱动程序初始化所有所需的资源。与此相对，我们有一个 detach 函数，允许我们在设备消失后进行清理。
 
-在这种情况下，驱动程序在 attach 函数中将初始化用于同步的互斥锁，并分配 USB 驱动程序的入口点，通常在 `/dev` 下。最后的部分由 `usb_fifo_attach` 函数完成。在创建新节点时，我们还需要定义它支持的操作（变量 `ornata_fifo_methods` ），但我们将在后续阶段中讨论。创建节点时，我们可以定义哪个用户和组应该是所有者（在我们的例子中是 root(0) 和 wheel(0) 组），以及该节点应以什么模式初始化（在我们的例子中是每个人都可以读写（666））。此时，我们还引入了一个辅助结构，存储所有设备特定的变量。与此相对，在 detach 例程中，我们调用函数 `usb_fifo_detach`，它销毁其关联的 USB 设备节点。这些函数的代码如下所示，见 Listing 8。
+在这种情况下，驱动程序在 attach 函数中将初始化用于同步的互斥锁，并在 **/dev** 下分配 USB 驱动程序的入口点。最后的部分由 `usb_fifo_attach` 函数完成。在创建新节点时，我们还需要定义它支持的操作（变量 `ornata_fifo_methods` ），但我们将在后续阶段中讨论。创建节点时，我们可以定义哪个用户和组应该是所有者（在我们的例子中是 root(0) 和 wheel(0) 组），以及该节点应以什么模式初始化（在我们的例子中是每个人都可以读写（666））。此时，我们还引入了一个辅助结构，存储所有设备特定的变量。与此相对，在 detach 例程中，我们调用函数 `usb_fifo_detach`，它销毁其关联的 USB 设备节点。这些函数的代码如下所示，见清单 8。
 
-**Listing 8. 驱动程序的 attach 和 detach 函数**
+**清单 8. 驱动程序的 attach 和 detach 函数**
 
 ```c
 struct ornata_softc {
@@ -278,9 +282,9 @@ ornata_detach( device_t self )
 }
 ```
 
-最终，我们可以定义驱动程序模块，如列表 9 所示。我们使用 `DRIVER_MODULE` 宏来创建一个内核驱动程序。在这一部分，我们将 `probe`、`attach` 和 `detach` 函数设置到驱动程序结构中。`MODULE_DEPEND` 宏用于设置对另一个内核模块的依赖关系。它仅用于帮助操作系统在加载此模块之前加载所有必需的模块；然而，这并不规定加载顺序。
+最终，我们可以定义驱动程序模块，如清单 9 所示。我们使用 `DRIVER_MODULE` 宏来创建一个内核驱动程序。在这一部分，我们将 `probe`、`attach` 和 `detach` 函数设置到驱动程序结构中。`MODULE_DEPEND` 宏用于设置对另一个内核模块的依赖关系。它仅用于帮助操作系统在加载此模块之前加载所有必需的模块；然而，这并不规定加载顺序。
 
-**列表 9. 内核模块的定义**
+**清单 9. 内核模块的定义**
 
 ```c
 static device_method_t	ornata_methods[] = {
@@ -302,9 +306,9 @@ MODULE_VERSION( ornata, 1 );
 USB_PNP_HOST_INFO( ornata_devs );
 ```
 
-此时，我们可以实现一个函数，向设备发送设置数据。这可以通过使用 `usbd_do_request_flags` 函数和表示请求的 `usb_device_request` 结构来完成。对于数据部分，我们可以使用来自 openrazer 的结构，因为它已经在 C 语言中实现。例如，在 Python 驱动程序的情况下，函数将期望设置颜色和行，且大多数变量只是从我们嗅探到的请求中复制过来。我们还需要记得重新计算 CRC 字段。`USET` 宏允许我们设置与 CPU 字节序无关的数据。设置背光颜色的函数如列表 10 所示。
+此时，我们可以实现一个函数，向设备发送设置数据。这可以通过使用 `usbd_do_request_flags` 函数和表示请求的 `usb_device_request` 结构来完成。对于数据部分，我们可以使用来自 openrazer 的结构，因为它已经在 C 语言中实现。例如，在 Python 驱动程序的情况下，函数将期望设置颜色和行，且大多数变量只是从我们嗅探到的请求中复制过来。我们还需要记得重新计算 CRC 字段。`USET` 宏允许我们设置与 CPU 字节序无关的数据。设置背光颜色的函数如清单 10 所示。
 
-**列表 10. 驱动程序的 `attach` 和 `detach` 函数**
+**清单 10. 设置背光颜色的函数**
 
 ```c
 static void
@@ -353,9 +357,9 @@ ornata_set_color( struct ornata_softc *sc, uint8_t r, uint8_t g, uint8_t b, uint
 
 首先，我们需要定义 `ioctl`。为此，我们可以使用 `_IOW` 宏，它定义了一个写操作宏——这意味着内存将从用户态复制到内核。对于其他用途，我们可以使用 `_IOR` 定义一个读取 `ioctl`，或使用 `_IOWR` 进行读/写操作，或使用 `_IO`，它不传输任何数据。我们还将使用一个额外的结构 `ornata_color`，仅用于以有序的方式传输数据。
 
-`ioctl` 的定义在用户态和内核之间共享，因此一个好的做法是定义一个包含这些定义的 C 文件头。该头文件如列表 11 所示。
+`ioctl` 的定义在用户态和内核之间共享，因此一个好的做法是定义一个包含这些定义的 C 文件头。该头文件如清单 11 所示。
 
-**列表 11. 驱动程序的 `attach` 和 `detach` 函数**
+**清单 11. 驱动程序的头文件**
 
 ```c
 #ifndef _ORNATA_H_
@@ -370,9 +374,9 @@ struct ornata_color {
 #endif
 ```
 
-现在，回到 `usb_fifo_attach`，我们使用了一个尚未定义的结构 `ornata_fifo_methods`。这个结构定义了设备上支持的操作；例如，打开或关闭。在我们的情况下，我们希望支持 `ioctl` 操作。`basename` 字段描述了应在 `/dev` 下创建的节点名称。使用 `ioctl` 时，内存已经安全地从用户态复制到内核，因此我们可以直接使用 `color` 结构。`ioctl` 方法的实现如列表 12 所示。
+现在，回到 `usb_fifo_attach`，我们使用了一个尚未定义的结构 `ornata_fifo_methods`。这个结构定义了设备上支持的操作；例如，打开或关闭。在我们的情况下，我们希望支持 `ioctl` 操作。`basename` 字段描述了应在 **/dev** 下创建的节点名称。使用 `ioctl` 时，内存已经安全地从用户态复制到内核，因此我们可以直接使用 `color` 结构。`ioctl` 方法的实现如清单 12 所示。
 
-**列表 12. `ioctl` 方法的实现**
+**清单 12. `ioctl` 方法的实现**
 
 ```c
 static int
@@ -413,9 +417,9 @@ static struct usb_fifo_methods ornata_fifo_methods = {
 };
 ```
 
-这种方法的缺点是我们必须实现一个额外的用户态程序，因为没有办法通过命令行生成 `ioctl(2)`。这个程序如列表 13 所示。
+这种方法的缺点是我们必须实现一个额外的用户态程序，因为没有办法通过命令行生成 `ioctl(2)`。这个程序如清单 13 所示。
 
-**列表 13. 用户态中使用 `ioctl` 的示例**
+**清单 13. 用户态中使用 `ioctl` 的示例**
 
 ```c
 int

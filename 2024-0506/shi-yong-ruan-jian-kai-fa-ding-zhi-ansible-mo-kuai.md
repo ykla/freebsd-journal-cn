@@ -3,6 +3,8 @@
 - 原文链接：[Practical Ports: Developing Custom Ansible Modules](https://freebsdfoundation.org/our-work/journal/browser-based-edition/configuration-management-2/practical-ports-developing-custom-ansible-modules/)
 - 作者：Benedict Reuschling
 
+![实用软件](../png/2024-0506/shi-yong-ruan-jian-kai-fa-ding-zhi-ansible-mo-kuai-1.png)
+
 Ansible 提供了许多不同的模块，普通用户通常可以直接使用这些模块，而无需编写自己的模块，因为现有模块的数量庞大。即使在模块 `ansible.builtin` 中未提供所需的功能，Ansible Galaxy 也有大量来自爱好者的第三方模块，这些模块进一步丰富了模块的数量。
 
 当所需功能未被单一模块及其组合覆盖时，就需要开发自己的模块。开发者可以选择将自定义模块保留为本地模块，而无需将其发布到互联网或通过 Ansible Galaxy 使用。模块通常用 Python 开发，但若不打算把该模块提交到官方 Ansible 生态系统中，使用其他编程语言也是可以的。
@@ -11,9 +13,9 @@ Ansible 提供了许多不同的模块，普通用户通常可以直接使用这
 
 ## 使用 Shell 编程的示例模块
 
-我们从一个简单的示例开始，帮助理解基本概念。稍后，我们将丰富它，使用 Python 实现更多功能。
+我们从一个简单的示例开始，帮助理解基本概念。稍后，我们将扩展它，使用 Python 实现更多功能。
 
-自定义模块的描述：我们的自定义模块名为 `touch`，它会检查 `/tmp` 目录下是否有名为 `BSD.txt` 的文件。若文件存在，模块返回 `true`（状态未更改）。若文件不存在，模块会创建该空文件，并返回 `state: changed`。
+自定义模块的描述：我们的自定义模块名为 `touch`，它会检查 **/tmp** 目录下是否有名为 `BSD.txt` 的文件。若文件存在，模块返回 `true`（状态未更改）。若文件不存在，模块会创建该空文件，并返回 `state: changed`。
 
 自定义模块通常存放在与使用该模块的 playbook 同一目录下的 `library` 文件夹中。可以使用 `mkdir` 命令创建该目录：
 
@@ -29,7 +31,7 @@ touch library/touch
 
 在 `library/touch` 文件中输入以下代码，作为模块逻辑：
 
-```python
+```sh
 1  FILENAME=/tmp/BSD.txt
 2  changed=false
 3  msg=''
@@ -67,7 +69,7 @@ ansible-playbook touch.yml
 
 ## 运行示例模块
 
-当文件 `/tmp/BSD.txt` 不存在时，playbook 输出如下：
+当文件 **/tmp/BSD.txt** 不存在时，playbook 输出如下：
 
 ```ini
 PLAY [localhost] *****************************************
@@ -77,15 +79,15 @@ changed: [localhost]
 
 TASK [debug] *********************************************
 ok: [localhost] => {
-    “changed”: true,
-    “result”: {
-        “failed”: false,
-        “msg”: “/tmp/BSD.txt created”
+    "changed": true,
+    "result": {
+        "failed": false,
+        "msg": "/tmp/BSD.txt created"
     }
 }
 ```
 
-当文件 `/tmp/BSD.txt` 存在（来自之前的运行）时，输出如下：
+当文件 **/tmp/BSD.txt** 存在（来自之前的运行）时，输出如下：
 
 ```ini
 PLAY [localhost] *****************************************
@@ -95,10 +97,10 @@ ok: [localhost]
 
 TASK [debug] *********************************************
 ok: [localhost] => {
-“result”: {
-        “changed”: false,
-        “failed”: false,
-        “msg”: “”
+"result": {
+        "changed": false,
+        "failed": false,
+        "msg": ""
     }
 }
 ```
@@ -121,7 +123,7 @@ ok: [localhost] => {
 
 ## 创建 Python 模块
 
-要创建模块，可以使用 `venv` 和 `virtualenv` 来进行开发。我们像之前一样，从创建目录 `library` 开始，在其中创建一个新的 `hello.py` 模块，内容如下：
+要创建模块，可以使用 `venv` 或 `virtualenv` 来进行开发。我们像之前一样，从创建目录 `library` 开始，在其中创建一个新的 `hello.py` 模块，内容如下：
 
 ```python
 #!/usr/bin/env python3
@@ -169,11 +171,11 @@ ok: [localhost]
 
 TASK [debug] *********************************************
 ok: [localhost] => {
-“result”: {
-        “changed”: false,
-        “failed”: false,
-        “meta”: {
-            “hello”: “world!”
+"result": {
+        "changed": false,
+        "failed": false,
+        "meta": {
+            "hello": "world!"
         }
     }
 }
@@ -183,19 +185,19 @@ ok: [localhost] => {
 
 我们使用的模块有一些参数，如 `path:`、`src:` 和 `dest:`，用于控制模块的行为。这些参数中的一些对于模块的正常运行至关重要，而其他一些则是可选的。在我们自己的模块中，我们希望控制哪些参数是必须的，哪些是可选的。定义数据类型可以让我们的模块在面对错误输入时更加健壮。
 
-`AnsibleModule` 提供的 `argument_spec` 定义了支持的模块参数，以及它们的类型、默认值等。
+提供给 `AnsibleModule` 的 `argument_spec` 定义了支持的模块参数，以及它们的类型、默认值等。
 
 示例参数定义：
 
 ```python
 parameters = {
-    'name': {“required”: True, “type”: 'str'},
-'age': {“required”: False, “type”: 'int', “default”: 0},
-    'homedir': {“required”: False, “type”: 'path'}
+    'name': {"required": True, "type": 'str'},
+'age': {"required": False, "type": 'int', "default": 0},
+    'homedir': {"required": False, "type": 'path'}
 }
 ```
 
-必需的参数 `name` 是字符串类型。`age`（整数类型）和 `homedir`（路径类型）是可选的，若未定义，`age` 默认为 `0`。一个新的模块使用这些参数定义，计算通过传两个数字和一个可选的数学运算符得到的结果。若未提供运算符，默认假定为加法。创建一个新的 Python 文件 `calc.py`，放在目录 `library` 下：
+必需的参数 `name` 是字符串类型。`age`（整数类型）和 `homedir`（路径类型）是可选的，若未定义，`age` 默认为 `0`。一个新的模块使用这些参数定义，计算通过传入两个数字和一个可选的数学运算符得到的结果。若未提供运算符，默认假定为加法。创建一个新的 Python 文件 `calc.py`，放在目录 `library` 下：
 
 ```python
 #!/usr/bin/env python3
@@ -203,27 +205,27 @@ from ansible.module_utils.basic import AnsibleModule
 
 def main():
     parameters = {
-       “number1”: {“required”: True, “type”: “int”},
-“number2”: {“required”: True, “type”: “int”},
-        “math_op”: {“required”: False, “type”: “str”, “default”: “+”},
+       "number1": {"required": True, "type": "int"},
+"number2": {"required": True, "type": "int"},
+        "math_op": {"required": False, "type": "str", "default": "+"},
     }
 
     module = AnsibleModule(argument_spec=parameters)
 
-    number1 = module.params[“number1”]
-    number2 = module.params[“number2”]
-    math_op = module.params[“math_op”]
+    number1 = module.params["number1"]
+    number2 = module.params["number2"]
+    math_op = module.params["math_op"]
 
-    if math_op == “+”:
+    if math_op == "+":
         result = number1 + number2
 
     output = {
-        “result”: result,
+        "result": result,
     }
 
     module.exit_json(changed=False, **output)
 
-if __name__ == “__main__”:
+if __name__ == "__main__":
     main()
 ```
 
@@ -250,15 +252,15 @@ playbook 执行的相关输出如下：
 
 ```ini
 ok: [localhost] => {
-    “result”: {
-        “changed”: false,
-        “failed”: false,
-“result”: 7
+    "result": {
+        "changed": false,
+        "failed": false,
+"result": 7
     }
 }
 ```
 
-我们扩展了示例来正确处理 `+`、`-`、`*`、`/`。当模块接收到一个不同于已定义的 `math_op` 时，它返回 `false`。此外，通过返回“Invalid Operation”来处理除以零的情况，这一直是学生作业中的经典题目。从前我并没有好好学习 Python，但直到现在，我的解决方案看起来是这样的：
+我们扩展了示例来正确处理 `+`、`-`、`*`、`/`。当模块接收到一个不同于已定义的 `math_op` 时，它返回 `false`。此外，通过返回“Invalid Operation”来处理除以零的情况，这一直是学生作业中的经典题目。我需要找时间好好学习 Python，但在此之前，我的解决方案看起来是这样的：
 
 ```python
 #!/usr/bin/env python3
@@ -266,39 +268,39 @@ from ansible.module_utils.basic import AnsibleModule
 
 def main():
     parameters = {
-        “number1”: {“required”: True, “type”: “int”},
-“number2”: {“required”: True, “type”: “int”},
-        “operation”: {“required”: False, “type”: “str”, “default”: “+”},
+        "number1": {"required": True, "type": "int"},
+"number2": {"required": True, "type": "int"},
+        "operation": {"required": False, "type": "str", "default": "+"},
 }
 
     module = AnsibleModule(argument_spec=parameters)
 
-number1 = module.params[“number1”]
-    number2 = module.params[“number2”]
-    operation = module.params[“operation”]
-    result = “”
+number1 = module.params["number1"]
+    number2 = module.params["number2"]
+    operation = module.params["operation"]
+    result = ""
 
-    if operation == “+”:
+    if operation == "+":
         result = number1 + number2
-    elif operation == “-”:
+    elif operation == "-":
         result = number1 - number2
-    elif operation == “*”:
+    elif operation == "*":
         result = number1 * number2
-    elif operation == “/”:
+    elif operation == "/":
         if number2 == 0:
-            module.fail_json(msg=”Invalid Operation”)
+            module.fail_json(msg="Invalid Operation")
         else:
             result = number1 / number2
     else:
         result = False
 
     output = {
-        “result”: result,
+        "result": result,
     }
 
     module.exit_json(changed=False, **output)
 
-if __name__ == “__main__”:
+if __name__ == "__main__":
 main()
 ```
 
@@ -313,7 +315,7 @@ main()
       calc:
         number1: 4
         number2: 0
-        map_op: ‘/’
+        map_op: '/'
       register: result
 
     - debug: var=result
@@ -323,12 +325,12 @@ main()
 
 ```ini
 TASK [Testing the calc module] **********************************************
-fatal: [localhost]: FAILED! => {“changed”: false, “msg”: “Invalid Operation”}
+fatal: [localhost]: FAILED! => {"changed": false, "msg": "Invalid Operation"}
 ```
 
 ## 结论
 
-掌握了这些基础，开始编写自定义模块就变得容易了。请记住，这些模块会在不同的操作系统上运行。请添加额外的检查来确定某些命令的可用性，或者直接让模块在某些环境下拒绝运行。尽可能提高兼容性，以增加模块的兼容性和实用性。目前能用的 BSD 特定模块并不多。为什么不尝试添加一个 bhyve 模块，或者一个管理启动环境、pf 防火墙或 `rc.conf` 条目的模块呢？对于有 Ansible 和 Python 背景的勇敢开发者来说，机会仍然很多。
+掌握了这些基础，开始编写自定义模块就变得容易了。请记住，这些模块会在不同的操作系统上运行。请添加额外的检查来确定某些命令的可用性，或者直接让模块在某些环境下拒绝运行。尽可能提高兼容性，以增加模块的普及度和实用性。目前能用的 BSD 特定模块并不多。为什么不尝试添加一个 bhyve 模块，或者一个管理启动环境、pf 防火墙或 `rc.conf` 条目的模块呢？对于有 Ansible 和 Python 背景的勇敢开发者来说，机会仍然很多。
 
 ### 参考文献
 

@@ -7,25 +7,25 @@ FreeBSD 的声音支持始于 1993 年，当时 Jordan K. Hubbard 将通用 Linu
 
 然而，1997 年情况发生了变化，当时 Luigi Rizzo 构建了现代 FreeBSD 声音系统的基础。1999 年，Cameron Grant 为 FreeBSD 4.0 重写了声卡系统，使用了 newbus 接口来支持大量硬件。这取代了 Luigi 的驱动，其驱动在一个月后被从代码树中移除。随后几年，声音领域经历了诸多变化。针对不同硬件芯片的驱动数量显著增加（尤其是 PCI 和 USB 设备），声卡基础设施也得到了多项改进，这都得益于 Cameron Grant 和 Orion Hodson。Cameron 于 2005 年离世，这是 FreeBSD 社区的一大损失。
 
-2005 年，Ariff Abdullah 接管了 FreeBSD 声音代码的维护工作。自此，FreeBSD 声音支持经历了显著变化，并进行了多轮设备驱动重构。
+2005 年，Ariff Abdullah 接管了 FreeBSD 声音代码的维护工作。自此，FreeBSD 声音支持经历了显著变化，并有多轮设备驱动重构。
 
 ## OSS
 
-FreeBSD 的声音 API 被称为 OSS，即 “Open Sound System”（开放声音系统）。有趣的是，它曾经也是 Linux 的默认声音 API，后被 ALSA 取代。而 FreeBSD 仍在使用 OSS，它通过标准设备文件提供了简单清晰的接口（`/dev/dsp*` 对应声卡，`/dev/mixer*` 对应混音器），并通过少量常用 POSIX 系统调用进行操作：
+FreeBSD 的声音 API 被称为 OSS，即“Open Sound System”（开放声音系统）。有趣的是，它曾经也是 Linux 的默认声音 API，后被 ALSA 取代。而 FreeBSD 仍在使用 OSS，它通过标准设备文件提供了简单清晰的接口（`/dev/dsp*` 对应声卡，`/dev/mixer*` 对应混音器），并通过少量常用 POSIX 系统调用操作：
 
-| 系统调用                          | 说明                                                                                                                                                            |
-| ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| open(2)                       | 打开设备。                                                                                                                                                           |
-| close(2)                      | 关闭设备。                                                                                                                                                           |
-| read(2)                       | 录制音频。                                                                                                                                                           |
-| write(2)                      | 播放音频。                                                                                                                                                           |
-| ioctl(2)                      | 查询或操作设置（采样率、格式、音量等）。                                                                                                                                            |
+| 系统调用 | 说明 |
+| -------- | ---- |
+| open(2) | 打开设备。 |
+| close(2) | 关闭设备。 |
+| read(2) | 录制音频。 |
+| write(2) | 播放音频。 |
+| ioctl(2) | 查询或操作设置（采样率、格式、音量等）。 |
 | select(2), poll(2), kqueue(2) | 事件轮询。`kqueue(2)` 为 FreeBSD 独有（从 [15.0 版本起](https://freebsdfoundation.org/our-work/journal/browser-based-edition/freebsd-15-0/vox-freebsd-how-sound-works/) 支持）。 |
-| mmap(2)                       | 内存映射 I/O。                                                                                                                                                       |
+| mmap(2) | 内存映射 I/O。 |
 
-官方手册可在此获取：[http://manuals.opensound.com/developer/](http://manuals.opensound.com/developer/)
+官方手册可在此获取：<http://manuals.opensound.com/developer/>
 
-由于与声卡的交互使用的是常用系统调用，因此在终端中可以执行如下操作：
+与声卡的交互使用的是常用系统调用，因此在终端中可以执行如下操作：
 
 1. 播放白噪声：`cat /dev/random > /dev/dsp`
 2. 将原始 PCM（Pulse Code Modulation，脉冲编码调制）流录入文件：`cat /dev/dsp > foo`
@@ -44,7 +44,7 @@ OSS API 在 `sound(4)` 中实现。它将一些通用功能抽象为内核模块
 * 设备的创建、删除和访问。
 * 缓冲区管理。
 * 音频处理。
-* 提供全局以及大部分设备特定的 sysctl 接口。
+* 提供全局和大部分设备特定的 sysctl 接口。
 
 驱动在初始化阶段必须附加到 `sound(4)` 并建立与其的通信管道。换言之，`sound(4)` 是用户空间与设备驱动之间的桥梁。这非常方便，因为 FreeBSD 内核为每个连接的声卡都暴露相同的 `/dev/dsp*` 文件和 sysctl（`hw.snd.*` 和 `dev.pcm.*`），为用户和应用程序提供了统一访问和配置，同时避免驱动层的重复实现。
 
@@ -58,11 +58,11 @@ OSS API 在 `sound(4)` 中实现。它将一些通用功能抽象为内核模块
 
 如前所述，并在示例程序中展示，应用程序通过 `/dev/dsp*` 访问声音子系统，使用 `open(2)` 系统调用。可指定以下标志：
 
-| open(2) 标志 | 功能   |
-| ---------- | ----- |
-| O_RDONLY   | 录音    |
-| O_WRONLY   | 播放    |
-| O_RDWR     | 录音和播放 |
+| open(2) 标志 | 功能 |
+| ------------ | ---- |
+| O_RDONLY | 录音 |
+| O_WRONLY | 播放 |
+| O_RDWR | 录音和播放 |
 
 在 `open(2)` 调用中，还可以额外指定 `O_NONBLOCK` 和 `O_EXCL` 标志，分别用于非阻塞 I/O 和对设备的独占访问。为了让 `sound(4)` 知道哪些通道属于哪个文件描述符，并正确路由音频和信息，它使用 `DEVFS_CDEVPRIV(9)`。
 
@@ -70,13 +70,13 @@ OSS API 在 `sound(4)` 中实现。它将一些通用功能抽象为内核模块
 
 ### 通道（Channel）
 
-通道保存了其状态的重要信息（如配置、使用该通道的进程 PID 与名称、诊断值等），以及最关键的组件：缓冲区，也就是实际的音频流。通道除了设备级的主音量外，还具有自己的独立音量。这一点尤其有用，因为应用程序可以拥有自己的音量控制，通常无需调整主音量。
+通道保存了其状态的重要信息（如配置、使用该通道的进程 PID 与名称、诊断值等），和最关键的组件：缓冲区，也就是实际的音频流。通道除了设备级的主音量外，还具有自己的独立音量。这一点尤其有用，因为应用程序可以拥有自己的音量控制，通常无需调整主音量。
 
 需要注意的是，`sound(4)` 中有两类通道：**主通道/“硬件”通道** 和 **虚拟通道**。
 
-主通道由设备驱动分配，通常硬件支持一个播放通道和一个录音通道。但某些驱动可能会将主通道数量设置为硬件提供的物理播放和录音端口数。每个主通道包含一对缓冲区：一个面向软件（userland），一个面向硬件。面向软件的缓冲区负责与用户空间交换音频数据，面向硬件的缓冲区则用于与硬件交换数据。当设备驱动准备好从硬件读取或向硬件写入数据时，会触发对 `sound(4)` 的中断，然后数据在两个缓冲区之间复制。播放时，由于数据写入硬件，软件缓冲区的数据会复制到硬件缓冲区，以便驱动将其发送给硬件；录音时则反向操作。
+主通道由设备驱动分配，通常硬件支持一个播放通道和一个录音通道。但某些驱动可能会将主通道数量设置为硬件提供的物理播放和录音端口数。每个主通道包含一对缓冲区：一个面向软件（userland），一个面向硬件。面向软件的缓冲区负责与用户空间交换音频数据，面向硬件的缓冲区则用于与硬件交换数据。当设备驱动准备好从硬件读取或向硬件写入数据时，会触发对 `sound(4)` 的中断，然后数据在两个缓冲区之间复制。播放时，数据写入硬件，软件缓冲区的数据会复制到硬件缓冲区，以便驱动将其发送给硬件；录音时则反向操作。
 
-虚拟通道（通常称为 VCHAN）被视为主通道的子通道，但与主通道不同，它们不与硬件直接连接，因此只使用面向软件的缓冲区。虚拟通道存在的原因是希望允许无限数量的应用程序同时访问设备。如果没有虚拟通道，同时访问设备的进程数将等于主通道的数量，因为每个主通道只有一个面向软件的缓冲区，这意味着所有进程必须共享同一个缓冲区，这对于音频处理并不理想，因此每个缓冲区必须专用于一个进程。
+虚拟通道（通常称为 VCHAN）被视为主通道的子通道，但与主通道不同，它们不与硬件直接连接，因此只使用面向软件的缓冲区。虚拟通道存在的原因是希望允许无限数量的应用程序同时访问设备。如果没有虚拟通道，同时访问设备的进程数将等于主通道的数量，因为每个主通道只有一个面向软件的缓冲区，这意味着所有进程必须共享同一个缓冲区，这对于音频处理并不理想，因此每个缓冲区必须专用于单一进程。
 
 前文介绍了如何通过主通道在用户空间与硬件之间交换音频流。当启用虚拟通道（默认情况）时，`sound(4)` 不再只是简单地将主通道的软件缓冲区复制到硬件缓冲区（播放时），或反向操作（录音时）；它首先需要混合主通道所有子虚拟通道的音频流，然后将最终混合后的流提供给主通道的硬件缓冲区。可以想象，这一额外层会引入轻微的开销，对于大多数场景影响不大，但在某些低延迟的音乐制作工作流程中可能不理想。对于这些场景，可以选择禁用虚拟通道。
 
@@ -88,11 +88,11 @@ $ sndctl -v
 
 ### 处理链（Processing chain）
 
-`sound(4)` 一个有趣的功能是其处理链，包括以下内容：
+`sound(4)` 的有趣功能是其处理链，包括以下内容：
 
 * **混音（Mixing）**：实际上就是前一节中讲的虚拟通道音频流的混合与解混合。
 * **音量控制（Volume control）**。
-* **通道矩阵（Channel matrixing）**：`sound(4)` 可以进行任意通道映射，例如单声道到立体声，或立体声到 5.1 环绕声。这是通过将流从一种交错 PCM 格式转换为另一种实现的。
+* **通道矩阵（Channel matrixing）**：`sound(4)` 可以做任意通道映射，例如单声道到立体声，或立体声到 5.1 环绕声。这是通过将流从一种交错 PCM 格式转换为另一种实现的。
 * **基础参数均衡（Basic parametric equalization）**。
 * **格式转换（Format conversions）**。
 * **重采样（Resampling）**，包括三种类型：
@@ -109,7 +109,7 @@ $ sndctl -v
 $ sndctl feederchain
 ```
 
-在下一节中，我们将讨论在某些特殊情况下，为什么以及如何完全绕过处理链。
+在下一节中，我们将讨论在某些特殊情况下，为什么和如何完全绕过处理链。
 
 ### 内存映射 I/O 与比特完美音频
 
@@ -125,34 +125,34 @@ $ sndctl feederchain
 
 FreeBSD 内置支持以下声卡：
 
-| 驱动程序             | 支持的声卡                                  | 默认启用平台      |
-| ---------------- | -------------------------------------- | ----------- |
-| snd_ai2s(4)      | Apple I2S                              | powerpc     |
-| snd_als4000(4)   | Avance Logic ALS4000                   |             |
-| snd_atiixp(4)    | ATI IXP                                |             |
-| snd_cmi(4)       | CMedia CMI8338/CMI8738                 | amd64, i386 |
-| snd_cs4281(4)    | Crystal Semiconductor CS4281           |             |
-| snd_csa(4)       | Crystal Semiconductor CS461x/462x/4280 | amd64, i386 |
-| snd_davbus(4)    | Apple Davbus                           | powerpc     |
-| snd_emu10k1(4)   | SoundBlaster Live! 和 Audigy            |             |
-| snd_emu10kx(4)   | Creative SoundBlaster Live! 和 Audigy   | amd64, i386 |
-| snd_envy24(4)    | VIA Envy24 及兼容型号                       |             |
-| snd_envy24ht(4)  | VIA Envy24HT 及兼容型号                     |             |
-| snd_es137x(4)    | Ensoniq AudioPCI ES137x                | amd64, i386 |
-| snd_fm801(4)     | Forte Media FM801                      |             |
-| snd_hda(4)       | Intel 高保真音频 (High Definition Audio)    | amd64, i386 |
-| snd_hdsp(4)      | RME HDSP                               |             |
-| snd_hdspe(4)     | RME HDSPe                              |             |
-| snd_ich(4)       | Intel ICH AC’97 及兼容型号                  | amd64, i386 |
-| snd_maestro3(4)  | ESS Maestro3/Allegro-1                 |             |
-| snd_neomagic(4)  | NeoMagic 256AV/ZX                      |             |
-| snd_solo(4)      | ESS Solo-1/1E                          |             |
-| snd_spicds(4)    | I2S SPI                                |             |
-| snd_t4dwave(4)   | Trident 4DWave                         |             |
-| snd_uaudio(4)    | USB 音频和 MIDI                           | 插入设备时自动加载   |
-| snd_via8233(4)   | VIA Technologies VT8233                | amd64, i386 |
-| snd_via82c686(4) | VIA Technologies 82C686A               |             |
-| snd_vibes(4)     | S3 SonicVibes                          |             |
+| 驱动程序 | 支持的声卡 | 默认启用平台 |
+| -------- | ---------- | ------------ |
+| snd_ai2s(4) | Apple I2S | powerpc |
+| snd_als4000(4) | Avance Logic ALS4000 | |
+| snd_atiixp(4) | ATI IXP | |
+| snd_cmi(4) | CMedia CMI8338/CMI8738 | amd64, i386 |
+| snd_cs4281(4) | Crystal Semiconductor CS4281 | |
+| snd_csa(4) | Crystal Semiconductor CS461x/462x/4280 | amd64, i386 |
+| snd_davbus(4) | Apple Davbus | powerpc |
+| snd_emu10k1(4) | SoundBlaster Live! 和 Audigy | |
+| snd_emu10kx(4) | Creative SoundBlaster Live! 和 Audigy | amd64, i386 |
+| snd_envy24(4) | VIA Envy24 及兼容型号 | |
+| snd_envy24ht(4) | VIA Envy24HT 及兼容型号 | |
+| snd_es137x(4) | Ensoniq AudioPCI ES137x | amd64, i386 |
+| snd_fm801(4) | Forte Media FM801 | |
+| snd_hda(4) | Intel 高保真音频 (High Definition Audio) | amd64, i386 |
+| snd_hdsp(4) | RME HDSP | |
+| snd_hdspe(4) | RME HDSPe | |
+| snd_ich(4) | Intel ICH AC’97 及兼容型号 | amd64, i386 |
+| snd_maestro3(4) | ESS Maestro3/Allegro-1 | |
+| snd_neomagic(4) | NeoMagic 256AV/ZX | |
+| snd_solo(4) | ESS Solo-1/1E | |
+| snd_spicds(4) | I2S SPI | |
+| snd_t4dwave(4) | Trident 4DWave | |
+| snd_uaudio(4) | USB 音频和 MIDI | 插入设备时自动加载 |
+| snd_via8233(4) | VIA Technologies VT8233 | amd64, i386 |
+| snd_via82c686(4) | VIA Technologies 82C686A | |
+| snd_vibes(4) | S3 SonicVibes | |
 
 此外，还支持以下 ARM 芯片：
 
@@ -171,16 +171,16 @@ FreeBSD 内置支持以下声卡：
 
 ## 最近改进
 
-在过去两年里，声音子系统经历了许多改进，包括多个错误和崩溃修复、引入不断扩展的 Kyua 测试套件和测试驱动（`snd_dummy(4)`），以及多次代码清理和重构。
+在过去两年里，声音子系统经历了许多改进，包括多个错误和崩溃修复、引入不断扩展的 Kyua 测试套件和测试驱动（`snd_dummy(4)`），和多次代码清理和重构。
 
 几个重要的面向用户的改进包括：
 
 * 现在支持热拔插。使用旧版 FreeBSD 的 USB 声卡用户可能记得，热拔插声卡通常会导致 USB 总线卡住，直到手动终止使用已断开设备的应用程序
   ([PR 194727](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=194727))。
-* 浮点音频支持。这有点容易误解，因为至少目前在设备驱动层并未真正支持浮点音频，而是允许用户空间应用程序使用 OSS 进行浮点音频处理。已修复了不少 Port，例如 Wine，需要 OSS 提供浮点音频支持。
-* `sound(4)` 现在每个设备只暴露一个 `/dev/dsp*` 文件，并在内部完成所有音频流路由，通过 DEVFS_CDEVPRIV(9) 实现，而不是为每个分配的音频流暴露一个 `/dev/dsp*` 文件。当前方法在实现和向用户空间暴露的内容上都更清晰。
-* 对高保真音频卡 (`snd_hda(4)`) 的开箱支持更好。这类声卡一直是开发者和用户的痛点，因为它们往往带有非标准配置，需要在驱动或 `/boot/device.hints` 内添加手动补丁来补偿。一个常见问题是插入耳机时声音不会自动切换，反之亦然。最近已有针对多款声卡的补丁，尤其是 Framework 笔记本。自 FreeBSD 15.0 起，提供了 devd(8) 配置 `/etc/devd/snd.conf` 尝试自动解决该问题。基本思路是，当 snd_hda(4) 检测到插孔被（拔）插时，会发送 devd(8) 通知，而 `/etc/devd/snd.conf` 会通过 `virtual_oss(8)` 将声音重定向到合适的设备。此功能仍处于实验阶段，未来会根据反馈进一步优化。
-* 为 `sound(4)` 添加 kqueue(2) 支持。
+* 浮点音频支持。这有点容易误解，因为至少目前在设备驱动层并未真正支持浮点音频，而是允许用户空间应用程序使用 OSS 做浮点音频处理。已修复了不少 Port，例如 Wine，需要 OSS 提供浮点音频支持。
+* `sound(4)` 现在每个设备只暴露一个 `/dev/dsp*` 文件，并在内部完成所有音频流路由，通过 `DEVFS_CDEVPRIV(9)` 实现，而不是为每个分配的音频流暴露一个 `/dev/dsp*` 文件。当前方法在实现和向用户空间暴露的内容上都更清晰。
+* 对高保真音频卡（`snd_hda(4)`）的开箱支持更好。这类声卡一直是开发者和用户的痛点，因为它们往往带有非标准配置，需要在驱动或 **/boot/device.hints** 内添加手动补丁来补偿。常见问题是插入耳机时声音不会自动切换，反之亦然。最近已有针对多款声卡的补丁，尤其是 Framework 笔记本。自 FreeBSD 15.0 起，提供了 `devd(8)` 配置 **/etc/devd/snd.conf** 尝试自动解决该问题。基本思路是，当 `snd_hda(4)` 检测到插孔被（拔）插时，会发送 `devd(8)` 通知，而 **/etc/devd/snd.conf** 会通过 `virtual_oss(8)` 将声音重定向到合适的设备。此功能仍处于实验阶段，未来会根据反馈进一步优化。
+* 为 `sound(4)` 添加 `kqueue(2)` 支持。
 
 ## 用户空间工具
 
@@ -188,7 +188,7 @@ FreeBSD 内置支持以下声卡：
 
 ### sndctl(8)
 
-`sndctl(8)` 用于列出和操作声卡设置，例如采样率、采样格式、比特完美模式（bit-perfect）和实时模式（realtime）设置等。它旨在替代 `/dev/sndstat`（实际上内部就是使用它）以及部分 `sound(4)` 的 sysctl，至少在大多数使用场景下如此。
+`sndctl(8)` 用于列出和操作声卡设置，例如采样率、采样格式、比特完美模式（bit-perfect）和实时模式（realtime）设置等。它旨在替代 `/dev/sndstat`（实际上内部就是使用它）和部分 `sound(4)` 的 sysctl，至少在大多数使用场景下如此。
 
 ```sh
 $ sndctl
@@ -223,7 +223,7 @@ pcm3: <Realtek ALC295 (Analog 2.0+HP/2.0)> on hdaa1 (play/rec)
 
 ### mixer(8)
 
-`mixer(8)` 用于控制音量、静音/取消静音、录音源选择以及默认设备设置。它在 FreeBSD 14.0 中被完全重写，提供了改进的界面和功能。
+`mixer(8)` 用于控制音量、静音/取消静音、录音源选择和默认设备设置。它在 FreeBSD 14.0 中被完全重写，提供了改进的界面和功能。
 
 ```sh
 $ mixer
@@ -237,7 +237,7 @@ pcm3:mixer: <Realtek ALC295 (Analog 2.0+HP/2.0)> on hdaa1 (play/rec) (default)
 
 ### virtual_oss(8)
 
-`virtual_oss(8)` 是由已故 Hans Petter Selasky 编写的 OSS 强大音频服务器。多年来它一直作为 ports（audio/virtual_oss）提供，但自 FreeBSD 15.0 起已成为基本系统的一部分。它目前正在积极开发中，已有许多重要改进在进行和规划中。
+`virtual_oss(8)` 是由已故 Hans Petter Selasky 编写的 OSS 强大音频服务器。多年来它一直作为 ports（audio/virtual_oss）提供，但自 FreeBSD 15.0 起已成为基本系统的一部分。它目前正在积极开发中，已有许多重要改进在推进和规划中。
 
 如 [15.0 发布说明](https://cgit.freebsd.org/src/commit/?id=c457acb4ee821cf015930a94f52c3870786468a7) 所述，FreeBSD 15.0 之前的 `virtual_oss(8)` 用户可以卸载 port audio/virtual_oss 并使用基本系统版本。唯一需要注意的是，某些依赖第三方库的功能已移至独立 port，包括：
 
@@ -247,7 +247,7 @@ pcm3:mixer: <Realtek ALC295 (Analog 2.0+HP/2.0)> on hdaa1 (play/rec) (default)
 
 ### mididump(1)
 
-`mididump(1)` 是一款简单的工具，可用于实时打印指定设备的 MIDI 事件。这对于确认 MIDI 设备工作正常，以及按键是否正确映射，非常实用。
+`mididump(1)` 是一款简单的工具，可用于实时打印指定设备的 MIDI 事件。这对于确认 MIDI 设备工作正常，和按键是否正确映射，非常实用。
 
 ```sh
 $ mididump /dev/umidi0.0
@@ -266,13 +266,13 @@ Pitch bend              channel=1, change=1
 
 除了前面提到的工具，声音子系统还提供了以下内容：
 
-| 功能                 | 说明                                                                     | 文档            |
-| ------------------ | ----------------------------------------------------------------------- | ------------- |
-| mixer(3)           | 用于与 OSS mixer 交互的 C 语言库。                                                | man 3 mixer   |
-| sndstat(4)         | 一个 nv(9) 接口，用于列出设备信息，以及注册用户态声音设备。被 `sndctl(8)` 和 `virtual_oss(8)` 内部使用。 | man 4 sndstat |
-| hw.snd.*           | 全局 sysctl(8) 变量。                                                        | man 4 sound   |
-| dev.pcm.*          | 设备特定的 sysctl(8) 变量。                                                     | man 4 sound   |
-| 驱动特定的 sysctl(8) 变量 |                                                                         | 请参考相应驱动的手册页。  |
+| 功能 | 说明 | 文档 |
+| ---- | ---- | ---- |
+| mixer(3) | 用于与 OSS mixer 交互的 C 语言库。 | man 3 mixer |
+| sndstat(4) | 一个 nv(9) 接口，用于列出设备信息，和注册用户态声音设备。被 `sndctl(8)` 和 `virtual_oss(8)` 内部使用。 | man 4 sndstat |
+| hw.snd.* | 全局 sysctl(8) 变量。 | man 4 sound |
+| dev.pcm.* | 设备特定的 sysctl(8) 变量。 | man 4 sound |
+| 驱动特定的 sysctl(8) 变量 | | 请参考相应驱动的手册页。 |
 
 ## FreeBSD 用于音乐制作？！
 
@@ -296,7 +296,7 @@ Pitch bend              channel=1, change=1
 1. `uname -a`
 2. `sndctl -v`
 3. `mixer -a`
-4. `sysctl hw.snd dev.pcm`，以及任何驱动相关的 sysctl（如果有的话）。
+4. `sysctl hw.snd dev.pcm`，和任何驱动相关的 sysctl（如果有的话）。
 5. dmesg，在设置 `hw.snd.verbose=4` 并重现 bug 后获取。
 6. 与重现 bug 的应用程序相关的日志（如果有）。
 
@@ -306,4 +306,4 @@ Pitch bend              channel=1, change=1
 
 ---
 
-Christos Margiolis 是来自希腊的独立开发商，同时也是 FreeBSD 源代码提交者（src committer）。
+**Christos Margiolis** 是来自希腊的独立承包人，同时也是 FreeBSD 源代码提交者（src committer）。
