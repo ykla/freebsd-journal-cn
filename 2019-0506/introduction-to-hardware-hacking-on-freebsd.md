@@ -1,6 +1,6 @@
 # FreeBSD 硬件黑客入门
 
-作者：Tom Jones
+作者：**Tom Jones**
 
 FreeBSD 是创客和硬件黑客项目的理想平台，因为我们在各类板卡上都提供了扎实且统一的支持。
 
@@ -10,7 +10,7 @@ FreeBSD 对许多不同的 ARM 单板计算机（SBC）都有出色支持。Linu
 
 通用输入输出（GPIO）设备为我们打开了一扇窗，让计算机能在现实世界中引起变化。这通常通过向内存的特定区域写入或使用处理器寄存器来控制现实世界的某些东西来实现。在 ARM SoC 上，这通常通过一段映射的内存实现，向这段内存写入即可控制暴露引脚上的电压。FreeBSD 提供设备驱动，让用户空间进程能在所有支持的硬件平台上以相同接口与 GPIO 交互。
 
-GPIO 设备并非在所有系统上都可用，但在相当多的系统上都存在。通常，暴露的 GPIO 在系统主板的 PCB 上以针脚排针的形式出现。如果你配置过 pc engines 主板，可能注意到了串口旁边标着 GPIO 的针脚排针。如今许多 SBC 专为硬件项目设计，专门暴露 GPIO 供使用。还有 Intel 系列板卡，例如 LattePanda，运行大家熟悉的 64 位（x86）平台。总的来说，大多数为硬件项目设计的 SBC 运行 32 位或 64 位 ARM 架构，例如 BeagleBone 和 树莓派 系列电脑。
+GPIO 设备并非在所有系统上都可用，但在相当多的系统上都存在。通常，暴露的 GPIO 在系统主板的 PCB 上以针脚排针的形式出现。如果你配置过 pc engines 主板，可能注意到了串口旁边标着 GPIO 的针脚排针。如今许多 SBC 专为硬件项目设计，专门暴露 GPIO 供使用。还有 Intel 系列板卡，例如 LattePanda，运行大家熟悉的 64 位（x86）平台。总的来说，大多数为硬件项目设计的 SBC 运行 32 位或 64 位 ARM 架构，例如 BeagleBone 和树莓派系列电脑。
 
 本文使用 ARMv7（32 位）BeagleBone Black 板卡。GPIO 和总线接口的概念对 FreeBSD 支持的所有平台通用，迁移到不同硬件也相当容易。BeagleBone Black 是一块好板子，它的 FreeBSD 支持非常成熟，并暴露了大量用于实验的 IO 端口。
 
@@ -111,7 +111,7 @@ gpio_22<OUT>, caps:<IN,OUT,PU,PD,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN>
 # gpioctl -f /dev/gpioc1 21 1
 ```
 
-尽情欣赏我们 glorious LED 的光辉吧。
+尽情欣赏我们辉煌的 LED 的光辉吧。
 
 进一步，可以用 `gpioctl` 的 `-t` 标志切换 LED 状态。当你只想让 LED 闪烁时这很有用：
 
@@ -200,10 +200,10 @@ else
 echo $project done building
 if [ "$result" = '"SUCCESS"' ]; then
 echo build suceeded for $project
-gpioctl -f /dev/gpioc2 1 1 #绿色 led
+gpioctl -f /dev/gpioc2 1 1 # 绿色 led
 else
 echo build failed for $project
-gpioctl -f /dev/gpioc0 26 1 #红色 led
+gpioctl -f /dev/gpioc0 26 1 # 红色 led
 fi
 fi
 sleep 60  # 1 分钟
@@ -216,4 +216,4 @@ done
 
 ---
 
-Tom Jones 是苏格兰阿伯丁一家黑客空间（57northhacklab.org.uk）的创始人和理事。他最初为了把一个项目从 Linux 移植过来而开始尝试在 FreeBSD 上做硬件黑客，结果一头扎进了内核黑客的世界。
+**Tom Jones** 是苏格兰阿伯丁一家黑客空间（57northhacklab.org.uk）的创始人和理事。他最初为了把一个项目从 Linux 移植过来而开始尝试在 FreeBSD 上做硬件黑客，结果一头扎进了内核黑客的世界。

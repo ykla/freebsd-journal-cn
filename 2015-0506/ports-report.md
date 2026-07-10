@@ -3,7 +3,7 @@
 - 原文：[Ports Report](https://freebsdfoundation.org/our-work/journal/browser-based-edition/measure-twice-code-once/)
 - 作者：**Frederic Culot**
 
-3–4 月期间，Ports 方面的活动保持高水平，志愿者带来了重要变更，尤其是在 package 构建基础设施方面。我们也很高兴在此期间迎来了一位新开发者。
+3–4 月期间，Ports 方面的活动保持高水平，志愿者带来了重要变更，尤其是在软件包构建基础设施方面。我们也很高兴在此期间迎来了一位新开发者。
 
 ## 新的 Ports 提交者与保管
 
@@ -22,10 +22,12 @@
 
 ## 基础设施更新
 
-许多旨在改进 FreeBSD Ports 构建基础设施的重要工作在后台进行，因此可能被最终用户忽视。例如，过去两个月添加了新的 package 构建器，以允许每周进行三次 package 构建而非仅一次。当然，这意味着最终用户能获得更频繁的 package 更新。目标是提供每日 package 构建，为此正在优化 poudriere（我们创建和测试 FreeBSD package 的实用工具，见 <https://www.freebsd.org/doc/en/books/handbook/ports-poudriere.html>）。还有一个新工具正在开发中，用于监控最新的 package 构建：结果展示在专用网页上（<https://pkg-status.freebsd.org>）。想参与开发的人可在 GitHub 上找到源代码（<https://github.com/bdrewery/pkg-status.freebsd.org>）。
+许多旨在改进 FreeBSD Ports 构建基础设施的重要工作在后台进行，因此可能被最终用户忽视。例如，过去两个月添加了新的软件包构建器，以允许每周进行三次软件包构建而非仅一次。当然，这意味着最终用户能获得更频繁的软件包更新。目标是提供每日软件包构建，为此正在优化 poudriere（我们创建和测试 FreeBSD 软件包的实用工具，见 <https://www.freebsd.org/doc/en/books/handbook/ports-poudriere.html>）。还有一个新工具正在开发中，用于监控最新的软件包构建：结果展示在专用网页上（<https://pkg-status.freebsd.org>）。想参与开发的人可在 GitHub 上找到源代码（<https://github.com/bdrewery/pkg-status.freebsd.org>）。
 
 ## 统计
 
-3 月与 4 月两个月间，Ports 树共应用了 4602 次提交，较上一周期增长超过 10%。在缺陷报告方面，关闭了 1324 个 PR，相较 1–2 月也有小幅增长。让我们希望这些数字继续增长，未来几个月有更多新开发者加入我们的行列！
+3 月与 4 月两个月间，Ports 树共应用了 4,602 次提交，较上一周期增长超过 10%。在缺陷报告方面，关闭了 1,324 个 PR，相较 1–2 月也有小幅增长。让我们希望这些数字继续增长，未来几个月有更多新开发者加入我们的行列！
+
+---
 
 **Frederic Culot** 在 IT 行业工作了 10 年。业余时间他学习商业与管理，刚取得 MBA 学位。Frederic 于 2010 年作为 Ports 提交者加入 FreeBSD，此后完成了约 2000 次提交，指导了六位新提交者，现担任 portmgr-secretary。

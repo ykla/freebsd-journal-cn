@@ -29,18 +29,18 @@ vnet    创建带有自身虚拟网络栈的 jail，拥有自身的
 
 ## 示例
 
-这些示例使用基于 host `/` 的"空" Jail，仅聚焦 vnet 特性。它们都处于 "persist" 模式（因为没有进程运行）。
+这些示例使用基于 host `/` 的 "空" Jail，仅聚焦 vnet 特性。它们都处于 "persist" 模式（因为没有进程运行）。
 
 关于操作系统要求：
 
-- 使用的 shell 是 `/bin/sh`。
+- 使用的 shell 是 **/bin/sh**。
 - FreeBSD 12.1 起步（可以是 12-STABLE 或更佳的 -head）
 
-作者：OLIVIER COCHARD-LABBÉ
+作者：**OLIVIER COCHARD-LABBÉ**
 
 ## 无用的隔离 vnet Jail
 
-这个无用的示例展示如何创建一个隔离的 vnet Jail。
+这个无用的示例展示如何创建隔离的 vnet Jail。
 
 命令行参数详情：
 
@@ -64,10 +64,10 @@ vnet    创建带有自身虚拟网络栈的 jail，拥有自身的
 # jexec useless ifconfig
 ```
 
-lo0: flags=8008<LOOPBACK,MULTICAST> metric 0 mtu 16384
-        options=680003<RXCSUM,TXCSUM,LINKSTATE,RXCSUM_IPV6,TXCSUM_IPV6>
+lo0: flags=8008<LOOPBACK, MULTICAST> metric 0 mtu 16384
+        options=680003<RXCSUM, TXCSUM, LINKSTATE, RXCSUM_IPV6, TXCSUM_IPV6>
         groups: lo
-        nd6 options=21<PERFORMNUD,AUTO_LINKLOCAL>
+        nd6 options=21<PERFORMNUD, AUTO_LINKLOCAL>
 
 ```sh
 # jexec useless netstat -rn
@@ -75,25 +75,25 @@ lo0: flags=8008<LOOPBACK,MULTICAST> metric 0 mtu 16384
 
 Routing tables
 
-存在一个未配置的 loopback（禁用且未分配 IP 地址）和空路由表。我们来修复它。
+存在未配置的 loopback（禁用且未分配 IP 地址）和空路由表。我们来修复它。
 
 ```sh
 # jexec useless service netif restart
 ```
 
 Stopping Network: lo0.
-lo0: flags=8008<LOOPBACK,MULTICAST> metric 0 mtu 16384
-        options=680003<RXCSUM,TXCSUM,LINKSTATE,RXCSUM_IPV6,TXCSUM_IPV6>
+lo0: flags=8008<LOOPBACK, MULTICAST> metric 0 mtu 16384
+        options=680003<RXCSUM, TXCSUM, LINKSTATE, RXCSUM_IPV6, TXCSUM_IPV6>
         groups: lo
-        nd6 options=21<PERFORMNUD,AUTO_LINKLOCAL>
+        nd6 options=21<PERFORMNUD, AUTO_LINKLOCAL>
 Starting Network: lo0.
-lo0: flags=8049<UP,LOOPBACK,RUNNING,MULTICAST> metric 0 mtu 16384
-        options=680003<RXCSUM,TXCSUM,LINKSTATE,RXCSUM_IPV6,TXCSUM_IPV6>
+lo0: flags=8049<UP, LOOPBACK, RUNNING, MULTICAST> metric 0 mtu 16384
+        options=680003<RXCSUM, TXCSUM, LINKSTATE, RXCSUM_IPV6, TXCSUM_IPV6>
         inet6 ::1 prefixlen 128
         inet6 fe80::1%lo0 prefixlen 64 scopeid 0x1
         inet 127.0.0.1 netmask 0xff000000
         groups: lo
-        nd6 options=21<PERFORMNUD,AUTO_LINKLOCAL>
+        nd6 options=21<PERFORMNUD, AUTO_LINKLOCAL>
 
 ```sh
 # jexec useless netstat -rn
@@ -109,7 +109,7 @@ Destination                     Gateway                       Flags     Netif Ex
 fe80::%lo0/64                   link#1                        U           lo0
 fe80::1%lo0                     link#1                        UHS         lo0
 
-好多了！但我们只有 loopback 接口在运行。下一步是创建一个虚拟 Ethernet tap 接口并分配给 Jail。`ifconfig(8)` 手册页摘录：
+好多了！但我们只有 loopback 接口在运行。下一步是创建虚拟 Ethernet tap 接口并分配给 Jail。`ifconfig(8)` 手册页摘录：
 
 ```sh
 vnet jail
@@ -123,13 +123,13 @@ vnet jail
 # ifconfig $TAP
 ```
 
-tap0: flags=8802<BROADCAST,SIMPLEX,MULTICAST> metric 0 mtu 1500
+tap0: flags=8802<BROADCAST, SIMPLEX, MULTICAST> metric 0 mtu 1500
         options=80000<LINKSTATE>
         ether 00:bd:70:98:00:00
         groups: tap
         media: Ethernet autoselect
         status: no carrier
-        nd6 options=29<PERFORMNUD,IFDISABLED,AUTO_LINKLOCAL>
+        nd6 options=29<PERFORMNUD, IFDISABLED, AUTO_LINKLOCAL>
 
 ```sh
 # ifconfig $TAP vnet useless
@@ -144,20 +144,20 @@ ifconfig: interface tap0 does not exist
 # jexec useless ifconfig $TAP
 ```
 
-tap0: flags=8802<BROADCAST,SIMPLEX,MULTICAST> metric 0 mtu 1500
+tap0: flags=8802<BROADCAST, SIMPLEX, MULTICAST> metric 0 mtu 1500
         options=80000<LINKSTATE>
         ether 00:bd:70:98:00:00
         groups: tap
         media: Ethernet autoselect
         status: no carrier
-        nd6 options=21<PERFORMNUD,AUTO_LINKLOCAL>
+        nd6 options=21<PERFORMNUD, AUTO_LINKLOCAL>
 
 ```sh
 # jexec useless ifconfig $TAP inet 192.0.2.1/24 up
 # jexec useless ifconfig $TAP inet
 ```
 
-tap0: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> metric 0 mtu 1500
+tap0: flags=8843<UP, BROADCAST, RUNNING, SIMPLEX, MULTICAST> metric 0 mtu 1500
         options=80000<LINKSTATE>
         inet 192.0.2.1 netmask 0xffffff00 broadcast 192.0.2.255
 
@@ -471,7 +471,7 @@ traceroute to 192.0.2.9 (192.0.2.9), 64 hops max, 40 byte packets
   4  192.0.2.7  0.194 ms  0.197 ms  0.191 ms
   5  192.0.2.9  0.261 ms  0.201 ms  0.188 ms
 
-可选地，给此设置增添一点趣味（在拥有较大 IPv6 范围时，应能轻松编写一个填充 DNS 配置文件的 text-to-traceroute 脚本）。
+可选地，给此设置增添一点趣味（在拥有较大 IPv6 范围时，应能轻松编写填充 DNS 配置文件的 text-to-traceroute 脚本）。
 
 ```sh
 # cat >> /etc/hosts <<EOF
@@ -508,9 +508,9 @@ traceroute to 192.0.2.9 (192.0.2.9), 64 hops max, 40 byte packets
 
 ### SR-IOV
 
-这一最初为虚拟机设计的特性会创建多个 Virtual Function（VF = 我们的场景下即虚拟 NIC）。使用默认的非 passthrough 模式时，它向 host 呈现多个虚拟 NIC，每一个都可附加到 vnet-jail。
+这一最初为虚拟机设计的特性会创建多个 Virtual Function（VF = 我们的场景下即虚拟 NIC）。使用默认的非 passthrough 模式时，它向 host 呈现多个虚拟 NIC，每个都可附加到 vnet-jail。
 
-下面是一个使用两块 Chelsio 接口（cxl0 与 cxl1）为每块创建 10 个 VF 的示例。
+下面是使用两块 Chelsio 接口（cxl0 与 cxl1）为每块创建 10 个 VF 的示例。
 
 ```sh
 # sysrc iovctl_files="/etc/iovctl.cxl0.conf /etc/iovctl.cxl1.conf"
@@ -650,13 +650,13 @@ vnet.interface=epair${i}b; jexec jail$i ifconfig epair${i}b inet \
 192.0.2.${i}/24 up; jexec jail$i ifconfig epair${i}b inet; done
 ```
 
-epair1b: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> metric 0 mtu 1500
+epair1b: flags=8843<UP, BROADCAST, RUNNING, SIMPLEX, MULTICAST> metric 0 mtu 1500
         options=8<VLAN_MTU>
         inet 192.0.2.1 netmask 0xffffff00 broadcast 192.0.2.255
-epair2b: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> metric 0 mtu 1500
+epair2b: flags=8843<UP, BROADCAST, RUNNING, SIMPLEX, MULTICAST> metric 0 mtu 1500
         options=8<VLAN_MTU>
         inet 192.0.2.2 netmask 0xffffff00 broadcast 192.0.2.255
-epair3b: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> metric 0 mtu 1500
+epair3b: flags=8843<UP, BROADCAST, RUNNING, SIMPLEX, MULTICAST> metric 0 mtu 1500
         options=8<VLAN_MTU>
         inet 192.0.2.3 netmask 0xffffff00 broadcast 192.0.2.255
 
@@ -815,7 +815,7 @@ protocol device {}
 protocol kernel { ipv4 { export all; }; }
 protocol ospf {
   area 0 {
-    interface "epair${i}b" {
+    interface " epair${i}b " {
       hello 60;
       dead 240;
     };

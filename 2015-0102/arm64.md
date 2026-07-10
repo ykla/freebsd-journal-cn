@@ -3,7 +3,7 @@
 - 原文：[arm64](https://freebsdfoundation.org/our-work/journal/browser-based-edition/mips-and-arm64/)
 - 作者：**Andrew Turner**
 
-历史上，ARM 主要为大量嵌入式和移动设备中使用的芯片提供 CPU 核心设计。FreeBSD 用户很可能熟悉使用 ARM 芯片的开发板，例如 树莓派 和 PandaBoard。这些 CPU 此前都是 32 位的；但在过去几年里，ARM 发布了新的 64 位架构。新架构称为 AArch64，包含全新的指令集 A64，首批 AArch64 处理器遵循 ARMv8 规范设计。熟悉 32 位 ARM 和 Thumb 指令集的开发者应该能很快上手 A64。
+历史上，ARM 主要为大量嵌入式和移动设备中使用的芯片提供 CPU 核心设计。FreeBSD 用户很可能熟悉使用 ARM 芯片的开发板，例如树莓派和 PandaBoard。这些 CPU 此前都是 32 位的；但在过去几年里，ARM 发布了新的 64 位架构。新架构称为 AArch64，包含全新的指令集 A64，首批 AArch64 处理器遵循 ARMv8 规范设计。熟悉 32 位 ARM 和 Thumb 指令集的开发者应该能很快上手 A64。
 
 ## ARMv8 规范
 
@@ -81,7 +81,7 @@ AArch64 将系统调用作为硬件异常在内核中处理，由内核决定如
 
 实现了所有必需的内核桩函数后，运气好的话，`init` 应该开始执行。最初，只会存在间接证据，例如通过观察异常处理程序中的状态。随着更多 bug 被修复，`init` 会走得更远，直到——如果 `init` 被设置为引导到单用户模式——它会打印一条消息让你选择 shell。此时可能还需要进一步修复，但内核应基本为用户态做好准备，`init` 会尝试运行 shell，shell 可用于运行文件系统中的任何其他应用程序。
 
-截至本文撰写时，arm64 移植已进展到此阶段。FreeBSD 可以在 Foundation Model 上以内核文件系统启动并运行静态二进制文件。已开始加载动态可执行文件的工作；但这仍只能从单用户模式运行。后续工作正朝着稳定移植推进。短期内，正在让 FreeBSD 在 Cavium ThunderX 硬件上运行，并支持动态二进制和多用户模式。移植仍只在单核上运行，而由于 ThunderX 核心众多，让 SMP 工作是必需的。
+截至本文撰写时，arm64 移植已进展到此阶段。FreeBSD 可以在 Foundation Model 上以内核文件系统启动并运行静态二进制文件。已开始加载动态可执行文件；但这仍只能从单用户模式运行。后续工作正朝着稳定移植推进。短期内，正在让 FreeBSD 在 Cavium ThunderX 硬件上运行，并支持动态二进制和多用户模式。移植仍只在单核上运行，而由于 ThunderX 核心众多，让 SMP 工作是必需的。
 
 展望更远的未来，还需要稳定性工作，确保代码在生产环境中能正常工作。一种方式是在硬件上尝试构建 Ports。这也会让我们看到 Ports 树在这一新平台上的状态。对 DTrace 和 hwpmc 等其他项目也有兴趣。此外，总会需要将 FreeBSD 移植到任何新出现的硬件，因为遗憾的是，大量设备是各硬件厂商专有的。
 
@@ -89,7 +89,9 @@ AArch64 将系统调用作为硬件异常在内核中处理，由内核决定如
 
 我要感谢 FreeBSD 基金会，以及 ARM Ltd 和 Cavium 赞助本项目。由于这只是一个开始，后续仍需努力。芯片厂商需要发布文档，以便 FreeBSD 移植到他们的芯片。进一步的赞助也将有助于让 FreeBSD 在 ARMv8 上达到稳定且可用于生产的状态。
 
-Andrew Turner 最早接触 FreeBSD on ARM，是将其移植到 OpenMoko 手机中 Samsung CPU 的人，并负责将 ARM EABI 支持引入 FreeBSD。他作为嵌入式软件工程师，参与过从只有几 KB RAM 的深度嵌入式 ARM 设备，到拥有数 GB 内存的多核 ARM 板的项目。他也以承包商身份将 FreeBSD 移植到 ARMv8 芯片。
+---
+
+**Andrew Turner** 最早接触 FreeBSD on ARM，将其移植到了 OpenMoko 手机中的 Samsung CPU，并负责将 ARM EABI 支持引入 FreeBSD。他作为嵌入式软件工程师，参与过从只有几 KB RAM 的深度嵌入式 ARM 设备，到拥有数 GB 内存的多核 ARM 板的项目。他也以承包商身份将 FreeBSD 移植到 ARMv8 芯片。
 
 ## 延伸阅读
 

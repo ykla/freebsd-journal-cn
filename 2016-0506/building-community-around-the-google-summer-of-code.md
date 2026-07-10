@@ -1,7 +1,7 @@
 # 围绕谷歌编程之夏构建社区
 
 - 原文：[Building Community Around the Google Summer of Code](https://freebsdfoundation.org/wp-content/uploads/2016/06/Building-Community-Around-the-Google-Summer-of-Code.pdf)
-- 作者：Pedro Giffuni
+- 作者：**Pedro Giffuni**
 
 FreeBSD 每年都作为导师组织参与谷歌 Summer of Code（简称 GSoC），这是谷歌资助大学生参与开源项目的计划。这是让学生参与软件开发的好方式，同时帮助通常资源紧缺的社区获得开发资金。
 
@@ -51,4 +51,4 @@ FreeBSD 当然相当特殊，因为它是一个完整的操作系统：虽然只
 
 ---
 
-**Pedro Giffuni** 是哥伦比亚国立大学的机械工程师。他在 14 岁左右开始接触计算机，那时他在 Tandy Coco 上 Microsoft Basic 的早期时代与 Intellivision 之间徘徊。Pedro 第一次接触 FreeBSD 是在 1997 年，他在波哥大的学校里通过当时"高速"的 19.2K 调制解调器下载软盘安装了 2.1.5-Release。那时他已经非常精通 Pascal 和 Fortran 编程，后来发现这些基本毫无用处。在乐趣远多于痛苦的探索后，Pedro 自那以后无需尝试其他类 Unix 变体。
+**Pedro Giffuni** 是哥伦比亚国立大学的机械工程师。他在 14 岁左右开始接触计算机，那时他在 Tandy Coco 上 Microsoft Basic 的早期时代与 Intellivision 之间徘徊。Pedro 第一次接触 FreeBSD 是在 1997 年，他在波哥大的学校里通过当时 "高速" 的 19.2K 调制解调器下载软盘安装了 2.1.5-Release。那时他已经非常精通 Pascal 和 Fortran 编程，后来发现这些基本毫无用处。在乐趣远多于痛苦的探索后，Pedro 自那以后无需尝试其他类 Unix 变体。

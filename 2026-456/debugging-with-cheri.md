@@ -8,13 +8,13 @@
 
 CHERI 能将某些未定义行为（UB）转化为崩溃，从而缓解漏洞。这种缓解从安全角度看很有价值，但 CHERI 还能辅助调试，既能为用户提供更多信息（例如内存分配的边界），也能更早捕获错误。
 
-随着时间推移，支持 CHERI 的软件库不断壮大，包括 FreeBSD 的完整移植版——[CheriBSD](https://www.cheribsd.org/)，以及若干第三方应用，其中涵盖 KDE 图形桌面环境的大部分组件。CHERI 研究团队还维护着 GNU 调试器的一个[分支](https://github.com/CTSRD-CHERI/gdb)，支持检查 CHERI 架构（包括 ARM 的 Morello 和 CHERI-RISC-V）。CHERI GDB 既支持调试 CheriBSD 用户进程，也支持调试内核。由于 CheriBSD 紧跟 FreeBSD 的开发进展，针对 FreeBSD 报告的 bug 通常也能在 CheriBSD 上复现并排查。
+随着时间推移，支持 CHERI 的软件库不断壮大，包括 FreeBSD 的完整移植版——[CheriBSD](https://www.cheribsd.org/)，以及若干第三方应用，其中涵盖 KDE 图形桌面环境的大部分组件。CHERI 研究团队还维护着 GNU 调试器的一个 [分支](https://github.com/CTSRD-CHERI/gdb)，支持检查 CHERI 架构（包括 ARM 的 Morello 和 CHERI-RISC-V）。CHERI GDB 既支持调试 CheriBSD 用户进程，也支持调试内核。由于 CheriBSD 紧跟 FreeBSD 的开发进展，针对 FreeBSD 报告的 bug 通常也能在 CheriBSD 上复现并排查。
 
 本文将考察 FreeBSD bug 数据库中几份高质量 bug 报告在 CheriBSD 上的排查过程，借此展示在 CHERI 上调试的体验，以及使用 CHERI 时可能遇到的一些出乎意料的结果。排查期间，我使用了运行在 [ARM Morello](https://www.arm.com/architecture/cpu/morello) 系统上的 CheriBSD，以及在我 FreeBSD/amd64 桌面机上通过 QEMU 运行的 CHERI 镜像。在 Morello 系统上用 GDB 交互调试更顺手一些，尤其是排查用户态问题时。不过，QEMU 的调试服务器在排查内核 bug 时非常有用。QEMU 方案也可在任何运行 FreeBSD、Linux 或 macOS 的普通系统上使用。使用 QEMU 时，我借助 [cheribuild](https://github.com/CTSRD-CHERI/cheribuild) 工具构建 CheriBSD 磁盘镜像，以及 LLVM、GDB 和 QEMU 等所需工具。在 Morello 系统上，我使用 CheriBSD 的软件包仓库安装 LLVM 和 GDB，并使用 FreeBSD 的标准构建系统构建和测试基本系统组件的新版本。
 
 ### 第一个 Bug
 
-Bug [271955](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=271955) 描述了 [ppp(8)](https://man.freebsd.org/ppp/8) 工具 CHAP 解析代码中的缓冲区溢出问题。除了非常详细的描述外，该 bug 还附带一个触发溢出的测试程序，便于复现 bug 和测试潜在修复。我首先在 Morello 系统上下载测试程序源码，编译并执行。虽然这确实 fork 并 exec 了一个崩溃的 ppp(8) 进程，但崩溃与 bug 中描述的问题并不一致。相反，ppp(8) 在更早的位置就崩溃了，如图 1 所示。与非 CHERI 架构上使用 GDB 相比，首先注意到的一点是：指针在方括号中标注了额外数据。例如，`ID0open()` 函数的 `path` 参数标注了字符串 `[rwRW,0x1d8aa0-0x1f1f60]`。逗号前的第一个字段表示指针的权限。此处该指针既可读写数据（小写字母），也可读写其他指针（大写字母）。逗号后的地址范围给出该指针的边界，描述了可访问地址的范围。另一个值得注意的细节是，此次崩溃关联了一种新信号 SIGPROT，CheriBSD 用它表示 CHERI 异常。本例中，一次内存操作使用了无效 capability，导致崩溃。这行代码中的指针解引用可能并不显眼，但 `va_arg()` 的调用实际上是一次隐式内存引用。查看图 2 中的周边代码，可以看到该函数假定 `flags` 参数之后总存在第三个整数参数，这看上去有些可疑。可变参数的意义就在于它们并非总是存在。向上回溯栈帧查看调用者（图 3），调用者实际上只向 `ID0open()` 传递了两个参数。在 C 中，试图获取不存在的可变参数属于未定义行为（UB）；只不过在 CHERI 上比 FreeBSD 支持的其他架构上后果更严重罢了。
+Bug [271955](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=271955) 描述了 [ppp.8](https://man.freebsd.org/ppp/8) 工具 CHAP 解析代码中的缓冲区溢出问题。除了非常详细的描述外，该 bug 还附带一个触发溢出的测试程序，便于复现 bug 和测试潜在修复。我首先在 Morello 系统上下载测试程序源码，编译并执行。虽然这确实 fork 并 exec 了一个崩溃的 ppp.8 进程，但崩溃与 bug 中描述的问题并不一致。相反，ppp.8 在更早的位置就崩溃了，如图 1 所示。与非 CHERI 架构上使用 GDB 相比，首先注意到的一点是：指针在方括号中标注了额外数据。例如，`ID0open()` 函数的 `path` 参数标注了字符串 `[rwRW,0x1d8aa0-0x1f1f60]`。逗号前的第一个字段表示指针的权限。此处该指针既可读写数据（小写字母），也可读写其他指针（大写字母）。逗号后的地址范围给出该指针的边界，描述了可访问地址的范围。另一个值得注意的细节是，此次崩溃关联了一种新信号 SIGPROT，CheriBSD 用它表示 CHERI 异常。本例中，一次内存操作使用了无效 capability，导致崩溃。这行代码中的指针解引用可能并不显眼，但 `va_arg()` 的调用实际上是一次隐式内存引用。查看图 2 中的周边代码，可以看到该函数假定 `flags` 参数之后总存在第三个整数参数，这看上去有些可疑。可变参数的意义就在于它们并非总是存在。向上回溯栈帧查看调用者（图 3），调用者实际上只向 `ID0open()` 传递了两个参数。在 C 中，试图获取不存在的可变参数属于未定义行为（UB）；只不过在 CHERI 上比 FreeBSD 支持的其他架构上后果更严重罢了。
 
 图 1：GDB 崩溃摘要
 
@@ -54,9 +54,9 @@ Capability tag fault.
 726	bundle.dev.fd = ID0open(bundle.dev.Name, O_RDWR);
 ```
 
-从图 2 列出的代码和函数名可以看出，该函数的用途是封装 [open(2)](https://man.freebsd.org/open/2) 系统调用，以 root 身份执行 `open(2)`。`open(2)` 的文档说明：若传入 `O_CREAT` 标志，则接受可选的第三个参数。因此，针对 ppp(8) 中该 bug 的[修复](https://reviews.freebsd.org/D57137)方案是：仅当指定 `O_CREAT` 时才获取可变参数。解决了这个问题之后，可以回到原始 bug 的调试。
+从图 2 列出的代码和函数名可以看出，该函数的用途是封装 [open.2](https://man.freebsd.org/open/2) 系统调用，以 root 身份执行 `open.2`。`open.2` 的文档说明：若传入 `O_CREAT` 标志，则接受可选的第三个参数。因此，针对 ppp.8 中该 bug 的 [修复](https://reviews.freebsd.org/D57137) 方案是：仅当指定 `O_CREAT` 时才获取可变参数。解决了这个问题之后，可以回到原始 bug 的调试。
 
-用修复后的 ppp(8) 二进制文件重新运行测试程序后，迎来了图 4 所示的内核崩溃。为便于调试，我改在 FreeBSD/amd64 桌面系统上用 QEMU 测试。我通过 `-s` 命令行参数在 QEMU 中启动 GDB 服务器，并用 `kgdb-native` cheribuild 目标构建的原生 CHERI GDB 二进制文件连接到 QEMU 客户机。
+用修复后的 ppp.8 二进制文件重新运行测试程序后，迎来了图 4 所示的内核崩溃。为便于调试，我改在 FreeBSD/amd64 桌面系统上用 QEMU 测试。我通过 `-s` 命令行参数在 QEMU 中启动 GDB 服务器，并用 `kgdb-native` cheribuild 目标构建的原生 CHERI GDB 二进制文件连接到 QEMU 客户机。
 
 图 4：内核崩溃消息
 
@@ -121,7 +121,7 @@ $2 = 12
 
 CHERI LLVM 实现了一项名为 subobject bounds（子对象边界）的可选特性，它会改变取地址运算符（&）的行为，将所得指针的边界收窄到仅允许访问单个字段或数组元素。某些情况下这很有用。例如，若结构体中包含一个持有字符串的字符数组，在将该结构体字段的指针传给 `strcpy()` 时把边界收窄到仅该字符数组，可防止溢出蔓延到其他结构体字段。然而，也有不少现实中的 C 代码依赖取某个字段的指针后再将其转换回指向包含对象的指针。Linux 中使用的 `container_of()` 宏就是一例。BSD 上 **<sys/queue.h>** 中的某些宏也存在类似模式。C 中另一种常见模式是通过定义一个包含基类字段的结构体，并将该结构体的实例作为第一个字段嵌入到定义子类的结构体中，来实现 C++ 风格的面向对象编程。这通常与函数指针配合使用以实现虚方法。函数指针接受指向基类结构体类型的指针，但会将其转换为子类结构体类型。FreeBSD 内核中有若干子系统采用了这种模式。由于这些常见的 C 惯用法与 subobject bounds 不兼容，CHERI LLVM 默认不启用该特性。不过，CHERI LLVM 允许通过源码注解针对特定类型或类型的特定字段禁用 subobject bounds。当字段以这种方式标注后，取地址运算符不会收窄所得指针的边界。CheriBSD 对内核启用了 subobject bounds，既是为提升安全性，也是作为评估 subobject bounds 的研究案例。某些情况下（例如使用 `container_of()` 宏时），若字段未标注禁用 subobject bounds 的注解，CHERI LLVM 能在编译时发出警告。但在其他情况下，编译器无法检测取地址运算符是否被用于生成随后将用于访问包含对象的指针。不幸的是，这些情况目前只能在运行时执行到相关代码路径时因边界错误 panic 才被发现。
 
-回到 ng_pppoe 模块的 panic。这里，该模块采用了上述子类模型的一种变体：`struct pppoe_tag` 类型在每个 PPPoE tag 的起始处定义公共字段。模块另外定义了 `struct datatag` 和 `struct maxptag` 两种类型，二者都将一个 `struct pppoe_tag` 对象作为第一个字段（名为"`hdr`"）嵌入，其后是存放 tag 特定数据的附加字段。当 `pppoe_start()` 调用 `insert_tag()` 将其使用的每个 tag 插入图 6 所示的 tag 指针数组时，使用了取地址运算符取 `struct datatag` 的 `hdr` 字段指针。结果，指针的边界被缩减到 4 字节的首部结构。注意，将边界收窄到单个 `struct datatag` 是没问题的，收窄到首部才有问题。例如，对于表达式 `&neg->host_uniq.hdr`，将边界收窄到 `neg` 结构体的 `host_uniq` 成员是可以的，问题仅出在进一步收窄到 `hdr` 字段。为修复此问题，我只需添加几条源码注解，为 `hdr` 成员禁用 subobject bounds。应用该修复后，再次运行测试程序。
+回到 ng_pppoe 模块的 panic。这里，该模块采用了上述子类模型的一种变体：`struct pppoe_tag` 类型在每个 PPPoE tag 的起始处定义公共字段。模块另外定义了 `struct datatag` 和 `struct maxptag` 两种类型，二者都将一个 `struct pppoe_tag` 对象作为第一个字段（名为 "`hdr`"）嵌入，其后是存放 tag 特定数据的附加字段。当 `pppoe_start()` 调用 `insert_tag()` 将其使用的每个 tag 插入图 6 所示的 tag 指针数组时，使用了取地址运算符取 `struct datatag` 的 `hdr` 字段指针。结果，指针的边界被缩减到 4 字节的首部结构。注意，将边界收窄到单个 `struct datatag` 是没问题的，收窄到首部才有问题。例如，对于表达式 `&neg->host_uniq.hdr`，将边界收窄到 `neg` 结构体的 `host_uniq` 成员是可以的，问题仅出在进一步收窄到 `hdr` 字段。为修复此问题，我只需添加几条源码注解，为 `hdr` 成员禁用 subobject bounds。应用该修复后，再次运行测试程序。
 
 终于，我得以复现 bug 报告中描述的原始崩溃，图 7 所示的崩溃确实非常相似。与 bug 报告中崩溃的不同之处在于，CHERI 版本死于 CHERI 故障，原因是读取了未标记的指针。然而，若原始 bug 如报告所言是缓冲区溢出，为何 CHERI 没有更早检测到缓冲区溢出并崩溃？根据 bug 报告，溢出发生在 `chap_Input()` 函数将 CHAP challenge 读入 `chap->challenge.peer` 数组时。确实，向上回溯栈帧并查看图 8 中包含无效指针的数据结构，可以明显看到 peer 数组及其后直到结构体末尾的若干字段都被填充了 `0xff` 字节。那么 CHERI 为何没有捕获 `peer` 数组的溢出？答案仍是 subobject bounds。
 
@@ -161,13 +161,13 @@ bundle = 0xffffffffffffffff [rwxRWE,0xffffffffffffffff-0xffffffffffffffff] (inva
 next = 0xffffffffffffffff [rwxRWE,0xffffffffffffffff-0xffffffffffffffff] (invalid,sealed)}
 ```
 
-确认 bug 确实是 `peer` 数组溢出后，最明显的修复方式是对 challenge 长度添加边界检查，并拒绝长度无效的 challenge。我好奇 CHAP challenge 是否有标准化上限。快速搜索网络后找到 RFC 1994。阅读对 Challenge 数据包的描述，Value 字段的长度除了 255 字节的隐式限制外没有其他限制，因为单字节 Value-Size 字段能指定的最大值就是 255。ppp(8) 此前人为设定了 48 字节的过低上限，因此我采取的修复方案是将最大 challenge 长度提升到 255，以支持任何合法的 challenge。
+确认 bug 确实是 `peer` 数组溢出后，最明显的修复方式是对 challenge 长度添加边界检查，并拒绝长度无效的 challenge。我好奇 CHAP challenge 是否有标准化上限。快速搜索网络后找到 RFC 1994。阅读对 Challenge 数据包的描述，Value 字段的长度除了 255 字节的隐式限制外没有其他限制，因为单字节 Value-Size 字段能指定的最大值就是 255。ppp.8 此前人为设定了 48 字节的过低上限，因此我采取的修复方案是将最大 challenge 长度提升到 255，以支持任何合法的 challenge。
 
 ### 第二个 Bug
 
-Bug [271820](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=271820) 描述了 ppp(8) 守护进程 NAT 处理中的另一处缓冲区溢出。具体而言，ppp(8) 的 NAT 处理包含若干针对特定网络协议的处理函数，该 bug 描述的是 NetBIOS over TCP/IP 数据报服务的处理函数中的问题。尽管名字中有 TCP/IP，该协议实际使用 UDP。该 bug 具体与 IP 分片有关：一个大的 UDP 报文可被拆分为多个 IP 数据包。这些较小的 IP 数据包（即分片）各包含原始 UDP 数据报的一个子集。NetBIOS 处理函数试图解析 UDP 负载的内容，并小心避免读出 UDP 数据包的末尾。该处理函数确实假定所检查的数据包包含完整的 UDP 负载。然而，若所检查的数据包是 IP 分片，它可能只包含 UDP 负载的一个子集。
+Bug [271820](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=271820) 描述了 ppp.8 守护进程 NAT 处理中的另一处缓冲区溢出。具体而言，ppp.8 的 NAT 处理包含若干针对特定网络协议的处理函数，该 bug 描述的是 NetBIOS over TCP/IP 数据报服务的处理函数中的问题。尽管名字中有 TCP/IP，该协议实际使用 UDP。该 bug 具体与 IP 分片有关：一个大的 UDP 报文可被拆分为多个 IP 数据包。这些较小的 IP 数据包（即分片）各包含原始 UDP 数据报的一个子集。NetBIOS 处理函数试图解析 UDP 负载的内容，并小心避免读出 UDP 数据包的末尾。该处理函数确实假定所检查的数据包包含完整的 UDP 负载。然而，若所检查的数据包是 IP 分片，它可能只包含 UDP 负载的一个子集。
 
-与上一个 bug 一样，该 bug 报告也包含一个复现缓冲区溢出的测试程序。但提交者指出，在传统（非 CHERI）架构上执行时，该溢出并不能可靠地使 ppp(8) 进程崩溃。在 CHERI 系统上运行测试程序时，ppp(8) 在溢出发生时可靠地因边界错误崩溃，如图 9 所示。这使得验证潜在修复更为容易，因为一旦阻止溢出，ppp(8) 便不再崩溃。一个值得注意的奇怪之处是，`AliasHandleName()` 的 `pmax` 参数被标记为无效。若查看 `AliasHandleUdpNbtNs()` 函数的起始处，`p` 和 `pmax` 最终都是通过在 IP 数据包起始地址上加一个偏移量计算得出的，如图 10 所示。因此，两个指针本应具有相同的元数据，如边界和权限。然而，`pmax` 的边界覆盖的范围与 `p` 不同，尽管两个范围长度相同。在 CHERI 中，边界表示为当前 capability 地址附近的一个有界范围。这使得 CHERI capability 所用的额外元数据字中能高效表示这些边界，但也意味着：若指针地址远离其原始地址到一定程度，元数据便无法再描述正确的边界。发生这种情况时，CHERI capability 会被标记为无效，这就是为何 `pmax` 虽由对有效指针加偏移计算得出，却被标记为无效的原因。`p` 相对于数据包原始起始处虽有偏移，但仍足够接近原始指针地址，因此即使 `p` 本身已越界，仍被标记为有效。
+与上一个 bug 一样，该 bug 报告也包含一个复现缓冲区溢出的测试程序。但提交者指出，在传统（非 CHERI）架构上执行时，该溢出并不能可靠地使 ppp.8 进程崩溃。在 CHERI 系统上运行测试程序时，ppp.8 在溢出发生时可靠地因边界错误崩溃，如图 9 所示。这使得验证潜在修复更为容易，因为一旦阻止溢出，ppp.8 便不再崩溃。一个值得注意的奇怪之处是，`AliasHandleName()` 的 `pmax` 参数被标记为无效。若查看 `AliasHandleUdpNbtNs()` 函数的起始处，`p` 和 `pmax` 最终都是通过在 IP 数据包起始地址上加一个偏移量计算得出的，如图 10 所示。因此，两个指针本应具有相同的元数据，如边界和权限。然而，`pmax` 的边界覆盖的范围与 `p` 不同，尽管两个范围长度相同。在 CHERI 中，边界表示为当前 capability 地址附近的一个有界范围。这使得 CHERI capability 所用的额外元数据字中能高效表示这些边界，但也意味着：若指针地址远离其原始地址到一定程度，元数据便无法再描述正确的边界。发生这种情况时，CHERI capability 会被标记为无效，这就是为何 `pmax` 虽由对有效指针加偏移计算得出，却被标记为无效的原因。`p` 相对于数据包原始起始处虽有偏移，但仍足够接近原始指针地址，因此即使 `p` 本身已越界，仍被标记为有效。
 
 图 9：第三次 GDB 崩溃摘要
 
@@ -212,9 +212,9 @@ at /usr/home/john/work/git/cheribsd/sys/netinet/libalias/alias_nbt.c:805
 785	return (-1);
 ```
 
-阅读 alias_nbt.c 源文件中各函数的代码，它们总体上表现良好：遵守只在 `p` 和 `pmax` 之间读取数据的约束，并在任何试图越过 `pmax` 的访问时中止。因此，此处的 bug 在于 `pmax` 在该情况下被设为了错误的值。修复方案是：也用 IP 首部中的长度字段计算底层 IP 数据包的末尾，并在所得指针小于 `pmax` 原值时将其作为 `pmax` 的值。应用此修复后，测试程序不再触发 ppp(8) 崩溃。奇怪的是，alias_nbt.c 中有两个函数包含相同的 `pmax` 计算：`AliasHandleUdpNbt()` 和 `AliasHandleUdpNbtNs()`。我第一次尝试修复时，误只修补了第一个函数，导致 ppp(8) 继续崩溃。意识到错误后，我在最终修复中修补了两个函数。
+阅读 alias_nbt.c 源文件中各函数的代码，它们总体上表现良好：遵守只在 `p` 和 `pmax` 之间读取数据的约束，并在任何试图越过 `pmax` 的访问时中止。因此，此处的 bug 在于 `pmax` 在该情况下被设为了错误的值。修复方案是：也用 IP 首部中的长度字段计算底层 IP 数据包的末尾，并在所得指针小于 `pmax` 原值时将其作为 `pmax` 的值。应用此修复后，测试程序不再触发 ppp.8 崩溃。奇怪的是，alias_nbt.c 中有两个函数包含相同的 `pmax` 计算：`AliasHandleUdpNbt()` 和 `AliasHandleUdpNbtNs()`。我第一次尝试修复时，误只修补了第一个函数，导致 ppp.8 继续崩溃。意识到错误后，我在最终修复中修补了两个函数。
 
-最后，bug 报告者还指出复现程序使用了值为 0 的无效 IP 首部长度，而 libalias 代码未检测到这一点。我又写了一个后续补丁，在数据包传递给库中其他处理函数之前，添加对 IP 首部的额外验证，包括版本和长度字段。由于该 bug 未触发崩溃，我依靠 GDB 单步调试 ppp(8) 进程，验证数据包在 `libAliasInLocked()` 函数中被提前拒绝。
+最后，bug 报告者还指出复现程序使用了值为 0 的无效 IP 首部长度，而 libalias 代码未检测到这一点。我又写了一个后续补丁，在数据包传递给库中其他处理函数之前，添加对 IP 首部的额外验证，包括版本和长度字段。由于该 bug 未触发崩溃，我依靠 GDB 单步调试 ppp.8 进程，验证数据包在 `libAliasInLocked()` 函数中被提前拒绝。
 
 ### 结论
 

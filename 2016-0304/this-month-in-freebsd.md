@@ -1,5 +1,6 @@
 # FreeBSD 本月动态：访谈 Gleb Smirnoff
 
+- 原文：[This Month in FreeBSD: An Interview with Gleb Smirnoff](https://freebsdfoundation.org/wp-content/uploads/2016/04/This-Month-in-FreeBSD.pdf)
 - 作者：**Dru Lavigne**
 
 接下来几期，我们将深入关注 2016 年版本中的若干新特性和背后的开发者。
@@ -32,7 +33,7 @@
 
 ## 新的 sendfile(2) 是 NGINX Inc. 与 Netflix 联合开发的成果。为什么选择 FreeBSD 作为参考实现？是否计划把这一系统调用移植到 Linux 等其他操作系统？
 
-FreeBSD 用于 Netflix OpenConnect CDN[1] 的核心，向全球 Netflix 客户提供流媒体数据，是互联网上最大的流量来源。所以我们并非为了好玩或思想实验去构建新 sendfile 的参考实现，而是在改进 OpenConnect 软件，让单台服务器能服务更多数据。这顺带改进了 FreeBSD 本身。
+FreeBSD 用于 Netflix OpenConnect CDN [1] 的核心，向全球 Netflix 客户提供流媒体数据，是互联网上最大的流量来源。所以我们并非为了好玩或思想实验去构建新 sendfile 的参考实现，而是在改进 OpenConnect 软件，让单台服务器能服务更多数据。这顺带改进了 FreeBSD 本身。
 
 我们这边没有把它移植到其他操作系统的计划。我们专注于 FreeBSD。
 

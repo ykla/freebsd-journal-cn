@@ -1,6 +1,6 @@
 # 非 RPi 上的媒体服务器
 
-作者：Roller Angel
+作者：**Roller Angel**
 
 媒体服务器是网络的绝佳补充。它允许各类播放设备发现自己并从媒体服务器串流媒体。
 
@@ -32,4 +32,4 @@ fdescfs /dev/fd fdescfs rw 0 0
 
 ---
 
-Roller Angel 是热衷 BSD 的用户，享受 BSD 技术带来的种种精彩。他基于 FreeBSD 开过编程工作坊，正在搭建一个在线培训平台，教授 BSD 和相关技术。详见 BSD.pw。
+**Roller Angel** 是热衷 BSD 的用户，享受 BSD 技术带来的种种精彩。他基于 FreeBSD 开过编程工作坊，正在搭建一个在线培训平台，教授 BSD 和相关技术。详见 BSD.pw。

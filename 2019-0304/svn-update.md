@@ -26,7 +26,7 @@
 
 <https://svnweb.freebsd.org/changeset/base/343075>
 
-vmm 的 CPUID 仿真此前向客户机呈现 Intel 拓扑信息，却禁用了 AMD 拓扑信息，某些情况下还会传入垃圾数据。CPUID 叶 0x8000_001[de] 被透传给客户机，但客户机 CPU 会在主机线程之间迁移，因此呈现的信息不一致。这可以通过 `cpucontrol -i 0xfoo /dev/cpuctl0` 轻易观察到。
+vmm 的 CPUID 仿真此前向客户机呈现 Intel 拓扑信息，却禁用了 AMD 拓扑信息，某些情况下还会传入垃圾数据。CPUID 叶 0x8000_001 [de] 被透传给客户机，但客户机 CPU 会在主机线程之间迁移，因此呈现的信息不一致。这可以通过 `cpucontrol -i 0xfoo /dev/cpuctl0` 轻易观察到。
 
 通过启用 AMD 拓扑特性标志，并至少呈现 FreeBSD 自身用于在较新 AMD64 硬件（Family 15h+）上探测拓扑的 CPUID 字段，略微改善了这一情况。较老的硬件大概不那么重要。我无法实证确认这已足够，但应该不会引起回归。
 
@@ -73,4 +73,6 @@ vmm 的 CPUID 仿真此前向客户机呈现 Intel 拓扑信息，却禁用了 A
 
 生成 PIC 代码时，一些较老的编译器无法处理会破坏 `%ebx` 的内联汇编（因为 `%ebx` 用作 GOT 偏移寄存器）。用户态版本通过在执行 CPUID 指令前将 `%ebx` 保存到栈上来避免破坏它。
 
-STEVEN KREUZER 是一名 FreeBSD 开发者和 Unix 系统管理员，对复古计算和风冷大众汽车感兴趣。他与妻子、女儿和狗居住在纽约皇后区。
+---
+
+**STEVEN KREUZER** 是一名 FreeBSD 开发者和 Unix 系统管理员，对复古计算和风冷大众汽车感兴趣。他与妻子、女儿和狗居住在纽约皇后区。
