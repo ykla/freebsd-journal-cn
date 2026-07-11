@@ -9,7 +9,7 @@ iocage
 
 其他 Jail 管理器确实存在。有些在特定场景下用得还不错。但对于中大型 Jail 服务器——你期望单台宿主机上运行几十甚至几百个 Jail——iocage 提升了可管理性。iocage 可以和 docker 叫板。iocage 利用 ZFS。iocage 自动化批量升级 Jail，包括软件包。iocage 配置虚拟网络。iocage 解决你甚至不知道自己有的问题。iocage 总是用小写“i”开头，但在句首看起来很傻，所以我拒绝那样写。
 
-如果你今天在部署 Jail 宿主机：用 iocage。（并且用 FreeBSD 12 或更高版本，但那是另一个话题。）是的，iocage 需要 ZFS 和 Python。如今的 Jail 宿主机应该用 ZFS，而 Python 几乎无处不在。如果你的宿主机磁盘够多，把宿主机操作系统放在冗余 ZFS 池上，把 Jail 放在另一个。锁定宿主机的服务；然后从软件包或 Github 安装 iocage。
+如果你今天在部署 Jail 宿主机：用 iocage。（并且用 FreeBSD 12 或更高版本，但那是另一个话题。）是的，iocage 需要 ZFS 和 Python。如今的 Jail 宿主机应该用 ZFS，而 Python 几乎无处不在。如果你的宿主机磁盘够多，把宿主机操作系统放在冗余 ZFS 池上，把 Jail 放在另一个。锁定宿主机的服务；然后从软件包或 GitHub 安装 iocage。
 
 首先，告诉 iocage 用哪个池来放 Jail。
 
@@ -21,7 +21,7 @@ iocage
 
 ## iocage 命令行
 
-所有操作都用 `iocage(8)` 命令完成。语法和 ZFS 极为相似，好像 iocage 的开发者看到好主意就知道是好的。我们先用 `iocage get` 查看 iocage 的默认参数。我们加上 `-a` 标志获取所有参数，并加上 Jail 名 `default` 来查看默认参数。
+所有操作都用 **iocage(8)** 命令完成。语法和 ZFS 极为相似，好像 iocage 的开发者看到好主意就知道是好的。我们先用 `iocage get` 查看 iocage 的默认参数。我们加上 `-a` 标志获取所有参数，并加上 Jail 名 `default` 来查看默认参数。
 
 ```sh
 # iocage get -a default
@@ -133,7 +133,7 @@ boot: 0 -> 1
 
 ### iocage 软件包
 
-用 `iocage pkg` 子命令管理软件包。所有软件包功能，包括升级，都能在 iocage 下工作。给出 Jail 名、`pkg(8)` 命令和软件包名。
+用 `iocage pkg` 子命令管理软件包。所有软件包功能，包括升级，都能在 iocage 下工作。给出 Jail 名、**pkg(8)** 命令和软件包名。
 
 ```sh
 # iocage pkg www1 install sudo

@@ -111,7 +111,7 @@ EOF
 
 `max_size` 选项可以将缓存大小限制为一定数量，但设为 0 时，它可以使用所需的全部磁盘空间。我并不太担心，因为 ZFS 压缩在这里效果不错。如果磁盘空间不足，我甚至可以在数据集 **zroot/var/cache/ccache** 上设置配额。
 
-`cache_dir` 和 `base_dir` 定义缓存的位置。这里它们指向我们的数据集。将 `hash_dir` 选项设为 `false` 可以增加缓存命中率，但启用它会增加调试难度。这是我为了更好性能愿意做的权衡。此选项及其他选项的详情请参阅 ccache(1)。FreeBSD 论坛的一个帖子也讨论了这个问题：<https://forums.freebsd.org/threads/howto-speeding-up-poudriere-build-times.69431/>
+`cache_dir` 和 `base_dir` 定义缓存的位置。这里它们指向我们的数据集。将 `hash_dir` 选项设为 `false` 可以增加缓存命中率，但启用它会增加调试难度。这是我为了更好性能愿意做的权衡。此选项及其他选项的详情请参阅 **ccache(1)**。FreeBSD 论坛的一个帖子也讨论了这个问题：<https://forums.freebsd.org/threads/howto-speeding-up-poudriere-build-times.69431/>
 
 在 ccache 期望找到它的位置为该配置文件创建符号链接。
 
@@ -320,7 +320,7 @@ FreeBSD: {
 
 或者直接从 **/usr/local/etc/pkg/repos/local.conf** 删除该存储库定义。
 
-那么其他越来越多运行 FreeBSD 的机器怎么办？特别是虚拟机或嵌入式系统，你不会在每台机器上运行单独的 poudriere 编译机。一种方法是通过 NFS 把 repo URL 共享给每台机器。更好的办法是配置一台中央的、性能强劲的 poudriere 编译机，通过 http 把它的软件包作为存储库共享。网络中其他 FreeBSD 机器可以像添加官方 FreeBSD 存储库一样添加它。相比 NFS 共享，这种办法的额外好处是你可以对这些软件包签名。这能保证密码学完整性和对源的信任（这些软件包确实是你自定义编译的）。这样，机器会检查编译机的公钥是否与它们持有的记录匹配，确保软件包来自真实源。下面开始相关设置。
+那么其他越来越多运行 FreeBSD 的机器怎么办？特别是虚拟机或嵌入式系统，你不会在每台机器上运行单独的 poudriere 编译机。一种方法是通过 NFS 把 repo URL 共享给每台机器。更好的办法是配置一台中央的、性能强劲的 poudriere 编译机，通过 HTTP 把它的软件包作为存储库共享。网络中其他 FreeBSD 机器可以像添加官方 FreeBSD 存储库一样添加它。相比 NFS 共享，这种办法的额外好处是你可以对这些软件包签名。这能保证密码学完整性和对源的信任（这些软件包确实是你自定义编译的）。这样，机器会检查编译机的公钥是否与它们持有的记录匹配，确保软件包来自真实源。下面开始相关设置。
 
 为了给其他机器提供软件包，我们安装 nginx 作为 web 服务器。其他 web 服务器只要能向客户端共享 URL 作为文档根目录，也可以使用。`poudriere bulk` 运行期间，我们还可以共享编译日志，查看当前编译的进度并调试失败的 ports。
 
@@ -459,14 +459,14 @@ clienthost# mkdir ssl/certs ssl/keys
 clienthost# mkdir pkg/repos
 ```
 
-然后，安全地把编译机 **/usr/local/etc/ssl/certs/** 下的 `poudriere.cert` 复制到我们刚创建的目录。你可以用 `scp(1)` 从主机传到客户端：
+然后，安全地把编译机 **/usr/local/etc/ssl/certs/** 下的 `poudriere.cert` 复制到我们刚创建的目录。你可以用 **scp(1)** 从主机传到客户端：
 
 ```sh
 poudriere# scp /usr/local/etc/ssl/certs/poudriere.cert
 clienthost:/usr/local/etc/ssl/certs/
 ```
 
-接下来定义新的存储库位置，与上面类似。唯一区别是 URL。编译机可以用 `file:///` 引用本地文件系统，远程机器则要通过 http 连接我们的 nginx。`mirror_type` 也不同，除此之外配置完全相同，如下所示：
+接下来定义新的存储库位置，与上面类似。唯一区别是 URL。编译机可以用 `file:///` 引用本地文件系统，远程机器则要通过 HTTP 连接我们的 nginx。`mirror_type` 也不同，除此之外配置完全相同，如下所示：
 
 ```sh
 Poudriere: {

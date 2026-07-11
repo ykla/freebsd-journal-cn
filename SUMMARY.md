@@ -275,7 +275,7 @@
 * [使用 FreeBSD 构建高弹性的私有云](2022-0506/cloud.md)
 * [LLDB 14 —— FreeBSD 新调试器](2022-0506/lldb.md)
 * [实用 IPv6（第一部分）](2022-0506/ipv6.md)
-* [利用 netdump(4) 进行事后内核调试](2022-0506/netdump.md)
+* [利用 **netdump(4)** 进行事后内核调试](2022-0506/netdump.md)
 * [进行中的工作/征求反馈：FreeBSD 启动性能](2022-0506/freebsd.md)
 * [实用 Port：在 OpenZFS 上设置 NFSv4 文件服务器](2022-0506/port.md)
 * [读者来信](2022-0506/we-get-letters.md)
@@ -417,7 +417,7 @@
 * [内核中的 TLS 卸载](2020-0506/TLS.md)
 * [访谈：Michael W Lucas](2020-0506/Lucas.md)
 * [FreeBSD 桌面发行版](2020-0506/Desktop.md)
-* [使用 Poudriere 进行 Port 批量管理](2020-0506/Port.md)
+* [使用 Poudriere 进行 Ports 批量管理](2020-0506/Port.md)
 * [FreeBSD 的新面孔](2020-0506/Faces.md)
 * [读者来信](2020-0506/we-get-letters.md)
 
@@ -525,7 +525,7 @@
 * [FreeBSD 12.0 工具链更新](2018-1112/freebsd-12-0-toolchain-update.md)
 * [FreeBSD 新面孔](2018-1112/new-faces-of-freebsd.md)
 * [SVN 动态](2018-1112/svn-update.md)
-* [The Daemon's Dozen——FreeBSD 12.0 简介](2018-1112/the-daemons-dozen-introducing-freebsd-12-0.md)
+* [The Daemon’s Dozen——FreeBSD 12.0 简介](2018-1112/the-daemons-dozen-introducing-freebsd-12-0.md)
 * [读者来信](2018-1112/we-get-letters.md)
 * [ZPool 检查点](2018-1112/zpool-checkpoint.md)
 

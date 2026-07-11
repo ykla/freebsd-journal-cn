@@ -34,7 +34,7 @@ MITRE Caldera（[security/caldera](https://cgit.freebsd.org/ports/tree/security/
 
 ## AppJail
 
-[AppJail](https://github.com/DtxdF/AppJail) 是完全由 sh(1) 和 C 编写的框架，用于使用 FreeBSD Jail 创建隔离的、便携的、易于部署的环境，这些环境的行为类似应用程序。AppJail 的有趣特性之一是 [AppJail-Makejails](https://github.com/AppJail-makejails) 格式。它是文本文档，包含构建 jail 的所有指令。Makejail 是构建 jail、配置它、安装应用程序、配置它们等过程的又一层抽象。
+[AppJail](https://github.com/DtxdF/AppJail) 是完全由 **sh(1)** 和 C 编写的框架，用于使用 FreeBSD Jail 创建隔离的、便携的、易于部署的环境，这些环境的行为类似应用程序。AppJail 的有趣特性之一是 [AppJail-Makejails](https://github.com/AppJail-makejails) 格式。它是文本文档，包含构建 jail 的所有指令。Makejail 是构建 jail、配置它、安装应用程序、配置它们等过程的又一层抽象。
 
 ## 准备
 
@@ -137,7 +137,7 @@ Password  :  @ugEwZHpUJ8a7oCsc1rxJKd3/hlk=
 -j agent01 -- --network wazuh-net --agent_ip 11.1.0.3 --agent_name agent01 --server_ip 11.1.0.2 --enrollment @ugEwZHpUJ8a7oCsc1rxJKd3/hlk=
 ```
 
-对于每个代理（agent01、agent02、agent03、agent04 和 agent05），重复此命令，使用不同的 IP 地址（11.1.0.3、11.1.0.4、11.1.0.5 和 11.1.0.6），并更改系统版本（13.2-RELEASE 或 14.0-RC1）。完成后，我们将能够在 wazuh-dashboard 的 "Agents" 窗口中查看已连接代理的列表。
+对于每个代理（agent01、agent02、agent03、agent04 和 agent05），重复此命令，使用不同的 IP 地址（11.1.0.3、11.1.0.4、11.1.0.5 和 11.1.0.6），并更改系统版本（13.2-RELEASE 或 14.0-RC1）。完成后，我们将能够在 wazuh-dashboard 的 “Agents” 窗口中查看已连接代理的列表。
 
 ![image](../png/2023-0910/wazuh-and-mitre-caldera-3.png)
 

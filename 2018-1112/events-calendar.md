@@ -10,7 +10,7 @@
 
 ## FOSDEM • 2 月 2–3 日 • 比利时布鲁塞尔
 
-<http://fosdem.org/2019/> • FOSDEM 是欧洲最大的年度开源活动之一，免费参加。届时会有 BSD 开发者房间和 expo 区域的 FreeBSD 展位。FreeBSD 基金会在会议前一天于 NH Brussels Carrefour de l'Europe 酒店赞助了一日开发者峰会。
+<http://fosdem.org/2019/> • FOSDEM 是欧洲最大的年度开源活动之一，免费参加。届时会有 BSD 开发者房间和 expo 区域的 FreeBSD 展位。FreeBSD 基金会在会议前一天于 NH Brussels Carrefour de l’Europe 酒店赞助了一日开发者峰会。
 
 ## APRICOT 2019 • 2 月 18–28 日 • 韩国大田儒城区
 
@@ -26,4 +26,4 @@
 
 ## AsiaBSDCon 2019 • 3 月 21–24 日 • 日本东京
 
-<https://2019.asiabsdcon.org/> • 这一年度会议面向任何开发、部署和使用基于 FreeBSD、NetBSD、OpenBSD、DragonFlyBSD、Darwin 和 MacOS X 系统的人。AsiaBSDCon 是一场技术会议，旨在收集可用的最佳技术论文和演示，以确保我们开源社区的最新发展能够与尽可能广泛的受众分享。
+<https://2019.asiabsdcon.org/> • 这一年度会议面向任何开发、部署和使用基于 FreeBSD、NetBSD、OpenBSD、DragonFlyBSD、Darwin 和 macOS X 系统的人。AsiaBSDCon 是一场技术会议，旨在收集可用的最佳技术论文和演示，以确保我们开源社区的最新发展能够与尽可能广泛的受众分享。

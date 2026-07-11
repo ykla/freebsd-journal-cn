@@ -28,9 +28,9 @@
 
 ## ACCORDIUM 的 FreeBSD
 
-Accordium 的开发于 2017 年 4 月正式开始，只有两名开发者（包括我）。我发现自己负责选择服务器环境，没有人需要我解释。这是我第一次就整个软件栈做出选择，我渴望至少测试一下 FreeBSD。令我松了一口气的是，有可用于在 Amazon Web Services 上部署的 FreeBSD 镜像。
+Accordium 的开发于 2017 年 4 月正式开始，只有两名开发者（包括我）。我发现自己负责选择服务器环境，无需向任何人解释。这是我第一次就整个软件栈做出选择，我渴望至少测试一下 FreeBSD。令我松了一口气的是，有可用于在 Amazon Web Services 上部署的 FreeBSD 镜像。
 
-我们的需求非常少，只是用 Spring Boot 框架编写的一些 API 端点，运行在 JVM 上，一个 Postgres 数据库服务器和一个 rabbitmq 实例——所有这些都作为二进制软件包提供。当时没有生产环境，唯一的用户是我们自己。
+我们的需求非常少，只是用 Spring Boot 框架编写的一些 API 端点，运行在 JVM 上，一个 Postgres 数据库服务器和一个 RabbitMQ 实例——所有这些都作为二进制软件包提供。当时没有生产环境，唯一的用户是我们自己。
 
 我们所有的开发都在 Linux 机器上进行。Ahmed Uways Zulkurnain，现在管理我们所有生产机器的工程师，当时不熟悉 FreeBSD。他提出一些非常合乎逻辑的问题，主要的一个是“为什么不用 Linux，毕竟我们自己也在用它。”我请他耐心一点，先测试一下，承诺如果他曾发现 FreeBSD 不足，就更换环境。现在是 2018 年 4 月，他还没有回来提出反对。
 
@@ -62,14 +62,14 @@ Ahmad Uways Zulkurnain 是第一个在 Accordium 工作的工程师，对 FreeBS
 主要是出于我的个人信念，但对我们来说，运行 BSD 机器是有意义的。
 
 - 操作系统配置是集中化的。基本系统配置放在 **/etc/**，本地安装特定配置放在 **/usr/local/etc**。
-- 软件可用性——我们从未不得不挠头说“这在 FreeBSD 中不可用”。
+- 软件可用性——我们从不需要挠头说“这在 FreeBSD 中不可用”。
 - 更新定期且易于进行。
 
 我们已经运行了大约五个月，服务于越来越多的客户需求。我们的问题都不是因为 FreeBSD。它坚定地不碍事，是一个不知疲倦、可靠的工作马。
 
 ## 现在我们想从 FreeBSD 得到什么？
 
-Accordium 是一家 Java 和 Javascript 商店。OpenJDK 8 在 FreeBSD 上运行良好，但 Java 的后续版本（9/10/11）没有支持 FreeBSD 的迹象。BSD 移植工作似乎很少。当 OpenJDK 11 推出时，如果没有 FreeBSD 版本，我们将不得不继续前进，特别是当有趣的东西如 GraalVM 出现时。
+Accordium 是一家 Java 和 JavaScript 商店。OpenJDK 8 在 FreeBSD 上运行良好，但 Java 的后续版本（9/10/11）没有支持 FreeBSD 的迹象。BSD 移植工作似乎很少。当 OpenJDK 11 推出时，如果没有 FreeBSD 版本，我们将不得不继续前进，特别是当有趣的东西如 GraalVM 出现时。
 
 ## FreeBSD 在生产中——ACCORDIUM 进入 BETA
 

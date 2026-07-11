@@ -9,7 +9,7 @@ Webhook 是一种基于 HTTP 的事件驱动远程回调协议，允许从几乎
 
 最简单的 Webhook 可以只是智能手机浏览器中一个加书签的链接，较复杂的版本可能需要强认证和授权。
 
-虽然 Ansible 和 Puppet 等大型自动化工具集已经存在，但有时候更简单的方案就够了。Webhook 正是如此，让你能够按需安全地在远程计算机上执行任务。调用 webhook 可以看作是 "踢一脚"，这也是本文标题的由来。
+虽然 Ansible 和 Puppet 等大型自动化工具集已经存在，但有时候更简单的方案就够了。Webhook 正是如此，让你能够按需安全地在远程计算机上执行任务。调用 webhook 可以看作是 “踢一脚”，这也是本文标题的由来。
 
 ## 集成
 
@@ -65,7 +65,7 @@ $ sudo pkg install -r FreeBSD www/webhook ftp/curl www/gurl
 
 让我们用这个最小示例启动服务器，将其保存为 webhooks.yaml。
 
-它将使用 `logger.1` 命令向 **/var/log/messages** 写入一条简短记录，包含成功 webhook 的 HTTP User-Agent header。
+它将使用 **logger(1)** 命令向 **/var/log/messages** 写入一条简短记录，包含成功 webhook 的 HTTP User-Agent header。
 
 注意，有一个 trigger-rule 键确保 HTTP 查询参数 `secret` 与单词 `squirrel` 匹配。
 
@@ -331,7 +331,7 @@ webhook executed
 * Connection #0 to host localhost left intact
 ```
 
-[gurl](https://github.com/skunkwerks/gurl) 没有此选项，期望你以正规方式操作。对于生产环境，最好使用反向代理如 [nginx](https://nginx.org/) 或 [haproxy](https://haproxy.org/) 来提供可靠的 TLS 终止，并允许通过 Let's Encrypt 等类似服务使用公共 TLS 证书。
+[gurl](https://github.com/skunkwerks/gurl) 没有此选项，期望你以正规方式操作。对于生产环境，最好使用反向代理如 [nginx](https://nginx.org/) 或 [haproxy](https://haproxy.org/) 来提供可靠的 TLS 终止，并允许通过 Let’s Encrypt 等类似服务使用公共 TLS 证书。
 
 ## 用 GitHub 和 Webhook 更新网站
 
@@ -339,7 +339,7 @@ webhook executed
 
 虽然本文无法涵盖设置自己的网站、TLS 加密证书和 DNS 的全部细节，但以下步骤对于任何软件代码仓库都大致相似。
 
-你需要设置代理服务器，如 Caddy、nginx、haproxy 等，并配置可用的 TLS。通过 Let's Encrypt 使用 ACME 协议来维护是一个很好的选择。
+你需要设置代理服务器，如 Caddy、nginx、haproxy 等，并配置可用的 TLS。通过 Let’s Encrypt 使用 ACME 协议来维护是一个很好的选择。
 
 你需要调整代理服务器，将适当的请求路由到 webhook 守护进程。考虑限制可访问的 IP 地址，以及限制 HTTP 方法。GitHub 的 API 有一个 `/meta` 端点可获取其 IP 地址，但你需要保持更新。
 
