@@ -228,7 +228,7 @@ network={
 # wpa_supplicant -i wlan0 -c /etc/wpa_supplicant.conf -D bsd
 ```
 
-在默认情况下，`wpa_supplicant` 会在前台运行，加上 `-B` 参数则会后台运行。可以通过控制接口获取它的日志信息。
+在默认情况下，`wpa_supplicant` 会在前台运行，加上参数 `-B` 则会后台运行。可以通过控制接口获取它的日志信息。
 
 `wpa_passphrase` 命令可用来为 `wpa_supplicant` 配置文件生成 WPA 网络配置，例如：
 
@@ -321,7 +321,7 @@ wpa_passphrase="superpassword"
 # ifconfig wlan1 inet 192.168.2.1/24 up
 ```
 
-动态地址分配需要安装 dhcpd Port 并创建配置文件。可以在 **dhcpd.conf(5)** 手册页中找到最简配置示例，示例如下：
+动态地址分配需要安装 Port dhcpd 并创建配置文件。可以在 **dhcpd.conf(5)** 手册页中找到最简配置示例，示例如下：
 
 ```ini
 /usr/local/etc/dhcpd.conf:
@@ -342,7 +342,7 @@ subnet 192.168.2.0 netmask 255.255.255.0 {
 
 我们示例中创建的最后一个 VAP 是监控模式。虽然其他模式下也能抓包，但接口并非混杂模式，只会收到发给该接口地址的数据包。监控模式允许我们接收信道上所有的数据包（具体取决于硬件对不同速率的支持）。
 
-一个简单的验证方法是使用带有 `-y` 选项（设置链路层头部类型）的 `tcpdump`：
+一个简单的验证方法是使用带有选项 `-y`（设置链路层头部类型）的 `tcpdump`：
 
 ```sh
 # tcpdump -L -i wlan2
@@ -351,7 +351,7 @@ Data link types for wlan0 (use option -y to set):
   IEEE802_11_RADIO (802.11 plus radiotap header)
 ```
 
-我经常记不清这个变量中下划线的顺序，但 `tcpdump` 使用 `-L` 参数加接口名可以显示该接口类型支持的链路层头部类型。
+我经常记不清这个变量中下划线的顺序，但 `tcpdump` 使用参数 `-L` 加接口名可以显示该接口类型支持的链路层头部类型。
 
 ```sh
 # tcpdump -i wlan2 -y IEEE802_11_RADIO

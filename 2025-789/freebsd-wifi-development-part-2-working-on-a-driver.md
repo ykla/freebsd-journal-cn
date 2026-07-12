@@ -87,7 +87,7 @@ index 00e005fd7d4d..97c790dd5b81 100644
 
 ## 连接到 net80211
 
-WiFi 驱动所需的状态存储在驱动 softc 中的 `ieee80211com` 变量里（通常命名为 `ic`）。
+WiFi 驱动所需的状态存储在驱动 softc 中的变量 `ieee80211com` 里（通常命名为 `ic`）。
 
 驱动使用 `ic` 来设置能力标志，并通过覆盖函数指针来挂接或替换 **net80211** 栈提供的默认功能。
 
@@ -119,7 +119,7 @@ ic->ic_caps =
 
 这段代码位于 `if_iwx` 的 attach 方法末尾。前面的 attach 代码则负责执行驱动的初始化工作，例如识别具体的 PCIe 设备，和确定该网卡的具体 Intel Wireless 型号。
 
-`if_iwx` 驱动支持 **station 模式**（`IEEE80211_C_STA`）和 **monitor 模式**（`IEEE80211_C_MONITOR`）；如果它支持 **host AP 模式**（像 rtwn 那样），那么在能力位掩码中就会额外包含 `IEEE80211_C_HOSTAP` 标志。
+`if_iwx` 驱动支持 **station 模式**（`IEEE80211_C_STA`）和 **monitor 模式**（`IEEE80211_C_MONITOR`）；如果它支持 **host AP 模式**（像 rtwn 那样），那么在能力位掩码中就会额外包含标志 `IEEE80211_C_HOSTAP`。
 
 除了模式以外，iwx 还支持：WPA 加密（`IEEE80211_C_WPA`）、差分服务的多媒体扩展（`IEEE80211_C_WME`）、电源管理（`IEEE80211_C_PMGT`）、短时隙（`IEEE80211_C_SHSLOT`）、短前导码（`IEEE80211_C_SHPREAMBLE`）和后台扫描（`IEEE80211_C_BGSCAN`）。
 
@@ -182,7 +182,7 @@ ieee80211_announce(ic);
 ifconfig wlan create wlandev iwx0
 ```
 
-`wlan` 参数让系统为我们分配一个设备号，而 `iwx0` 则告诉 net80211 子系统使用名为 `iwx0` 的设备来创建这个 VAP。
+参数 `wlan` 让系统为我们分配一个设备号，而 `iwx0` 则告诉 net80211 子系统使用名为 `iwx0` 的设备来创建这个 VAP。
 
 该命令会通过 `ifconfig` 的库转换为一次 `net80211_ioctl` 调用。最终结果是 net80211 会在我们的驱动 `ic` 上调用 `ic->ic_vap_create` 回调。正如前文所述，这个回调映射到 `iwx_vap_create`。
 

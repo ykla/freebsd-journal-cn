@@ -271,7 +271,7 @@ Content-Type : text/plain; charset=utf-8
 freebsd otutahi
 ```
 
-更复杂的示例可在 port 的 [webhook.yaml 示例](https://cgit.freebsd.org/ports/tree/www/webhook/files/webhook.yaml) 或 [详细文档](https://github.com/adnanh/webhook/tree/master/docs) 中找到。
+更复杂的示例可在 Port 的 [webhook.yaml 示例](https://cgit.freebsd.org/ports/tree/www/webhook/files/webhook.yaml) 或 [详细文档](https://github.com/adnanh/webhook/tree/master/docs) 中找到。
 
 ## 保护 Webhook 内容
 
@@ -288,7 +288,7 @@ $ webhook -debug -hotreload \
   -hooks webhook.yaml
 ```
 
-curl 命令需要额外的 `-k` 参数来忽略自签名证书，但其余过程与之前相同：
+curl 命令需要额外的参数 `-k` 来忽略自签名证书，但其余过程与之前相同：
 
 ```sh
 curl -4vk https://localhost:9000/hooks/logger?secret=squirrel

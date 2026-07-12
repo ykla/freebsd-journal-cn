@@ -28,7 +28,7 @@ ezjail_jailzfs="dozer/jails"
 # ezjail-admin install -m
 ```
 
-注意：`-m` 标志会在 Jail 里安装手册页，因为没有什么比查不到 ln 的参数顺序更让人抓狂的了。
+注意：标志 `-m` 会在 Jail 里安装手册页，因为没有什么比查不到 ln 的参数顺序更让人抓狂的了。
 
 这会为 basejail 和 newjail 创建数据集。basejail 数据集通过 nullfs 挂载到每个 Jail 里，提供基本系统，并允许通过简单替换 basejail 的内容来轻松更新。newjail 数据集会复制到每个新建的 Jail 里，以提供完整可用的系统。有了这些，我们可以创建第一个 Jail：
 
@@ -70,7 +70,7 @@ ezjail_jailzfs="dozer/jails"
 
 ### Jail 的进阶配置
 
-Jail 新手最常搜索的问题之一是“为什么我无法从 Jail 里 ping？”Ping 需要使用原始套接字，出于安全考虑默认是禁用的。我们通常应该保持禁用，但有时你需要它，不管是调试，还是像 Nagios 这样需要能 ping 的程序。Jail 有参数 `allow.raw_sockets`，默认设为 0。我们可以用 Jail 配置文件中名副其实的 `parameters` 选项，让 ezjail 为我们的 Jail 设置参数。
+Jail 新手最常搜索的问题之一是“为什么我无法从 Jail 里 ping？”Ping 需要使用原始套接字，出于安全考虑默认是禁用的。我们通常应该保持禁用，但有时你需要它，不管是调试，还是像 Nagios 这样需要能 ping 的程序。Jail 有参数 `allow.raw_sockets`，默认设为 0。我们可以用 Jail 配置文件中名副其实的选项 `parameters`，让 ezjail 为我们的 Jail 设置参数。
 
 Jail 的 ezjail 配置文件只是一个 shell 脚本，启动脚本在启动 Jail 时会包含它。所以，我们所有的 Jail 设置就是 **/usr/local/etc/ezjail/myjail.example.com** 里类似下面这样的行：
 
@@ -94,7 +94,7 @@ export jail_myjail_example_com_fib="2"
 
 ZFS 和 Jail 的另一个强大功能是把数据集委托给 Jail。通过把数据集委托进 Jail，Jail 里的 root 用户就能创建和销毁子数据集、调整数据集属性、执行复制等等。这意味着我们可以创建存储设置，与宿主操作系统隔离，这样即便拥有提权权限的失控脚本也不会破坏宿主机。
 
-如果我们把数据集的 `jailed` 参数设为 `on`，作为安全措施，宿主机将无法再挂载或管理该数据集及其任何子数据集。设置好那个参数后，我们就可以通过设置以下选项，让 ezjail 把它委托给 Jail：
+如果我们把数据集的参数 `jailed` 设为 `on`，作为安全措施，宿主机将无法再挂载或管理该数据集及其任何子数据集。设置好那个参数后，我们就可以通过设置以下选项，让 ezjail 把它委托给 Jail：
 
 ```sh
 export jail_myjail_example_com_zfs_datasets="dozer/customerfiles"

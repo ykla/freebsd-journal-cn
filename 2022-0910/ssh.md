@@ -90,7 +90,7 @@ $ ssh -vD8080 -fCN sshproxyhost.example.com
 - `-C`：对加密的 VPN 数据进行压缩。根据你的网络状况和处理器速度，这可能会降低或提高连接速度。你可以试验这个选项，如果在你只住一晚的那家条件较差的酒店服务下速度太慢，就将其移除。
 - `-N`：SSH 默认期望在远程主机上运行交互式 shell，但对于我们的 VPN 来说并不需要。此选项会使 SSH 不打开终端，而仅转发端口——这正是我们所需要的。
 
-这些选项的详细说明可以在 **ssh(1)** 手册页中找到。当使用 `-v` 选项时，典型会话会输出类似如下的信息：
+这些选项的详细说明可以在 **ssh(1)** 手册页中找到。当使用选项 `-v` 时，典型会话会输出类似如下的信息：
 
 ```sh
 OpenSSH_8.6p1, LibreSSL 3.3.6
@@ -135,4 +135,4 @@ debug1: Requesting forwarding of dynamic forward LOCALHOST:8080 -> *
 
 ---
 
-**BENEDICT REUSCHLING** 是 FreeBSD 项目的文档提交者，也是文档工程团队的成员。过去，他曾担任 FreeBSD 核心团队成员两个任期。他在德国达姆施塔特应用科学大学管理着大数据集群，同时还为本科生教授“Unix for Developers”课程。Benedict 也是每周 bsdnow.tv 播客的主持人之一。
+**BENEDICT REUSCHLING** 是 FreeBSD 项目的文档提交者，也是文档工程团队的成员。过去，他曾任两届 FreeBSD 核心团队成员。他在德国达姆施塔特应用科技大学管理一个大数据集群，还为本科生教授“Unix for Developers”课程。Benedict 也是每周 bsdnow.tv 播客的主持人之一。

@@ -3,7 +3,7 @@
 - 原文链接：[FreeBSD Code Review with git-arc](https://freebsdfoundation.org/wp-content/uploads/2021/11/FreeBSD-Code-Review-with-git-arc.pdf)
 - 作者：**JOHN BALDWIN**
 
-FreeBSD 项目在 [https://reviews.freebsd.org](https://reviews.freebsd.org) 使用 Phabricator 的 Differential 应用作为代码审查工具。Phabricator 本身提供了多个应用来支持软件开发，但 FreeBSD 项目仅使用代码审查工具。用户和开发者可以通过直接在 Web 应用中粘贴 diff，或使用命令行工具 arc（可通过软件包或 port 安装 [devel/arcanist](https://www.freshports.org/devel/arcanist) ）来上传变更进行审查。arc 可以从命令行上传 git 分支中的提交，并且还能修改已审查提交的提交日志，以便将其推送到公共代码库。  
+FreeBSD 项目在 [https://reviews.freebsd.org](https://reviews.freebsd.org) 使用 Phabricator 的 Differential 应用作为代码审查工具。Phabricator 本身提供了多个应用来支持软件开发，但 FreeBSD 项目仅使用代码审查工具。用户和开发者可以通过直接在 Web 应用中粘贴 diff，或使用命令行工具 arc（可通过软件包或 Port 安装 [devel/arcanist](https://www.freshports.org/devel/arcanist) ）来上传变更进行审查。arc 可以从命令行上传 git 分支中的提交，并且还能修改已审查提交的提交日志，以便将其推送到公共代码库。  
 
 然而，arc 在 FreeBSD 开发中存在一些使用上的局限性，使其显得不太顺手：  
 
@@ -11,7 +11,7 @@ FreeBSD 项目在 [https://reviews.freebsd.org](https://reviews.freebsd.org) 使
 
 - Arcanist 假设开发分支中的所有提交都会作为单个 Differential 修订版本上传进行审查。在包含多个提交的功能分支上工作时，通常逐个审查每个提交更加高效。  
 
-尽管可以通过一定的方法规避这些限制（例如，使用 `--head` 选项可以将单个提交作为独立的审查上传），但这些方法比较繁琐。  
+尽管可以通过一定的方法规避这些限制（例如，使用选项 `--head` 可以将单个提交作为独立的审查上传），但这些方法比较繁琐。  
 
 git-arc 工具是 arc 的一个封装，主要用于解决这些限制。git-arc 是 git 的一个插件，它为 git 添加了与 Phabricator 交互的相关命令。  
 
@@ -57,9 +57,9 @@ Writing ~/.arcrc...
 
 提交准备完成后，下一步是使用 `create` 子命令为该提交创建审查。此命令接受一个提交的引用（如哈希值或符号引用，例如 `HEAD`）作为位置参数，位于所有选项之后。`create` 子命令会使用提交日志消息作为审查的标题和描述，在 Phabricator 上创建一个新的审查。  
 
-可以使用 `-r` 选项添加审查者。多个审查者可以用逗号分隔，或者通过多个 `-r` 选项指定。要添加一个审查组，可以在组名前加 `#` 符号，例如 `#bhyve` 以标记负责 **bhyve(8)** hypervisor 的开发者。  
+可以使用选项 `-r` 添加审查者。多个审查者可以用逗号分隔，或者通过多个选项 `-r` 指定。要添加一个审查组，可以在组名前加 `#` 符号，例如 `#bhyve` 以标记负责 **bhyve(8)** hypervisor 的开发者。  
 
-以下示例为 `gdb_11` 分支上的一个提交创建审查，该提交涉及 `devel/gdb` port，并将 port 维护者（<pizzamig@FreeBSD.org>）指定为审查者：
+以下示例为 `gdb_11` 分支上的一个提交创建审查，该提交涉及 `devel/gdb` Port，并将 Port 维护者（<pizzamig@FreeBSD.org>）指定为审查者：
 
 ```sh
 > git log --oneline main..gdb_11
@@ -84,7 +84,7 @@ Does this look OK? [y/N] y
 >
 >`update` 和 `stage` 子命令会使用提交日志的第一行来查找标题相同的审查。如果修改了提交日志消息的第一行，则必须在 Phabricator 中更新审查的标题，否则 `git-arc` 无法正确识别该提交对应的现有审查。  
 
-以下示例展示了在根据审查者反馈修改原始提交后，如何更新 `devel/gdb` Port 更新的审查：  
+以下示例展示了在根据审查者反馈修改原始提交后，如何更新 Port `devel/gdb` 更新的审查：  
 
 ```sh
 > git arc update gdb_11
@@ -126,7 +126,7 @@ Does this look OK? [y/N] y
 
 对于分支，`git-arc` 会为每个提交创建一个审查，并在 Phabricator 中将这些提交链接成一个堆栈。分支中的第一个提交的审查被标记为第二个提交审查的父修订，依此类推。这使得在 Phabricator UI 中查看分支中任意提交的审查时，都可以通过 **Stack** 选项卡找到该分支的所有提交。  
 
-默认情况下，`create` 子命令会逐个显示每个提交的日志消息和补丁，并在每个提交后提示用户确认。对于包含许多提交的分支，这个步骤可能会很繁琐，因此 `create` 提供了可选的 `-l` 参数。如果使用该参数，`create` 将列出所有候选提交，并只进行一次确认提示。如果用户在提示时输入 `y`，则整个审查堆栈会一次性创建，而不会进一步提示。以下示例展示了如何为当前目录中检出的分支创建所有提交的审查。该分支是基于 `main` 分支创建的：
+默认情况下，`create` 子命令会逐个显示每个提交的日志消息和补丁，并在每个提交后提示用户确认。对于包含许多提交的分支，这个步骤可能会很繁琐，因此 `create` 提供了可选的参数 `-l`。如果使用该参数，`create` 将列出所有候选提交，并只进行一次确认提示。如果用户在提示时输入 `y`，则整个审查堆栈会一次性创建，而不会进一步提示。以下示例展示了如何为当前目录中检出的分支创建所有提交的审查。该分支是基于 `main` 分支创建的：
 
 ```sh
 > git arc create -l -s emaste main..

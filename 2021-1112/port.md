@@ -160,7 +160,7 @@ Ceph 在 FreeBSD 上运行良好，但导入这个设备的过程却相当...有
 # rbd map -t ggate volumes/ssdvolume
 ```
 
-**volumes/ssdvolume** 是我们从 IT 部门获得的 SSD Ceph 存储的路径，成功导入后会映射一个 geom gate 设备。由于没有提供执行导入的用户的 `--id`（用户名和密码保护了这个存储，防止他人未经授权导入），命令失败了。在这里，单破折号和双破折号的混用成了问题，因为基于 Linux 的 `rbd` 命令拒绝将 `--id` 与单个 `-t` 参数混合使用。我们通过将 ID 作为环境变量来解决这个问题，如下所示：
+**volumes/ssdvolume** 是我们从 IT 部门获得的 SSD Ceph 存储的路径，成功导入后会映射一个 geom gate 设备。由于没有提供执行导入的用户的 `--id`（用户名和密码保护了这个存储，防止他人未经授权导入），命令失败了。在这里，单破折号和双破折号的混用成了问题，因为基于 Linux 的 `rbd` 命令拒绝将 `--id` 与单个参数 `-t` 混合使用。我们通过将 ID 作为环境变量来解决这个问题，如下所示：
 
 ```sh
 CEPH_ARGS='--id postgresdb' rbd map -t ggate volumes/postgresdb
@@ -192,4 +192,4 @@ ggate0 created
 
 ---
 
-**BENEDICT REUSCHLING** 是 FreeBSD 项目的文档贡献者，并且是文档工程团队的成员。他在 FreeBSD 基金会董事会担任副主席。过去，他曾在 FreeBSD 核心团队工作两届。他在德国达姆施塔特应用科技大学管理一个大数据集群，并为本科生教授“开发者的 Unix”课程。Benedict 也是每周 bsdnow.tv 播客的主持人之一。
+**BENEDICT REUSCHLING** 是 FreeBSD 项目的文档提交者，也是文档工程团队的成员。他是 FreeBSD 基金会董事会的副主席。过去，他曾任两届 FreeBSD 核心团队成员。他在德国达姆施塔特应用科技大学管理一个大数据集群，还为本科生教授“Unix for Developers”课程。Benedict 也是每周 bsdnow.tv 播客的主持人之一。

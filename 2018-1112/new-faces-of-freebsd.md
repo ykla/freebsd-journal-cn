@@ -23,7 +23,7 @@
 
 ## 你最终是如何成为 committer 的？
 
-- **Sergey**：一切都始于我发现两款软件：p910nd 和 mjpg-streamer。我需要它们，但被迫使用 Linux，因为它们不在 Ports 集合中。这让我很生气——“为什么他们能用，我们不能？让这么小的应用在 FreeBSD 上运行能有多难？”这时我决定制作自己的 port。我制作了几个——每次工作中有人找我，说“嘿，我们需要 <应用名>，但网站上没有 FreeBSD 版本”，我都会微笑说：“别担心，我明天就移植它。”
+- **Sergey**：一切都始于我发现两款软件：p910nd 和 mjpg-streamer。我需要它们，但被迫使用 Linux，因为它们不在 Ports 集合中。这让我很生气——“为什么他们能用，我们不能？让这么小的应用在 FreeBSD 上运行能有多难？”这时我决定制作自己的 Port。我制作了几个——每次工作中有人找我，说“嘿，我们需要 <应用名>，但网站上没有 FreeBSD 版本”，我都会微笑说：“别担心，我明天就移植它。”
 
   过了一段时间，我加入 Intel，终于能够让 Ports 工作成为我的工作职责的一部分。经过许多 Phabricator 评审，sbruno@ 显然厌倦了提交我的代码，决定是时候让我自己开始搞砸事情了。
 
@@ -43,6 +43,6 @@
 
 ---
 
-**DRU LAVIGNE** 是 FreeBSD 文档 committer，《BSD Hacks》和《The Best of FreeBSD Basics》的作者。
+**DRU LAVIGNE** 是 FreeBSD 文档提交者，《BSD Hacks》和《The Best of FreeBSD Basics》的作者。
 
 > “祝贺发布工程团队和所有贡献者发布 12.0！我们还要感谢我们的捐赠者社区，他们的支持帮助我们资助一名全职工作人员，专门领导发布工程团队并监督发布流程。”

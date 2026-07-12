@@ -2,7 +2,7 @@
 
 本专栏聚焦近期获得提交权限的贡献者，并向 FreeBSD 社区介绍他们。本期聚焦 2 月获得 Ports 提交权限的 Kai Knoblich。
 
-“你第一次提交的感觉是无价的。“
+“你第一次提交的感觉是无价的。”
 
 **请简单介绍一下你自己、背景和兴趣。**
 
@@ -28,7 +28,7 @@
 
   2018 年初，我拿到一台新笔记本，装上崭新的 FreeBSD。我研读了《Porter’s Handbook》，最初开始为较小的 Port 提交补丁。不久之后，我已经在做新 Port 和更大的项目，比如 net-mgmt/netbox，它还依赖其他软件包。
 
-  NetBox 进入 Ports 树之后，我为许多 Django Port 提交了大量补丁，以应对 Django 1.8 到 1.11 迁移的善后工作。2018 年 7 月，Martin（miwi@）问我是否有兴趣获得提交权限。
+  NetBox 进入 Ports 树之后，我为许多 Port Django 提交了大量补丁，以应对 Django 1.8 到 1.11 迁移的善后工作。2018 年 7 月，Martin（miwi@）问我是否有兴趣获得提交权限。
 
   我决定再考虑一下，不久后 Jochen（joneum@）和 Tobias（tcberner@）也问我是否愿意接受提交权限。我在深秋同意了，2019 年 2 月初正式拿到提交权限。
 
@@ -43,4 +43,4 @@
 
 ---
 
-**DRU LAVIGNE** 是 FreeBSD 文档提交者，也是《BSD Hacks》和《The Best of FreeBSD Basics》的作者。
+**DRU LAVIGNE** 是 FreeBSD 文档提交者，《BSD Hacks》和《The Best of FreeBSD Basics》的作者。

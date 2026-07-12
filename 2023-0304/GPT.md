@@ -251,7 +251,7 @@ setup_partitions "$SSD" "$SWAP_SIZE_SSD" "false"
 
 **BCR**: 当我们用同样的 4g 作为 HDD 和 SSD 的交换空间大小时，代码会是什么样子？
 
-**ChatGPT**: 如果我们想对 HDD 和 SSD 使用同样的 4g 交换空间大小，我们可以修改 `setup_partitions` 函数，使其只接受一个磁盘参数，并删除 `is_hdd` 参数和确定磁盘序列号的条件逻辑。下面是更新后的代码在 **/bin/sh** 语法中的样子：
+**ChatGPT**: 如果我们想对 HDD 和 SSD 使用同样的 4g 交换空间大小，我们可以修改 `setup_partitions` 函数，使其只接受一个磁盘参数，并删除参数 `is_hdd` 和确定磁盘序列号的条件逻辑。下面是更新后的代码在 **/bin/sh** 语法中的样子：
 
 ```sh
 #!/bin/sh
@@ -304,7 +304,7 @@ setup_partitions "$HDD $SSD" "$SWAP_SIZE"
 **ChatGPT**：当然可以，这里有几个潜在的优化方案：
 
 1. 使用一种更有效的方式来增加计数器变量：在循环中不要使用 `counter=$((counter+1))`，你可以使用快捷方式 `counter=$((counter++))`，甚至只使用 `((counter++))`。这样可以避免创建子 shell 来执行算术操作，这样会比较慢。
-2. 使用 echo 的 `-n` 选项可以避免打印换行符：当打印关于设置交换空间的信息时，你可以使用 echo 的 `-n` 选项来避免打印换行符。因为你在它后面紧接着另一条信息。这将使输出看起来更干净。
+2. 使用 echo 的选项 `-n` 可以避免打印换行符：当打印关于设置交换空间的信息时，你可以使用 echo 的选项 `-n` 来避免打印换行符。因为你在它后面紧接着另一条信息。这将使输出看起来更干净。
 3. 使用参数扩展来删除空白：与其使用 `tr -d '[:space:]'` 来删除序列号中的空白，不如使用参数扩展来达到同样的效果：`${variable##*[[:space:]]}`。这就避免了产生额外进程的开销，而且可能会更快。
 
 下面是应用这些优化后的代码：
@@ -362,4 +362,4 @@ setup_partitions "$HDD $SSD" "$SWAP_SIZE"
 
 ---
 
-**BENEDICT REUSCHLING** 是 FreeBSD 项目的文档提交者和文档工程小组的成员。他曾在 FreeBSD 核心团队任职两届。他在德国达姆施塔特应用科学大学管理着大数据集群。他还在为本科生教授“Unix for Developers”【UNIX 开发】课程。他还是每周 bsdnow.tv 播客的主持人之一。
+**BENEDICT REUSCHLING** 是 FreeBSD 项目的文档提交者，也是文档工程团队的成员。过去，他曾任两届 FreeBSD 核心团队成员。他在德国达姆施塔特应用科技大学管理一个大数据集群，还为本科生教授“Unix for Developers”课程。Benedict 也是每周 bsdnow.tv 播客的主持人之一。

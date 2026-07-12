@@ -71,7 +71,7 @@ zfs set sharenfs="-network 192.168.0.0 -mask 255.255.255.0
 -maproot=user,-alldirs" zroot/fileshare
 ```
 
-`maproot=user` 部分定义了，如果用户访问共享并且文件拥有该用户的权限，则服务器会将其映射到相同的本地权限，即使它们在服务器上可能不同。例如，Joe 可能在本地的 uid/gid 是 2000，而在 NFS 服务器上，所有用户的 uid/gid 都从 3000 开始。NFS 服务器会将 Joe 的文件设置为 uid/gid 为 3000，但当 Joe 访问共享时，他会看到本地系统上熟悉的 2000，而不会感到困惑。`-alldirs` 选项允许在 **/fileshare** 下的任何目录中进行挂载。通过阅读 **exports(5)** 可以了解更多这些及其他选项。
+`maproot=user` 部分定义了，如果用户访问共享并且文件拥有该用户的权限，则服务器会将其映射到相同的本地权限，即使它们在服务器上可能不同。例如，Joe 可能在本地的 uid/gid 是 2000，而在 NFS 服务器上，所有用户的 uid/gid 都从 3000 开始。NFS 服务器会将 Joe 的文件设置为 uid/gid 为 3000，但当 Joe 访问共享时，他会看到本地系统上熟悉的 2000，而不会感到困惑。选项 `-alldirs` 允许在 **/fileshare** 下的任何目录中进行挂载。通过阅读 **exports(5)** 可以了解更多这些及其他选项。
 
 至此，服务器部分完成。我们需要启动 **/etc/rc.conf** 中列出的所有服务，以开始共享挂载的数据集。
 
@@ -149,4 +149,4 @@ myfiler:/fileshare /media nfs rw,nfsvers=4 0 0
 
 ---
 
-**BENEDICT REUSCHLING** 是 FreeBSD 项目中的文档提交者，也是文档工程团队的成员。过去，他曾在 FreeBSD 核心团队任职两届。他在德国达姆施塔特应用科技大学管理一个大数据集群，还教授本科生课程“开发者的 Unix”。Benedict 还是每周 bsdnow.tv 播客的主持人之一。
+**BENEDICT REUSCHLING** 是 FreeBSD 项目的文档提交者，也是文档工程团队的成员。过去，他曾任两届 FreeBSD 核心团队成员。他在德国达姆施塔特应用科技大学管理一个大数据集群，还为本科生教授“Unix for Developers”课程。Benedict 也是每周 bsdnow.tv 播客的主持人之一。

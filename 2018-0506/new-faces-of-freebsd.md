@@ -42,13 +42,13 @@
 
 **Sean**：在 Linux 的第一个版本不断因使用 telnet 而崩溃后，我切换到 386BSD 作为个人电脑，这导致了其他 BSD，最终在 FreeBSD 开始几个月后专注于 FreeBSD。当时可分发源代码的 BSD 仍然很新，有很多让我感兴趣的工作。像我一贯的做法，我做了大量库和工具工作，以及一些补充内核代码。在上 McKusick 的 BSD 内部课程时，我决定写一个 procfs 版本，在大量帮助下完成了模板。然后 procfs 工作后，我开始写 truss；这两个仍然是我最大的个人贡献。我还为 Dr Dobb’s Journal 写了一些相关文章。
 
-**Vincenzo**：我第一次接触 FreeBSD 是在大学学习 UNIX 系统管理的课程中。然而，我第一次真正与 FreeBSD 源代码互动只是几年前，当时我参加了 谷歌 Summer of Code 项目。在这个项目中，我玩内核比特和虚拟化工具，很开心。我还有机会在一次 FreeBSD 会议上展示我的工作。我对操作系统实现有浓厚兴趣，特别喜欢 FreeBSD，因为其干净的设计和出色的文档。
+**Vincenzo**：我第一次接触 FreeBSD 是在大学学习 UNIX 系统管理的课程中。然而，我第一次真正与 FreeBSD 源代码互动只是几年前，当时我参加了谷歌 Summer of Code 项目。在这个项目中，我玩内核比特和虚拟化工具，很开心。我还有机会在一次 FreeBSD 会议上展示我的工作。我对操作系统实现有浓厚兴趣，特别喜欢 FreeBSD，因为其干净的设计和出色的文档。
 
 **Fernando**：我第一次听说 FreeBSD 是在高中。我的一个朋友是早期 Linux 用户，他告诉我 FreeBSD。不久后，我买了一期西班牙版 PC World，其中附带了 FreeBSD 4.2。它在我的硬件上运行得不太好，但我能安装并玩一段时间。之后我升级到 5.0，但仍更常用 Linux。我想大约 7.0 时我成为主要的 FreeBSD 用户。我被其稳定性打动，这种感觉随时间增长。我仍有一台 12 年历史的笔记本，只有 1 GB 内存，运行 FreeBSD 11.0。
 
 **Tom**：我 2008 年 distro hopping 时在 G4 iBook 上运行 PowerPC FreeBSD，但我的冒险真正开始于 2018 年我加入阿伯丁大学研究组时。当时该组正在标准化一种称为 NewCWV（RFC7661）的 TCP 修改。我们有 Linux 的实现，IETF 标准化信条是“rough consensus and running code”，如果有尽可能多平台的实现会很有帮助。有人谈论移植到 BSD 操作系统，我要求参与。移植工作从我的桌面虚拟机开始，但很快我获得了一些二手服务器来构建和运行 FreeBSD。FreeBSD 因其著名的优秀 TCP 协议栈成为移植的首选操作系统。很快我开始怀念 FreeBSD 开发机器上可用的工具，决定必须把 FreeBSD 用作桌面。
 
-**Eric**：我那段旅程始于厌倦 Windows XP 上的病毒，想成为黑客。我切换到 PC Linux OS，搬到 Mandriva，然后到 Ubuntu，感觉有点像在家。在我成为臭名昭著的黑客的征途上，大约在同一时间我发现了 Eric Steven Raymond 的“How To Become A Hacker”，这是一个改变人生的事件，让我停止了成为黑客的旅程。“How To Become A Hacker”简要谈到 BSD Unix，这引起了我的注意。我开始 谷歌 BSD，这开始了我通向 FreeBSD 的道路。我安装了 FreeBSD 7.0，比 XP 更容易安装，但 shell 是我的克星。所以，我重装了 Ubuntu，做了更多研究，找到并尝试了 PC-BSD 1.4。我不喜欢 KDE，所以我在磁盘的一半重装了 Ubuntu，打印了整个 FreeBSD 手册和文档来安装和设置 Gnome，在另一半重装了 FreeBSD。这就是我对 FreeBSD 所有的爱开始的地方，我开始 GhostBSD 以拥有 PC-BSD 的 Gnome 等价物。
+**Eric**：我那段旅程始于厌倦 Windows XP 上的病毒，想成为黑客。我切换到 PC Linux OS，搬到 Mandriva，然后到 Ubuntu，感觉有点像在家。在我成为臭名昭著的黑客的征途上，大约在同一时间我发现了 Eric Steven Raymond 的“How To Become A Hacker”，这是一个改变人生的事件，让我停止了成为黑客的旅程。“How To Become A Hacker”简要谈到 BSD Unix，这引起了我的注意。我开始谷歌 BSD，这开始了我通向 FreeBSD 的道路。我安装了 FreeBSD 7.0，比 XP 更容易安装，但 shell 是我的克星。所以，我重装了 Ubuntu，做了更多研究，找到并尝试了 PC-BSD 1.4。我不喜欢 KDE，所以我在磁盘的一半重装了 Ubuntu，打印了整个 FreeBSD 手册和文档来安装和设置 Gnome，在另一半重装了 FreeBSD。这就是我对 FreeBSD 所有的爱开始的地方，我开始 GhostBSD 以拥有 PC-BSD 的 Gnome 等价物。
 
 今天我对 FreeBSD 的主要兴趣是 GhostBSD 以及我所有只运行 FreeBSD 的服务器和 VPS。我对 FreeBSD 桌面端比作为服务器的 FreeBSD 更感兴趣，这就是 GhostBSD 开始的原因。
 
@@ -56,13 +56,13 @@ FreeBSD 和 Eric Steven Raymond 的文章开始了我成为程序员的道路，
 
 ## 你是怎么成为 committer 的？
 
-**Jason**：我从 2004 年左右开始维护 ports，当时我发现 FreeBSD 为我们在威斯康星医学院的 fMRI 研究解决了很多稳定性问题。我目前维护几十个活跃的 ports，工作进度集合中还有两百多个。
+**Jason**：我从 2004 年左右开始维护 Ports，当时我发现 FreeBSD 为我们在威斯康星医学院的 fMRI 研究解决了很多稳定性问题。我目前维护几十个活跃的 Ports，工作进度集合中还有两百多个。
 
 我被邀请成为 committer 两次。第一次是几年前我生活非常忙碌的时候，我不得不婉拒。第二次大约一年前，我仍然很忙，但事情朝着正确的方向发展，所以我咬紧牙关接受了。
 
 大约同一时间我也成为 pkgsrc 开发者，比较两个项目的优缺点很有趣。我希望在未来几年帮助弥合两者，使双方受益。我们广泛使用 pkgsrc 在 CentOS 系统上安装最新的开源软件包。
 
-**Koichiro**：我多年来一直在为 FreeBSD 项目做贡献，特别是作为 xrdp 的 port 维护者。有一天，我自愿成为 Ports committer。Hiroki Sato（一位日本 FreeBSD 核心开发者）提名我为 Ports committer，最终我成为了 committer。
+**Koichiro**：我多年来一直在为 FreeBSD 项目做贡献，特别是作为 xrdp 的 Port 维护者。有一天，我自愿成为 Ports committer。Hiroki Sato（一位日本 FreeBSD 核心开发者）提名我为 Ports committer，最终我成为了 committer。
 
 **Sean**：我在早期就曾是 committer。然而，2001 年我开始在 Apple 工作，可以说，他们不赞成我继续那样做。所以，有十年期间我几乎没做任何公开可见的事。离开 Apple 后，我去了 iXsystems，在那里我第一次全职与 FreeBSD 工作。然而，前几年我做的大部分涉及非操作系统代码（主要是安装程序和更新程序）。偶尔，我会遇到一些我想做的事情需要操作系统更改，其中大部分我通过邮件发回给最后修改相关文件的人。有些补丁目前仍在 iX，需要回去。
 
@@ -70,7 +70,7 @@ FreeBSD 和 Eric Steven Raymond 的文章开始了我成为程序员的道路，
 
 **Vincenzo**：我是开源 Netmap 项目的维护者，该项目为应用提供从用户态执行快速网络 I/O 的 API。Netmap 在 FreeBSD 和 Linux 上运行，其源代码目前托管在 GitHub 上。虽然 Netmap 已经包含在 FreeBSD 树中，但其中的代码并没有真正维护，且相对于上游版本不断过时。因此，在上次 AsiaBSDCon 上我被邀请成为 committer，以保持 FreeBSD Netmap 代码的良好状态并与上游对齐。我非常高兴地接受了。
 
-**Fernando**：成为全职 FreeBSD 用户后，我开始贡献一些 port PR。2011 年，我发了几个 PR，移植了 wiki 的 WantedPorts 页面中列出的一些 ports。这是一件有趣的事，让我学到了很多，得益于所有提交我补丁的人的提示。我甚至在母校（Universidad de Valladolid）做了几次关于 FreeBSD 和如何创建 ports 的演讲。一段时间后，我觉得应该更深入地参与项目，所以我开始用“嘿，如果有人能指导我完成导师过程，我愿意提升”之类的话结束所有 PR。一段时间后，tz@ 回应了我的请求。tz@ 和 tcberner@ 是我耐心的导师。我仍在愉快地学习如何成为一名好的 Ports committer。
+**Fernando**：成为全职 FreeBSD 用户后，我开始贡献一些 Port PR。2011 年，我发了几个 PR，移植了 wiki 的 WantedPorts 页面中列出的一些 Ports。这是一件有趣的事，让我学到了很多，得益于所有提交我补丁的人的提示。我甚至在母校（Universidad de Valladolid）做了几次关于 FreeBSD 和如何创建 Ports 的演讲。一段时间后，我觉得应该更深入地参与项目，所以我开始用“嘿，如果有人能指导我完成导师过程，我愿意提升”之类的话结束所有 PR。一段时间后，tz@ 回应了我的请求。tz@ 和 tcberner@ 是我耐心的导师。我仍在愉快地学习如何成为一名好的 Ports committer。
 
 **Tom**：去年在布拉格的 IETF 上，约我吃午餐的人放了我鸽子，反而邀请我加入一位同事和 Netflix 团队。吃鲁本三明治时，我和 Jonathan Looney（我的导师）聊起我迄今为止在 FreeBSD 上做的工作。几周后在剑桥的 BSDCam，Jonathan 问我是否有兴趣成为 committer。
 
@@ -90,12 +90,12 @@ FreeBSD 和 Eric Steven Raymond 的文章开始了我成为程序员的道路，
 
 **Vincenzo**：我成为 committer 不到两个月，所以我经验不足，无法给出有意义的建议。然而，我觉得 FreeBSD 是一个非常友好的社区，对新想法和新人开放。这是我非常欣赏的，因为这在开源社区中并不常见。我认为为开源项目做贡献最令人兴奋的事是看到自己的工作成为被成千上万用户使用的东西的一部分。这绝对吸引了我，我认为对于那些考虑成为 FreeBSD committer 的人来说可能很有趣。
 
-**Fernando**：到目前为止，很棒！人们非常欢迎和友好。通过 Phabricator 的同行审查非常好，总是值得使用。所有开发者对工作的细节关注让我印象深刻。仅仅能用还不够，应该以最好的方式工作。关于建议：订阅你感兴趣的邮件列表（如 freebsd-ports@）。阅读你能读到的所有消息，你会学到很多。之后，你可以发一些补丁。对于 Ports Collection，你可以收养一个孤儿 port、提交新 port 或只是发送对现有 ports 的更新。对于其他子系统如 base，查看 bugzilla 的数据库，找到你能帮忙的事情总是好的。另外，不要害怕提问！
+**Fernando**：到目前为止，很棒！人们非常欢迎和友好。通过 Phabricator 的同行审查非常好，总是值得使用。所有开发者对工作的细节关注让我印象深刻。仅仅能用还不够，应该以最好的方式工作。关于建议：订阅你感兴趣的邮件列表（如 freebsd-ports@）。阅读你能读到的所有消息，你会学到很多。之后，你可以发一些补丁。对于 Ports Collection，你可以收养一个孤儿 Port、提交新 Port 或只是发送对现有 Ports 的更新。对于其他子系统如 base，查看 bugzilla 的数据库，找到你能帮忙的事情总是好的。另外，不要害怕提问！
 
 **Tom**：社区非常欢迎。对我来说，加入项目是一段漫长的旅程。写代码只是第一部分，让代码被上游接受需要同样甚至更多的努力。最大的进步来自与人面对面见面。去年我在 FOSDEM 遇到 Sevan Janiyan（sevan@），他邀请我参加 BSDCam。你的第一次贡献应该小；邮件列表上没有潜伏的怪物等着驳倒你的 diff。所以，修复一些东西、一个命令、man 页面或一些文档，参与进来！
 
-**Eric**：到目前为止还不错。我对最近学到的一切感到满意，在 Baptiste、William 和 Koop 的帮助下，我在创建和维护 ports 方面越来越好。我在 Ports 中发布了 MATE 1.20。我还有更多要学，由于我参与了很多项目，一切进展缓慢。对于任何有兴趣参与 FreeBSD 的人，参与你感兴趣的项目的任何部分都很简单。加入论坛、FreeBSD IRC 频道和与你兴趣相关的邮件列表。开始帮助和工作，把你的工作发送给相关的人，迟早你会得到 commit bit。
+**Eric**：到目前为止还不错。我对最近学到的一切感到满意，在 Baptiste、William 和 Koop 的帮助下，我在创建和维护 Ports 方面越来越好。我在 Ports 中发布了 MATE 1.20。我还有更多要学，由于我参与了很多项目，一切进展缓慢。对于任何有兴趣参与 FreeBSD 的人，参与你感兴趣的项目的任何部分都很简单。加入论坛、FreeBSD IRC 频道和与你兴趣相关的邮件列表。开始帮助和工作，把你的工作发送给相关的人，迟早你会得到 commit bit。
 
 ---
 
-**DRU LAVIGNE** 是 FreeBSD 项目的 doc committer，BSD Certification Group 主席。
+**DRU LAVIGNE** 是 FreeBSD 项目的文档提交者，BSD 认证小组主席。

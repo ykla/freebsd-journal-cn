@@ -3,7 +3,7 @@
 - 原文：[Ports Report](https://freebsdfoundation.org/our-work/journal/browser-based-edition/migrating-jail-management-from-warden-to-iocage/)
 - 作者：**Frederic Culot**
 
-9 月至 10 月期间，Ports 领域的活跃度与夏季基本持平，整体并不算高。话虽如此，我们很高兴看到几位新 committer 加入项目。此外，本期内一些主要的 port 也得到更新，升级时可能需要按后文所述谨慎处理。
+9 月至 10 月期间，Ports 领域的活跃度与夏季基本持平，整体并不算高。话虽如此，我们很高兴看到几位新 committer 加入项目。此外，本期内一些主要的 Port 也得到更新，升级时可能需要按后文所述谨慎处理。
 
 ## 新任 Ports Committer 与代为保管
 
@@ -16,7 +16,7 @@
 - Kenji Takefu，由 hrs@ 与 mat@ 担任导师；
 - Carlos Puga Medina，由 junovitch@、amdmi3@、feld@ 担任导师。
 
-两人都已为 FreeBSD 贡献不少：Kenji 自 2006 年以来提交了 300 多份问题报告，Carlos 维护着 30 多个 port。两份实至名归的 commit 权限——恭喜二位！
+两人都已为 FreeBSD 贡献不少：Kenji 自 2006 年以来提交了 300 多份问题报告，Carlos 维护着 30 多个 Port。两份实至名归的 commit 权限——恭喜二位！
 
 此外，部分 commit 权限因超过 18 个月未活跃而被代为保管（fluffy@、lioux@、lippe@、simon@）。
 
@@ -26,17 +26,17 @@
 
 ## 重要 Ports 更新
 
-一如既往，antoine@ 进行了大量 exp-run（共 22 次），以检查主要 port 的更新是否安全。这些重要更新中，以下亮点值得一提：
+一如既往，antoine@ 进行了大量 exp-run（共 22 次），以检查主要 Port 的更新是否安全。这些重要更新中，以下亮点值得一提：
 
 - CMake 更新至 3.3.1
 - ffmpeg 更新至 2.8
 - Qt4 更新至 4.8.7
 
-另一项值得关注的更新涉及 Firefox（41.0）和 SeaMonkey（2.38）：它们现在要求 **databases/sqlite3** 依赖在构建时启用 DBSTAT 选项——前提是你未使用二进制包，而是采用一组非默认的 port 选项。照例，更多信息见 **/usr/ports/UPDATING** 文件，升级主要 port 前应仔细阅读。
+另一项值得关注的更新涉及 Firefox（41.0）和 SeaMonkey（2.38）：它们现在要求 **databases/sqlite3** 依赖在构建时启用 DBSTAT 选项——前提是你未使用二进制包，而是采用一组非默认的 Port 选项。照例，更多信息见 **/usr/ports/UPDATING** 文件，升级主要 Port 前应仔细阅读。
 
 ## 我能如何参与？
 
-如果你喜爱 FreeBSD 并希望加入团队，不错的切入点是接手一个无人维护的 port 并提交更新。要查找未指定具体 committer 或团队的 port，可在线浏览 portsmon 的列表（<http://portsmon.freebsd.org/portsconcordanceformaintainer.py?maintainer=ports%40FreeBSD.org>），或执行以下命令：
+如果你喜爱 FreeBSD 并希望加入团队，不错的切入点是接手一个无人维护的 Port 并提交更新。要查找未指定具体 committer 或团队的 Port，可在线浏览 portsmon 的列表（<http://portsmon.freebsd.org/portsconcordanceformaintainer.py?maintainer=ports%40FreeBSD.org>），或执行以下命令：
 
 ```sh
 make -C /usr/ports quicksearch maint=ports@FreeBSD.org

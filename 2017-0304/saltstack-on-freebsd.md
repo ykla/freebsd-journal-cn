@@ -84,7 +84,7 @@ Summary
 
 ## 使用 SaltState 文件管理 Minion
 
-SaltStack 配置指令存储在所谓 statefile 中，以 `.sls` 扩展名标识。每个 SaltStack 安装都有一个所谓的”top file”，定义整体结构以及 SaltState 与受管主机的关联。出于我们的目的，从一个非常简单的 top file 开始，它把两个状态关联到我们的节点：
+SaltStack 配置指令存储在所谓 statefile 中，以 `.sls` 扩展名标识。每个 SaltStack 安装都有一个所谓的“top file”，定义整体结构以及 SaltState 与受管主机的关联。出于我们的目的，从一个非常简单的 top file 开始，它把两个状态关联到我们的节点：
 
 ```yaml
 base:
@@ -190,7 +190,7 @@ Summary
 -----------------------------------
 ```
 
-SaltStack 以列表形式返回这些值，因此我们必须指定列表中代表我们要使用的值的元素。所以，当 Minion 评估这个 salt stage 时，它会扫描 grain 系统中名为 `ipv4` 的键，并用存储的公共 IPv4 地址设置 `pri_ipv4` 变量。然后该数据按第 6 行所示插入 Minion 上的本地配置文件，其中 `{{ pri_ipv4 }}` 被替换为 IP 地址。这是一个非常简单的示例，但其威力应当相当明显。例如，设想你管理着跨越多个子域的一群系统。利用 Grains 和模板，你可以在模板中抽象掉许多按域和按系统的配置，甚至用逻辑决定在给定 Minion 上渲染模板的哪些部分。SaltStack 还让你能通过编写简单的 Python 类来轻松扩展默认 Minion。
+SaltStack 以列表形式返回这些值，因此我们必须指定列表中代表我们要使用的值的元素。所以，当 Minion 评估这个 salt stage 时，它会扫描 grain 系统中名为 `ipv4` 的键，并用存储的公共 IPv4 地址设置变量 `pri_ipv4`。然后该数据按第 6 行所示插入 Minion 上的本地配置文件，其中 `{{ pri_ipv4 }}` 被替换为 IP 地址。这是一个非常简单的示例，但其威力应当相当明显。例如，设想你管理着跨越多个子域的一群系统。利用 Grains 和模板，你可以在模板中抽象掉许多按域和按系统的配置，甚至用逻辑决定在给定 Minion 上渲染模板的哪些部分。SaltStack 还让你能通过编写简单的 Python 类来轻松扩展默认 Minion。
 
 ## 应用 SaltState 配置
 

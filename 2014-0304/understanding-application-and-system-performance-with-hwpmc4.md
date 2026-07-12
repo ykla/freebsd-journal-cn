@@ -151,7 +151,7 @@ $ pmcstat -R /tmp/hanoi.log -G /tmp/hanoi.graph
 100.0% [1429] _start
 ```
 
-pmcstat 的输出还可以另一种方式展示，作为 gprof.1 输出 `pmcstat -R /tmp/hanoi.log -g`（图 7）。用 `-g` 参数处理同一日志会创建按事件分的目录 **INSTR_RETIRED_ANY/**，其中包含采样时使用中的每个程序、库和内核的输出文件。处理 hanoi.gmon 文件得到图 8 所示输出。这种情况下，时间具有误导性。seconds 列中的数字代表被计数的事件，而非秒，但这样的输出便于简短阅读。我们仍然看到 `mov()` 例程是事件的最大消费者，占据了与该程序相关的所有事件的 99.8%。
+pmcstat 的输出还可以另一种方式展示，作为 gprof.1 输出 `pmcstat -R /tmp/hanoi.log -g`（图 7）。用参数 `-g` 处理同一日志会创建按事件分的目录 **INSTR_RETIRED_ANY/**，其中包含采样时使用中的每个程序、库和内核的输出文件。处理 hanoi.gmon 文件得到图 8 所示输出。这种情况下，时间具有误导性。seconds 列中的数字代表被计数的事件，而非秒，但这样的输出便于简短阅读。我们仍然看到 `mov()` 例程是事件的最大消费者，占据了与该程序相关的所有事件的 99.8%。
 
 **图 8**
 
@@ -239,4 +239,4 @@ hwpmc 最初只在少量 Intel 和 AMD 处理器上可用，现已扩展覆盖 A
 
 ---
 
-**George Neville-Neil** 出于兴趣和盈利目的从事网络和操作系统代码工作。他还讲授与计算机编程相关的各类课程。他的专业兴趣领域包括代码考古、操作系统、网络和安全。他与 Marshall Kirk McKusick 合著了《The Design and Implementation of the FreeBSD Operating System》，也是 ACM Queue 杂志 Kode Vicious 专栏的作者。Neville-Neil 在波士顿的东北大学获得计算机科学学士学位。他是 ACM、Usenix 协会和 IEEE 的会员。他热爱骑行和旅行，现居纽约。
+**George Neville-Neil** 出于兴趣和盈利目的从事网络和操作系统代码工作。他还讲授与计算机编程相关的各类课程。他的专业兴趣领域包括代码考古、操作系统、网络和安全。他与 Marshall Kirk McKusick 合著了《FreeBSD 操作系统设计与实现》，也是 ACM Queue 杂志 Kode Vicious 专栏的作者。Neville-Neil 在波士顿的东北大学获得计算机科学学士学位。他是 ACM、Usenix 协会和 IEEE 的会员。他热爱骑行和旅行，现居纽约。

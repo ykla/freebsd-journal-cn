@@ -56,7 +56,7 @@ root: flunkies@mwl.io
 
 你会被提示重启。根据打补丁的内容，freebsd-update 可能会告诉你重启并再次运行 `freebsd-update install`。遵循其指示。
 
-**freebsd-update(8)** 检查还会通知你 FreeBSD 版本是否过了生命周期终止日期。这使得升级到更新版本至关重要。**freebsd-update(8)** 使更新到新版本变得容易，但它不会为你执行下载。它不知道你想升级到哪个版本。你是要运行 FreeBSD 11.5，还是跳到 12.1？这是一个只有你能做的决定。选择一个版本并用 `-r` 标志指定它。
+**freebsd-update(8)** 检查还会通知你 FreeBSD 版本是否过了生命周期终止日期。这使得升级到更新版本至关重要。**freebsd-update(8)** 使更新到新版本变得容易，但它不会为你执行下载。它不知道你想升级到哪个版本。你是要运行 FreeBSD 11.5，还是跳到 12.1？这是一个只有你能做的决定。选择一个版本并用标志 `-r` 指定它。
 
 ```sh
 # freebsd-update upgrade -r 12.1-RELEASE
@@ -116,7 +116,7 @@ Proceed with this action? [y/N]: y
 
 也许问题来自原始软件包。Python 2.7 可能有已知的安全问题，但 Python 作者可能认为消除这些问题会改变 Python 的行为，这是不可接受的。在某些软件中，软件作者可能质疑某个安全问题是否需要修复。无论如何，你知道问题存在总比不知道好。
 
-也许软件供应商已创建了修复，但 FreeBSD 的 port 尚未更新。也许 port 已更新，但新软件包尚未构建并分发到镜像。也许修复后的软件包在尖端软件包中可用，但不在默认部署的季度分支中。
+也许软件供应商已创建了修复，但 FreeBSD 的 Port 尚未更新。也许 Port 已更新，但新软件包尚未构建并分发到镜像。也许修复后的软件包在尖端软件包中可用，但不在默认部署的季度分支中。
 
 如果问题严重影响你，查看修复卡在哪里。开源软件由社区维护。这是你贡献的机会。如果你无法修复问题，至少可以确定修复何时可用。如果永远不会修复，你可以制定计划减轻风险。
 
@@ -147,4 +147,4 @@ pass in on $ext_if proto icmp
 
 ---
 
-**MICHAEL W LUCAS** 是几本 FreeBSD 书籍的作者，包括 Absolute FreeBSD 和 FreeBSD Mastery 系列。在 <www.michaelwlucas.com> 了解更多。
+**MICHAEL W LUCAS** 著有多本 FreeBSD 书籍，包括《Absolute FreeBSD》和《FreeBSD Mastery》系列。更多信息见 <www.michaelwlucas.com>。
